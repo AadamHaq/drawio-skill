@@ -101,6 +101,34 @@ For each edge with waypoints on a given page:
   direction).
 - If this distance is less than 20px, report a violation.
 
+### 6. Service-map specific checks (SERVICE_MAP pages only)
+
+For pages with `pageWidth="1169" pageHeight="827"` (landscape orientation,
+indicating a SERVICE_MAP or DEPLOYMENT page):
+
+a. **Service containers must have labels**: every mxCell with the
+`swimlane;startSize=26` style pattern must have a non-empty `value` attribute
+containing the service name.
+
+b. **Conditional group boundaries must reference at least 2 other nodes**: a
+conditional group boundary (style containing `dashed=1;opacity=70`) should
+visually contain at least 2 service container nodes within its bounding box.
+
+c. **Bidirectional edges must not overlap**: for any pair of edges between the
+same two nodes (forward A→B and reverse B→A), their exit/entry Y-coordinates
+(for horizontal edges) or X-coordinates (for vertical edges) must differ by at
+least 4px to be visually distinguishable.
+
+d. **Protocol-coloured edges must use valid colours**: edges between service
+containers must use one of the approved protocol colours:
+   - `#6c8ebf` (HTTP / database)
+   - `#9673a6` (gRPC)
+   - `#d79b00` (WebSocket)
+   - `#82b366` (pub/sub)
+
+e. **SERVICE_MAP pages must use landscape orientation**: verify
+`pageWidth="1169"` and `pageHeight="827"`.
+
 ---
 
 ## Output format

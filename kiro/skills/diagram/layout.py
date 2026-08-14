@@ -11,6 +11,10 @@ Usage:
   layout.py loop-annotation <first_node_y> <last_node_y> <last_node_h> <sw_w>
   layout.py n-split <sw_w> <last_step_y> <last_step_h> <n_outcomes> [split_gap]
   layout.py multipage <page_type> [n_swimlanes]
+      page_type: overview, drill_down, data_flow, service_map, deployment
+  layout.py service-map <n_services> [layer_hints...]
+  layout.py service-container <n_components> [container_w]
+  layout.py conditional-group <x,y,w,h> <x,y,w,h> [<x,y,w,h>...]
 """
 
 import math
@@ -174,14 +178,16 @@ def cmd_n_split(sw_w, last_step_y, last_step_h, n_outcomes, split_gap=50):
 
 
 def cmd_multipage(page_type, n_swimlanes=None):
-    valid_types = ("overview", "drill_down", "data_flow")
+    valid_types = ("overview", "drill_down", "data_flow", "service_map", "deployment")
     if page_type not in valid_types:
         print(f"usage: layout.py multipage <page_type> [n_swimlanes]\n"
               f"  page_type must be one of: {', '.join(valid_types)}",
               file=sys.stderr)
         sys.exit(1)
 
-    if page_type == "overview" or page_type == "data_flow":
+    if page_type == "service_map" or page_type == "deployment":
+        page_w, page_h, orientation = 1169, 827, "landscape"
+    elif page_type == "overview" or page_type == "data_flow":
         page_w, page_h, orientation = 827, 1169, "portrait"
     else:
         # drill_down
@@ -194,6 +200,263 @@ def cmd_multipage(page_type, n_swimlanes=None):
     print(f"page_w={page_w}")
     print(f"page_h={page_h}")
     print(f"orientation={orientation}")
+
+
+def cmd_service_map(n_services, *layer_hints):
+    n_services = int(n_services)
+    if n_services < 1 or n_services > 15:
+        print("usage: layout.py service-map <n_services> [layer_hints...]\n"
+              "  n_services must be between 1 and 15", file=sys.stderr)
+        sys.exit(1)
+
+    valid_layers = ("client", "gateway", "service", "worker", "infrastructure")
+    layer_order = list(valid_layers)
+
+    # Assign each service to a layer based on hints (default "service")
+    assignments = []
+    for i in range(n_services):
+        if i < len(layer_hints) and layer_hints[i] in valid_layers:
+            assignments.append(layer_hints[i])
+        else:
+            assignments.append("service")
+
+    # Group services by layer, preserving order within each layer
+    layers = {layer: [] for layer in layer_order}
+    for i, layer in enumerate(assignments):
+        layers[layer].append(i)
+
+    # Page dimensions (landscape)
+    page_w = 1169
+    page_h = 827
+    margin_x = 40
+    margin_y = 40
+    min_gap = 20
+
+    # Determine active layers (those with services)
+    active_layers = [l for l in layer_order if layers[l]]
+    n_active = len(active_layers)
+
+    # Compute container dimensions to fit within page bounds
+    # Vertical: margin_y + n_active * container_h + (n_active - 1) * layer_gap + margin_y <= page_h
+    # Horizontal: margin_x + max_in_layer * container_w + (max_in_layer - 1) * h_gap + margin_x <= page_w
+    max_in_layer = max(len(layers[l]) for l in active_layers)
+    available_h = page_h - 2 * margin_y
+    available_w = page_w - 2 * margin_x
+
+    # Start with ideal dimensions
+    container_w = 180
+    container_h = 120
+
+    # Scale vertically: ensure all layers fit
+    if n_active == 1:
+        layer_gap = 0
+    else:
+        # container_h * n_active + layer_gap * (n_active - 1) <= available_h
+        # Try with ideal container_h first, compute max layer_gap
+        total_container_h = n_active * container_h
+        if total_container_h > available_h:
+            # Must shrink container_h
+            container_h = available_h // n_active
+            layer_gap = 0
+        else:
+            remaining = available_h - total_container_h
+            layer_gap = min(80, remaining // (n_active - 1))
+
+    # Scale horizontally: ensure widest layer fits
+    if max_in_layer == 1:
+        h_gap = 0
+    else:
+        total_container_w = max_in_layer * container_w
+        if total_container_w > available_w:
+            # Shrink container_w to fit
+            container_w = (available_w - (max_in_layer - 1) * min_gap) // max_in_layer
+            h_gap = min_gap
+        else:
+            remaining_w = available_w - total_container_w
+            h_gap = min(60, remaining_w // (max_in_layer - 1))
+
+    print(f"page_w={page_w}")
+    print(f"page_h={page_h}")
+    print(f"orientation=landscape")
+
+    # Compute positions per layer
+    positions = {}  # service_index -> (x, y, layer_name)
+    current_y = margin_y
+
+    for layer_name in active_layers:
+        layer_services = layers[layer_name]
+        n = len(layer_services)
+
+        if n > 1:
+            total_w = n * container_w + (n - 1) * h_gap
+        else:
+            total_w = container_w
+        start_x = (page_w - total_w) // 2
+
+        for idx, svc_i in enumerate(layer_services):
+            x = start_x + idx * (container_w + h_gap)
+            positions[svc_i] = (x, current_y, layer_name)
+
+        current_y += container_h + layer_gap
+
+    # Output per-service positions
+    for i in range(n_services):
+        x, y, layer_name = positions[i]
+        print(f"service[{i}]: x={x} y={y} w={container_w} h={container_h} layer={layer_name}")
+
+
+def cmd_service_container(n_components, container_w=180):
+    n_components = int(n_components)
+    container_w = int(container_w)
+    if n_components < 1 or n_components > 10:
+        print("usage: layout.py service-container <n_components> [container_w]\n"
+              "  n_components must be between 1 and 10", file=sys.stderr)
+        sys.exit(1)
+
+    header_h = 30
+    component_h = 24
+    padding = 10
+    gap = 4
+    component_w = container_w - 2 * padding
+    first_y = header_h + 6
+    container_h = header_h + 6 + n_components * component_h + (n_components - 1) * gap + padding
+
+    print(f"container_w={container_w}")
+    print(f"container_h={container_h}")
+    print(f"component_w={component_w}")
+    for i in range(n_components):
+        y = first_y + i * (component_h + gap)
+        print(f"component[{i}]: x={padding} y={y} w={component_w} h={component_h}")
+
+
+def cmd_conditional_group(*service_positions):
+    """Compute dashed bounding box around a set of services for conditional mode grouping."""
+    if len(service_positions) < 2:
+        print("usage: layout.py conditional-group <x,y,w,h> <x,y,w,h> [<x,y,w,h>...]\n"
+              "  at least 2 service positions required", file=sys.stderr)
+        sys.exit(1)
+
+    padding = 20
+
+    # Parse each position string "x,y,w,h" into a tuple of ints
+    positions = []
+    for pos_str in service_positions:
+        parts = pos_str.split(",")
+        if len(parts) != 4:
+            print(f"error: invalid position '{pos_str}', expected format: x,y,w,h", file=sys.stderr)
+            sys.exit(1)
+        x, y, w, h = int(parts[0]), int(parts[1]), int(parts[2]), int(parts[3])
+        positions.append((x, y, w, h))
+
+    # Compute bounding box
+    min_x = min(x for x, y, w, h in positions)
+    min_y = min(y for x, y, w, h in positions)
+    max_x = max(x + w for x, y, w, h in positions)
+    max_y = max(y + h for x, y, w, h in positions)
+
+    # Apply padding + extra top space for label
+    group_x = min_x - padding
+    group_y = min_y - padding - 20  # extra 20px for label area
+    group_w = (max_x - min_x) + 2 * padding
+    group_h = (max_y - min_y) + 2 * padding + 20  # extra 20px for label area
+    label_x = group_x + 10
+    label_y = group_y + 5
+
+    print(f"group_x={group_x}")
+    print(f"group_y={group_y}")
+    print(f"group_w={group_w}")
+    print(f"group_h={group_h}")
+    print(f"label_x={label_x}")
+    print(f"label_y={label_y}")
+
+
+def cmd_bidirectional_edge(src_x, src_y, src_w, src_h, tgt_x, tgt_y, tgt_w, tgt_h, offset=8):
+    """Compute forward and reverse edge exit/entry points for bidirectional edges.
+
+    Outputs decimal fractions (0.0-1.0) for exit/entry points on source and target boxes.
+    Forward edge goes source->target, reverse edge goes target->source, separated by offset.
+    """
+    src_x = int(src_x)
+    src_y = int(src_y)
+    src_w = int(src_w)
+    src_h = int(src_h)
+    tgt_x = int(tgt_x)
+    tgt_y = int(tgt_y)
+    tgt_w = int(tgt_w)
+    tgt_h = int(tgt_h)
+    offset = int(offset)
+
+    # Validate: source and target must not overlap
+    src_right = src_x + src_w
+    src_bottom = src_y + src_h
+    tgt_right = tgt_x + tgt_w
+    tgt_bottom = tgt_y + tgt_h
+
+    overlaps_x = src_x < tgt_right and tgt_x < src_right
+    overlaps_y = src_y < tgt_bottom and tgt_y < src_bottom
+
+    if overlaps_x and overlaps_y:
+        print(
+            "usage: layout.py bidirectional-edge <src_x> <src_y> <src_w> <src_h> "
+            "<tgt_x> <tgt_y> <tgt_w> <tgt_h> [offset]\n"
+            "  error: source and target boxes must not overlap",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    # Determine dominant direction based on box centres
+    src_cx = src_x + src_w / 2.0
+    src_cy = src_y + src_h / 2.0
+    tgt_cx = tgt_x + tgt_w / 2.0
+    tgt_cy = tgt_y + tgt_h / 2.0
+
+    dx = tgt_cx - src_cx
+    dy = tgt_cy - src_cy
+
+    if abs(dx) > abs(dy):
+        # Horizontal dominant: edges exit from left/right sides, offset vertically
+        forward_exit_y = 0.5 - (offset / src_h)
+        forward_entry_y = 0.5 - (offset / tgt_h)
+        reverse_exit_y = 0.5 + (offset / tgt_h)
+        reverse_entry_y = 0.5 + (offset / src_h)
+
+        if dx > 0:  # target is to the right
+            fwd_exit_x = 1.0
+            fwd_entry_x = 0.0
+            rev_exit_x = 0.0
+            rev_entry_x = 1.0
+        else:  # target is to the left
+            fwd_exit_x = 0.0
+            fwd_entry_x = 1.0
+            rev_exit_x = 1.0
+            rev_entry_x = 0.0
+
+        print(f"forward: exitX={fwd_exit_x:.4g} exitY={forward_exit_y:.4g} "
+              f"entryX={fwd_entry_x:.4g} entryY={forward_entry_y:.4g}")
+        print(f"reverse: exitX={rev_exit_x:.4g} exitY={reverse_exit_y:.4g} "
+              f"entryX={rev_entry_x:.4g} entryY={reverse_entry_y:.4g}")
+    else:
+        # Vertical dominant: edges exit from top/bottom, offset horizontally
+        forward_exit_x = 0.5 + (offset / src_w)
+        forward_entry_x = 0.5 + (offset / tgt_w)
+        reverse_exit_x = 0.5 - (offset / tgt_w)
+        reverse_entry_x = 0.5 - (offset / src_w)
+
+        if dy > 0:  # target is below
+            fwd_exit_y = 1.0
+            fwd_entry_y = 0.0
+            rev_exit_y = 0.0
+            rev_entry_y = 1.0
+        else:  # target is above
+            fwd_exit_y = 0.0
+            fwd_entry_y = 1.0
+            rev_exit_y = 1.0
+            rev_entry_y = 0.0
+
+        print(f"forward: exitX={forward_exit_x:.4g} exitY={fwd_exit_y:.4g} "
+              f"entryX={forward_entry_x:.4g} entryY={fwd_entry_y:.4g}")
+        print(f"reverse: exitX={reverse_exit_x:.4g} exitY={rev_exit_y:.4g} "
+              f"entryX={reverse_entry_x:.4g} entryY={rev_entry_y:.4g}")
 
 
 def cmd_check_approach(last_wx, last_wy, tx, ty, tw, th, entry_x, entry_y):
@@ -233,6 +496,10 @@ def main():
         "loop-annotation":  lambda: cmd_loop_annotation(*args),
         "n-split":          lambda: cmd_n_split(*args),
         "multipage":        lambda: cmd_multipage(*args),
+        "service-map":      lambda: cmd_service_map(*args),
+        "service-container": lambda: cmd_service_container(*args),
+        "conditional-group": lambda: cmd_conditional_group(*args),
+        "bidirectional-edge": lambda: cmd_bidirectional_edge(*args),
     }
     fn = dispatch.get(cmd)
     if fn is None:

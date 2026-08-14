@@ -52,6 +52,328 @@ what they asked to emphasise.
 
 ---
 
+## Topology Classification
+
+After exploring the repo (Step 1), classify its architecture before proceeding. This determines which diagram strategy to use.
+
+### Signals to scan for
+
+**Pipeline signals** (sequential stage-based architecture):
+- Orchestrator script (main.py / run.py with sequential calls to stages)
+- Stage configuration (YAML/JSON listing stages in order)
+- Pass/fail quality gates (score thresholds, filtering)
+- Output chaining (stage N output = stage N+1 input)
+- Single execution flow (runs once to completion)
+
+**Microservice signals** (distributed, always-running services):
+- Docker-compose with multiple services
+- Kubernetes manifests (Deployments, Services, Ingresses)
+- Multiple service directories (each with own entrypoint)
+- Inter-service HTTP client calls between services
+- gRPC .proto files defining service interfaces
+- WebSocket server/client patterns
+- Message queue usage (Redis pub/sub, Kafka, SQS)
+- Always-running processes (web servers, event loop workers)
+- Helm charts directory
+- Tiltfile for development orchestration
+
+### Classification rules
+
+- If ≥3 microservice signals detected AND pipeline score is low → **MICROSERVICE**
+- If ≥2 pipeline signals detected AND no microservice signals → **PIPELINE**
+- If both present with significant scores → **HYBRID**
+- When unsure → default to **PIPELINE** (preserves existing behavior)
+
+### What to do with the result
+
+- **PIPELINE**: Proceed with the existing diagram strategy (Step 2 onward unchanged). Use swimlanes, pass/fail splits, loop annotations — everything works as before.
+- **MICROSERVICE**: Skip the pipeline layout steps. Instead follow the Service-Map Strategy (see below).
+- **HYBRID**: Generate both pipeline pages AND service-map pages.
+
+---
+
+## Service Discovery (Microservice/Hybrid only)
+
+If topology is MICROSERVICE or HYBRID, perform deep service discovery:
+
+### 1. Identify services
+
+Scan these sources to find services:
+- `docker-compose.yml` / `docker-compose.yaml` → service names from the `services:` key
+- `deploy/` or `charts/` directories → Helm chart names = service names
+- `services/` directory → each subdirectory = one service
+- `Tiltfile` → `docker_build()` or `helm_resource()` targets
+- Kubernetes manifests → Deployment names
+
+For each service, extract:
+- **Name**: the service identifier
+- **Path**: relative directory containing its source
+- **Runtime type**: "always-running" (web servers, workers), "one-shot" (batch scripts), "triggered" (event handlers), "infrastructure" (databases, caches)
+- **Internal components**: sub-modules, handlers, routes inside the service
+- **Ports**: which port(s) it listens on and what protocol
+- **Dependencies**: which other services it calls
+
+### 2. Layer assignment
+
+Assign each service to a visual layer for positioning:
+- **client**: names containing "web", "frontend", "browser", "client", or "ui"
+- **gateway**: names containing "api", "gateway", "proxy", or "ingress"
+- **service**: application services (default)
+- **worker**: names containing "worker", "realtime", or background processors
+- **infrastructure**: databases, caches, message brokers (PostgreSQL, Redis, LiveKit, etc.)
+
+---
+
+## Communication Edge Mapping (Microservice/Hybrid only)
+
+After discovering services, map all inter-service communication:
+
+### What to look for in source code
+
+| Pattern | Protocol | Example |
+|---|---|---|
+| `requests.get/post()`, `httpx.AsyncClient`, fetch to another service URL | HTTP | `await client.get(f"{API_URL}/users")` |
+| gRPC stubs, `.proto` imports, channel creation | gRPC | `stub = SomeServiceStub(channel)` |
+| WebSocket connect/accept, LiveKit room connections | WebSocket | `websocket.connect(ws_url)` |
+| Redis publish/subscribe, Kafka producer/consumer | pub/sub | `redis.publish("channel", data)` |
+| Database connections (psycopg2, SQLAlchemy, prisma) | database | infrastructure edge, not inter-service |
+
+### Edge properties
+
+For each edge record:
+- **source**: the calling service name
+- **target**: the called service name
+- **protocol**: HTTP, gRPC, WebSocket, pub/sub, database
+- **bidirectional**: True if both A→B and B→A exist with the same protocol (e.g., WebSocket is inherently bidirectional)
+- **label**: what data flows (e.g., "audio frames", "transcription", "tool results")
+- **conditional**: if this edge only exists in certain config modes, note the mode name
+
+### Bidirectional collapse
+
+If you find A calls B (HTTP) AND B calls A (HTTP), collapse into one bidirectional edge. WebSocket connections are always bidirectional by nature.
+
+### Deduplication
+
+No duplicate edges with the same (source, target, protocol) combination.
+
+---
+
+## Conditional Mode Detection (Microservice/Hybrid only)
+
+Some repositories have multiple runtime configurations where different services are active:
+
+### What to look for
+
+- Environment variables that switch between modes (e.g., `PIPELINE_TYPE=cascade` vs `PIPELINE_TYPE=openai`)
+- Config files with mode selectors (e.g., `tilt_config.json` with `"pipeline-type": "cascade"`)
+- Conditional imports or service instantiation based on config values
+- Docker-compose profiles or Helm value overrides
+
+### For each mode, record:
+
+- **Name**: the mode identifier (e.g., "cascade", "openai")
+- **Config key**: what variable selects this mode
+- **Services**: which services are active in this mode
+- **Edges**: which edges only exist in this mode
+
+### Rendering conditional modes
+
+On the SERVICE_MAP page, draw a dashed boundary rectangle around services that belong to a specific mode. Use the `conditional-group` layout command to compute the boundary. Label the group with the mode name (e.g., "cascade mode" or "when PIPELINE_TYPE=openai").
+
+---
+
+## Service-Map Page Planning (Microservice/Hybrid only)
+
+When topology is MICROSERVICE, generate these pages:
+1. **SERVICE_MAP page** (required): shows all services with their containers, edges, and conditional groups. Use landscape orientation (1169×827). Run `layout.py multipage service_map`.
+2. **DATA_FLOW pages** (optional, one per conditional mode): show the data flow for a specific mode, e.g., "Voice Pipeline (Cascade)" showing only cascade-mode services and edges.
+3. **DEPLOYMENT page** (optional): show infrastructure layer (databases, caches, load balancers, k8s nodes). Use landscape orientation.
+
+When topology is HYBRID, also generate:
+- OVERVIEW + DRILL_DOWN pages using the existing pipeline strategy (for the pipeline portion)
+
+**>15 services handling**: If more than 15 services are discovered, group related services into logical clusters by directory prefix or communication density. Use one SERVICE_MAP page per cluster. Each cluster container shows internal service names in its label.
+
+---
+
+## Service-Map Layout Rules (Microservice/Hybrid only)
+
+### Layer-based grid positioning
+
+Services are placed in horizontal layers, top-to-bottom:
+```
+Row 1 (top):     clients (browser, mobile app)
+Row 2:           gateways (API service, reverse proxy)
+Row 3 (middle):  application services
+Row 4:           workers (background processors, voice workers)
+Row 5 (bottom):  infrastructure (PostgreSQL, Redis, LiveKit, message queues)
+```
+
+**Computing positions**: Run the layout calculator:
+```bash
+python3 ~/.claude/commands/diagram_layout.py service-map <n_services> <layer_hints...>
+```
+Where `<layer_hints>` is one of: client, gateway, service, worker, infrastructure (one per service in order). The calculator outputs x/y/w/h per service, handling page containment and no-overlap automatically.
+
+### Service containers
+
+Each service is drawn as a **rounded rectangle container** (swimlane-like) with its internal components as child boxes:
+```bash
+python3 ~/.claude/commands/diagram_layout.py service-container <n_components> [container_w]
+```
+
+### Edge-crossing minimization
+
+After computing initial positions, mentally trace all edges. If significant crossings exist, swap services within the same layer to reduce them. The layout calculator handles basic positioning, but manual within-layer reordering may improve readability.
+
+### Cycle handling
+
+If the service graph has cycles (A→B→C→A), use the following approach:
+1. For layout/layer assignment purposes, break the cycle at the weakest edge (lowest priority: pubsub < HTTP < gRPC)
+2. Still render ALL edges in the final diagram (including back-edges)
+3. Back-edges (going upward against the layer flow) use a different routing style: route along the outside margin with upward arrows
+
+---
+
+## Service-Map Visual Styles
+
+### Service containers
+
+```
+style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;
+       verticalAlign=top;fontStyle=1;fontSize=11;swimlane;startSize=26;"
+```
+- Rounded rectangle with purple/lavender fill
+- Service name in the header (startSize=26)
+- Internal components as child boxes (style: `fillColor=#f5f5f5;strokeColor=#666666`)
+
+### Infrastructure nodes
+
+```
+style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;
+       boundedLbl=1;backgroundOutline=1;size=10;"
+```
+- Cylinder shape for databases and caches (PostgreSQL, Redis)
+- Blue fill matching the input node colour palette
+
+### External services
+
+```
+style="shape=cloud;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;"
+```
+- Cloud shape for external APIs (OpenAI, third-party services)
+
+### Client nodes
+
+```
+style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;"
+```
+- Yellow/gold rounded rectangle for browser/mobile clients
+
+### Protocol-coloured edges
+
+| Protocol | Style |
+|---|---|
+| HTTP | `edgeStyle=orthogonalEdgeStyle;strokeColor=#6c8ebf;` (blue) |
+| gRPC | `edgeStyle=orthogonalEdgeStyle;strokeColor=#9673a6;strokeWidth=2;` (purple, thicker) |
+| WebSocket | `edgeStyle=orthogonalEdgeStyle;strokeColor=#d79b00;dashed=1;` (orange, dashed) |
+| pub/sub | `edgeStyle=orthogonalEdgeStyle;strokeColor=#82b366;dashed=1;dashPattern=8 4;` (green, long-dash) |
+| database | `edgeStyle=orthogonalEdgeStyle;strokeColor=#6c8ebf;dashed=1;dashPattern=4 2;` (blue, short-dash) |
+
+### Bidirectional edges
+
+For bidirectional communication (e.g., voice worker ↔ LiveKit), draw two parallel arrows with offset:
+```bash
+python3 ~/.claude/commands/diagram_layout.py bidirectional-edge <src_x> <src_y> <src_w> <src_h> <tgt_x> <tgt_y> <tgt_w> <tgt_h> [offset]
+```
+Use the output exitX/exitY/entryX/entryY for each arrow. Do NOT use double-headed arrows — always two separate edges.
+
+### Conditional mode groups
+
+For services that only exist in certain modes:
+```
+style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#d79b00;
+       strokeWidth=2;dashed=1;opacity=70;verticalAlign=top;fontStyle=2;fontSize=10;"
+```
+- Dashed border, orange stroke, no fill, italic label
+- Compute boundary with: `layout.py conditional-group <x,y,w,h> <x,y,w,h> ...`
+- Label format: `"mode: cascade"` or `"when PIPELINE_TYPE=openai"`
+
+### Edge labels
+
+- Label edges with what flows: `"audio frames"`, `"transcription"`, `"/api/v1/users"`, `"tool results"`
+- Keep labels short (under 30 chars)
+- Position labels on the midpoint of the edge segment
+
+---
+
+## Service-Map XML Template
+
+For SERVICE_MAP pages, use this structure:
+
+```xml
+<diagram id="service-map" name="Service Map">
+  <mxGraphModel dx="2043" dy="1085" grid="1" gridSize="10" guides="1" tooltips="1"
+                connect="1" arrows="1" fold="1" page="1" pageScale="1"
+                pageWidth="1169" pageHeight="827" math="0" shadow="0">
+    <root>
+      <mxCell id="0" />
+      <mxCell id="1" parent="0" />
+
+      <!-- Service container (parent="1") -->
+      <mxCell id="svc-api" parent="1" vertex="1"
+        style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;verticalAlign=top;fontStyle=1;fontSize=11;swimlane;startSize=26;"
+        value="API Service">
+        <mxGeometry x="..." y="..." width="180" height="..." as="geometry" />
+      </mxCell>
+
+      <!-- Internal component (parent=service container) -->
+      <mxCell id="svc-api-routes" parent="svc-api" vertex="1"
+        style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;"
+        value="Routes">
+        <mxGeometry x="10" y="36" width="160" height="24" as="geometry" />
+      </mxCell>
+
+      <!-- Infrastructure node (parent="1") -->
+      <mxCell id="infra-postgres" parent="1" vertex="1"
+        style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;boundedLbl=1;backgroundOutline=1;size=10;"
+        value="PostgreSQL&lt;br&gt;:5432">
+        <mxGeometry x="..." y="..." width="120" height="80" as="geometry" />
+      </mxCell>
+
+      <!-- Protocol-coloured edge (parent="1") -->
+      <mxCell id="e-api-db" parent="1" edge="1" source="svc-api" target="infra-postgres"
+        style="edgeStyle=orthogonalEdgeStyle;strokeColor=#6c8ebf;dashed=1;dashPattern=4 2;"
+        value="queries">
+        <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+
+      <!-- Bidirectional edge pair -->
+      <mxCell id="e-worker-stt-fwd" parent="1" edge="1" source="svc-worker" target="svc-stt"
+        style="edgeStyle=orthogonalEdgeStyle;strokeColor=#9673a6;strokeWidth=2;exitX=1;exitY=0.43;entryX=0;entryY=0.43;"
+        value="audio frames">
+        <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+      <mxCell id="e-worker-stt-rev" parent="1" edge="1" source="svc-stt" target="svc-worker"
+        style="edgeStyle=orthogonalEdgeStyle;strokeColor=#9673a6;strokeWidth=2;exitX=0;exitY=0.57;entryX=1;entryY=0.57;"
+        value="transcription">
+        <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+
+      <!-- Conditional mode group -->
+      <mxCell id="group-cascade" parent="1" vertex="1"
+        style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#d79b00;strokeWidth=2;dashed=1;opacity=70;verticalAlign=top;fontStyle=2;fontSize=10;"
+        value="mode: cascade">
+        <mxGeometry x="..." y="..." width="..." height="..." as="geometry" />
+      </mxCell>
+
+    </root>
+  </mxGraphModel>
+</diagram>
+```
+
+---
+
 ## Loop Detection and Annotation
 
 During exploration (Step 1), identify loop and iteration patterns in orchestrator source
@@ -261,6 +583,13 @@ attribute.
 - The key **exactly matches** (case-insensitive): `password`, `secret`, `token`, `api_key`
 
 Do not display a redacted placeholder — exclude the entire entry silently.
+
+### Additional secret filtering for service-map labels
+
+When generating labels for service-map nodes (service containers, infrastructure nodes):
+- Strip credentials from infrastructure connection strings found in docker-compose or k8s configs (e.g., `postgresql://user:password@host/db` → `PostgreSQL · :5432`)
+- Exclude environment variables whose keys match secret patterns (_KEY, _SECRET, _TOKEN, _PASSWORD, _CREDENTIAL, or exact matches: password, secret, token, api_key)
+- Never show full connection strings with embedded passwords in any node label
 
 ### Relative Paths Only
 
