@@ -26,7 +26,7 @@ exploration and layout decisions. Examples of what users might pass:
 - `"the annotation and generation run in parallel, treat them as one row"`
 
 Parse the intent naturally. If the user specifies a filename (ends in `.drawio`), use
-that instead of `architecture.drawio`. Apply all other guidance during Steps 1–2.
+that instead of `architecture.drawio`. Apply all other guidance during Steps 1–3.
 
 ---
 
@@ -41,13 +41,251 @@ Read entrypoints, orchestrators, and configs. Answer:
 4. What **decisions** happen within each stage? (pass/fail splits, routing)
 5. What are the **outputs**? (files written, services called)
 6. Which stages are **parallel** (→ side-by-side swimlanes) vs **sequential** (→ stacked)?
+7. For each stage, extract **concrete details**: the exact script/module path that
+   implements it, model names from config, key parameter values (temperatures,
+   thresholds, batch sizes), and the exact output file paths written.
+8. For each input and output, note which stage(s) it connects to — this determines
+   node placement order (see Step 3).
 
 Apply any steering from `$ARGUMENTS` here: skip sections the user said to skip, emphasise
 what they asked to emphasise.
 
 ---
 
-## Step 2 — Plan the layout
+## Loop Detection and Annotation
+
+During exploration (Step 1), identify loop and iteration patterns in orchestrator source
+files. Look for `for`/`while` loops, retry logic, per-item processing, and any repeated
+execution flow.
+
+### Loop classification
+
+Classify every detected loop into one of these types:
+
+| Type | Meaning | Example |
+|---|---|---|
+| FIXED_COUNT | Exactly N iterations | `for i in range(5)` |
+| BOUNDED_RANGE | Between min and max iterations | `max_turns = 7`, runs 3-7× |
+| RETRY | Retry with backoff | `retries = 3` with exponential wait |
+| PER_ITEM | Once per item in a collection | `for turn in turns` |
+| UNTIL_CONDITION | Loop until a condition is met | `while not converged` |
+
+### Extracting bounds
+
+To determine iteration counts:
+
+1. Check **config files** for min/max values (e.g., `min_turns: 3`, `max_turns: 7`)
+2. Check **code constants** (e.g., `MAX_RETRIES = 3`, `max_turns = 7`)
+3. Check **function signatures** or **class attributes** for default parameter values
+
+Use whichever source provides the most specific bound. If both config and code define
+the same parameter, prefer the config value (it represents runtime behaviour).
+
+### Visual rules for loop annotations
+
+Draw a **dashed-border box** around all nodes that are part of the loop:
+
+- Style: `dashed;strokeColor=#999999;fillColor=none;opacity=60;`
+- 15px padding on all sides around the enclosed nodes
+- 20px extra at the top for the label area
+
+Compute coordinates by calling the layout calculator:
+
+```bash
+python3 ~/.claude/commands/diagram_layout.py loop-annotation <first_node_y> <last_node_y> <last_node_h> <sw_w>
+```
+
+This outputs `annotation_x`, `annotation_y`, `annotation_w`, `annotation_h`,
+`label_x`, and `label_y` — use them directly in the XML.
+
+### Label format
+
+Format the annotation label as:
+
+```
+[loop context] · [bounds expression]
+```
+
+Examples:
+- `per turn · repeated 3-7×`
+- `per file · repeated N×`
+- `retry · max 3 attempts`
+
+### Label position
+
+- Right-aligned within the annotation box
+- 10px inset from the right edge
+- 5px below the top edge of the annotation box
+
+### Fallback for unknown bounds
+
+If bounds cannot be determined, use the loop type without a specific count:
+
+| Type | Fallback label |
+|---|---|
+| FIXED_COUNT | `repeated N×` |
+| BOUNDED_RANGE | `repeated N×` |
+| RETRY | `retry · max N attempts` |
+| PER_ITEM | `per item` |
+| UNTIL_CONDITION | `until condition met` |
+
+### Skip rule
+
+If the wrapped nodes referenced by a loop annotation don't exist on the current page,
+skip that annotation entirely — do not render an empty box.
+
+---
+
+## Step 2 — Plan Decomposition Levels
+
+After exploring the repo, decide how to split the architecture across pages.
+
+### Rules
+
+1. **ALWAYS create one OVERVIEW page as the first page.** This page shows the full
+   pipeline at a glance — every stage appears here (either as a summary node or a
+   standard node).
+
+2. **Create a DRILL_DOWN page for any stage with ≥ 3 sub-steps or that contains
+   loops.** These stages are too complex to render inline on the overview.
+
+3. **Maximum 8 drill-down pages.** If more than 8 candidates qualify, merge adjacent
+   stages in pipeline order into combined pages (maximum 3 stages per combined page)
+   until the count is ≤ 8.
+
+4. **Swimlane nodes on the OVERVIEW page (preferred for stages with 2+ sub-steps).**
+   Any stage with 2 or more identifiable sub-steps should appear as a **mini-swimlane**
+   on the overview — a container box with its sub-steps as child boxes inside. This
+   gives the reader an immediate sense of the internal structure without needing to
+   navigate to a drill-down page.
+   - Use STANDARD labels inside (title + up to 2 detail lines per step)
+   - The swimlane title is the stage name
+   - If the stage also has a drill-down page, add the NavLink to the swimlane container
+     so clicking it navigates to the detailed view
+   - Compute the swimlane coordinates using `layout.py swimlanes <n>` for the row,
+     then `layout.py steps <sw_w> <startSize> <lines_per_step...>` for the children
+
+5. **Flat summary nodes (only for truly atomic stages).** Use a flat standalone box
+   on the overview ONLY for stages that are a single atomic operation with no
+   identifiable sub-steps. These use STANDARD labels:
+   - Format: title + up to 2 detail lines (max 3 lines total)
+
+6. **Single-page fallback for simple repos.** If the repository has fewer than 3 stages
+   and no stage meets the drill-down threshold (≥ 3 sub-steps or loops), produce a
+   single OVERVIEW page with enhanced STANDARD labels (title + 2 detail lines per node).
+
+### Page dimensions
+
+Use the `layout.py multipage` command to get page dimensions for each page:
+
+```bash
+# Overview page dimensions
+python3 ~/.claude/commands/diagram_layout.py multipage overview
+
+# Drill-down page (specify number of parallel swimlanes to choose orientation)
+python3 ~/.claude/commands/diagram_layout.py multipage drill_down <n_swimlanes>
+```
+
+The multipage command outputs `page_w`, `page_h`, and `orientation` (portrait or
+landscape). Use these values in the `<mxGraphModel>` attributes for each page.
+
+---
+
+## Label Composition Rules
+
+When building multi-line labels for diagram nodes, follow these rules strictly.
+
+**Richness principle:** Every node should tell the reader something they couldn't
+guess from the title alone. A label like "Generation" is useless — use
+"Query Generation&lt;br&gt;model: deepseek-v4-flash&lt;br&gt;temp: 0.7 · max_tokens: 8192"
+instead. The diagram should be self-contained documentation that eliminates the need
+to cross-reference source files for basic understanding.
+
+### Detail Levels
+
+| Level | Max Lines | Content |
+|---|---|---|
+| OVERVIEW | 2 | title + at most 1 detail line (key parameter or script path) |
+| STANDARD | 3 | title + at most 2 detail lines (model + key params) |
+| DETAILED | 5 | title + at most 4 detail lines (model + params + paths + output) |
+
+Use OVERVIEW for summary nodes on the overview page, STANDARD for single-page simple
+repos or non-drilldown stages on the overview, and DETAILED for drill-down page nodes.
+
+**Always fill to the maximum.** If you have detail available, use it. A DETAILED node
+with only 2 lines when 4 lines of useful detail exist is underusing the format.
+
+### Config Value Extraction Priority
+
+When selecting which details to include in the label, use this priority order:
+
+1. **Model names** — e.g. `model: gpt-4o`, `engine: claude-sonnet-4-20250514`
+2. **Temperature / threshold parameters** — e.g. `temp: 0.7`, `threshold: 0.85`
+3. **Script/module path** — e.g. `📄 generator/run_generation.py`
+4. **Output file path** — e.g. `→ output/raw/multi_turn.json`
+5. **Key dimensions** — e.g. `batch: 50 · 5 emotions × 9 styles`
+
+Fill available detail lines in priority order. Stop when the line limit for the
+detail level is reached.
+
+### Truncation (40-character limit)
+
+Any single detail line exceeding 40 characters MUST be truncated:
+
+```
+Cut at position 37, append "..."  →  total length exactly 40
+```
+
+Example: `"temperature_scaling_factor: 0.95123"` (37+ chars) becomes
+`"temperature_scaling_factor: 0.951..."` (40 chars — cut at 37, append "...").
+
+### HTML Entity Escaping
+
+All label text MUST escape these characters before embedding in XML:
+
+| Character | Escape |
+|---|---|
+| `<` | `&lt;` |
+| `>` | `&gt;` |
+| `&` | `&amp;` |
+| `"` | `&quot;` |
+
+Apply escaping after truncation so the escaped form is what appears in the XML value
+attribute.
+
+### Secret Filtering
+
+**Case-insensitive.** Completely omit any config entry (no key name, no value) if:
+
+- The key **ends with**: `_KEY`, `_SECRET`, `_TOKEN`, `_PASSWORD`, `_CREDENTIAL`
+- The key **exactly matches** (case-insensitive): `password`, `secret`, `token`, `api_key`
+
+Do not display a redacted placeholder — exclude the entire entry silently.
+
+### Relative Paths Only
+
+All file paths in labels MUST be relative to the repository root. Strip any prefix
+that starts with:
+
+- `/Users/`
+- `/home/`
+- `C:\Users\`
+- `~`
+
+Express paths from the repo root, e.g. `src/pipeline/generate.py`, never
+`/Users/dev/project/src/pipeline/generate.py`.
+
+### Fallback Rules
+
+| Situation | Label content |
+|---|---|
+| Config values available | title + config values (up to detail level limit) |
+| Config unavailable, source path available | title + source file path only |
+| Both config and path unavailable | Single-line label with title only |
+
+---
+
+## Step 3 — Plan the layout
 
 Sketch the structure top-to-bottom before computing any numbers:
 
@@ -55,24 +293,57 @@ Sketch the structure top-to-bottom before computing any numbers:
 - **Row 1..N**: one row per sequential phase; swimlanes side-by-side within a row
 - **Row N+1**: output / aggregation nodes
 
-**How to represent each phase:**
+**Spatial ordering to minimize crossings:**
+
+Before placing nodes, determine the left-to-right order of each row by minimising
+edge crossings:
+
+1. For **input nodes** (Row 0): order them so that each input is positioned directly
+   above or near the stage it feeds. If input A feeds a stage on the left, place A
+   on the left. If input B feeds a stage on the right, place B on the right. If an
+   input feeds a stage in the middle, place it in the middle. The goal is that most
+   edges go straight down without crossing other nodes or edges.
+
+2. For **parallel stages** in the same row: order them to match the left-to-right
+   order of their upstream inputs. If Stage X receives input from the left side and
+   Stage Y receives input from the right side, put X on the left and Y on the right.
+
+3. **Avoid crossing rule**: After placing nodes, trace every edge mentally. If an edge
+   from a node on the right side must reach a node on the left side (crossing over
+   nodes in between), consider:
+   - Swapping the node positions to eliminate the crossing
+   - Routing the edge around the outside (along x < leftmost_node or x > rightmost_node)
+   - Using a routing band that runs below the row, goes horizontal outside all boxes,
+     then drops down to the target
+
+4. For **late-joining inputs** (an input that only feeds a stage further down the
+   pipeline, not the first row): place that input node directly above its target stage,
+   not in the top input row. Or if it must be in the top row, place it on the same
+   side as its target and route the edge along the outside margin to avoid crossing
+   intermediate rows.
+
+**How to represent each phase (applies on BOTH overview and drill-down pages):**
 
 | What you found in the code | How to draw it |
 |---|---|
-| Phase with 2+ sequential internal sub-steps | **Swimlane** — one step per box inside |
+| Phase with 2+ sequential internal sub-steps | **Swimlane** — one step per box inside (use on overview AND drill-down) |
 | Phase that is a single atomic operation | **Standalone box** (no swimlane) |
 | Multiple phases that run in parallel | **Side-by-side swimlanes** in the same row |
 
 The test: if you can name the internal steps separately (e.g. "validate → score → filter"),
-use a swimlane. If the phase is genuinely one operation, use a box. Never collapse a
-multi-step flow into a single box just because it's convenient.
+use a swimlane — even on the overview page. If the phase is genuinely one operation,
+use a box. Never collapse a multi-step flow into a single box just because it's convenient.
+
+**Overview vs drill-down difference:** On the overview, use STANDARD labels inside the
+swimlane steps (3 lines max). On drill-down pages, use DETAILED labels (5 lines max)
+and add loop annotations, nested containers, and more granular sub-steps.
 
 Then compute coordinates using the formulas below. Do this once, in order. Do not
 iterate or adjust after the fact.
 
 ---
 
-## Step 3 — Coordinate formulas
+## Step 4 — Coordinate formulas
 
 **Before computing any coordinates, run the layout calculator.** It is at
 `~/.claude/commands/diagram_layout.py` and requires only `python3` — no packages.
@@ -188,6 +459,12 @@ Examples:
 Compute `step_h` for each step **before** computing any `step_y` — the heights cascade.
 
 ### Pass / fail split (bottom of a swimlane, relative to swimlane parent)
+
+> **Note:** The binary pass/fail split is a special case of N-way conditional routing
+> with N = 2. Prefer calling `layout.py n-split <sw_w> <last_step_y> <last_step_h> 2 [split_gap]`
+> to compute coordinates for any decision node (including binary ones). The formulas
+> below remain as a reference for the N = 2 case.
+
 ```
 split_gap  = 50   ← when the fan-out edges carry labels (most decision splits)
 split_gap  = 20   ← only when edges are unlabelled
@@ -236,7 +513,7 @@ band_3 = row_bottom + 30   ← third edge
 
 ---
 
-## Step 4 — Colour palette
+## Step 5 — Colour palette
 
 | Role | fillColor | strokeColor |
 |---|---|---|
@@ -249,7 +526,7 @@ band_3 = row_bottom + 30   ← third edge
 
 ---
 
-## Step 5 — Edge rules
+## Step 6 — Edge rules
 
 All edges use `edgeStyle=orthogonalEdgeStyle` (right angles only).
 
@@ -260,12 +537,47 @@ All edges use `edgeStyle=orthogonalEdgeStyle` (right angles only).
 exitX=0.5  exitY=1   entryX=0.5  entryY=0    no label
 ```
 
-### Decision fan-out (scoring box → pass / fail)
+### Decision fan-out (N-way conditional routing)
+
+Decision nodes support 2 to 10 outcomes. If the outcome count is outside that range,
+flag an error and do not render the node.
+
+**Exit point distribution** along the bottom edge of the decision node:
 ```
-→ pass:  exitX=0  exitY=1   entryX=0.5  entryY=0   label = pass condition
-→ fail:  exitX=1  exitY=1   entryX=0.5  entryY=0   label = fail condition
+N > 2:   exit_position[i] = 0.1 + (0.8 * i / (N - 1))   for i = 0 .. N-1
+N == 2:  exit at 0.25 (left / pass) and 0.75 (right / fail)
 ```
-Opposite corners diverge immediately — they can never overlap.
+The special case for exactly 2 outcomes preserves the existing pass/fail behaviour with
+clear left/right separation.
+
+**Routing bands** — each outcome edge gets its own horizontal band, spaced 10px apart
+vertically below the decision node bottom edge:
+```
+band_y[i] = decision_node_bottom + 10 + (i * 10)
+```
+This prevents edges from overlapping on the horizontal run.
+
+**Edge labels** — label each outcome edge with the outcome condition text, positioned
+adjacent to its exit point.
+
+**Outcome node colours** — use the standard palette where applicable:
+- Green (`#d5e8d4` / `#82b366`) for pass / success outcomes
+- Red (`#f8cecc` / `#b85450`) for fail / error outcomes
+- Grey (`#f5f5f5` / `#666666`) for neutral outcomes
+
+**Coordinate calculation** — call the layout calculator for box positions:
+```bash
+python3 ~/.claude/commands/diagram_layout.py n-split <sw_w> <last_step_y> <last_step_h> <n_outcomes> [split_gap]
+```
+The `n-split` command computes N equal-width outcome boxes with 10px gaps between them,
+distributed across the available step width (sw_w − 36).
+
+**Binary pass/fail (special case, N = 2):**
+```
+→ pass:  exitX=0.25  exitY=1   entryX=0.5  entryY=0   label = pass condition
+→ fail:  exitX=0.75  exitY=1   entryX=0.5  entryY=0   label = fail condition
+```
+Left/right separation diverges immediately — edges can never overlap.
 
 ### Fast-fail bypass (early step → fail, skipping boxes below it)
 Route along the right wall of the swimlane at x = sw_w − 10 (outside all content):
@@ -281,6 +593,11 @@ downward approach segment before the arrowhead (see minimum-approach rule below)
 **Always use top entry** (`entryY=0`) with spread `entryX` fractions. Never use side entry
 (`entryY=0.5`) — it makes the arrowhead point sideways when the last waypoint shares the
 same x as the entry point.
+
+**Target is always the swimlane container itself** (not internal steps). When an edge
+from an input or another stage reaches a swimlane, it connects to the swimlane's top
+border. The internal steps are children of the swimlane — they don't receive external
+edges directly.
 
 ```
 first arriving edge:   entryX=0.1  entryY=0    (top-left)
@@ -299,18 +616,71 @@ edge drops vertically to its `target_entry_x`:
 The final segment `(target_entry_x, band_y)` → `(target_entry_x, target_top)` is vertical,
 giving a correct downward-pointing arrowhead.
 
+### Merging multiple inputs to the same target
+
+When 2+ inputs all feed the same stage (e.g., config + personas + context all go to
+Generation), do NOT draw separate overlapping edges. Instead:
+
+1. **If inputs are adjacent** (positioned next to each other above the target): draw
+   each edge straight down individually — they won't cross because the spatial ordering
+   already aligns them. Use spread entryX values (0.2, 0.5, 0.8) so arrows arrive at
+   different points along the target's top edge.
+
+2. **If an input is far from the target** (on the opposite side of the diagram): route
+   its edge around the outside margin of the page, not through other nodes. Use
+   waypoints to go: down along the margin → horizontal at a routing band → down to
+   the target entry point.
+
+3. **Never route an edge through the interior of another swimlane or standalone box.**
+   If an edge's straight path would cross through a box, route it around:
+   - Left side: use x < (leftmost_box_x − 20)
+   - Right side: use x > (rightmost_box_x + rightmost_box_w + 20)
+
+### Swimlane-to-swimlane edges
+
+When connecting the output of one swimlane to the input of the next:
+- **Exit from the swimlane container** (`source="{swimlane_id}"`), not from an internal step
+- Use `exitX=0.5;exitY=1` (bottom-centre of source swimlane)
+- Use `entryX=0.5;entryY=0` (top-centre of target swimlane)
+- If pass/fail split exists, exit from the pass/fail boxes (which are inside the swimlane)
+  using `parent="1"` on the edge so it can cross swimlane boundaries
+
 ### Coloured edges
 Pass-related: add `strokeColor=#82b366;`
 Fail-related: add `strokeColor=#b85450;`
 
 ---
 
-## Step 6 — XML structure
+## Step 7 — XML structure (multi-page)
+
+The output `.drawio` file is a single `<mxfile>` containing one `<diagram>` element per
+page. Each page becomes a navigable tab in draw.io.
+
+### Getting page dimensions
+
+Before writing XML, get the dimensions for each page:
+
+```bash
+# Overview page (always portrait)
+python3 ~/.claude/commands/diagram_layout.py multipage overview
+# → page_w=827  page_h=1169  orientation=portrait
+
+# Drill-down page (orientation depends on swimlane count)
+python3 ~/.claude/commands/diagram_layout.py multipage drill_down <n_swimlanes>
+# → page_w and page_h (portrait or landscape depending on n_swimlanes)
+```
+
+Use the output `page_w` and `page_h` values in the `<mxGraphModel>` attributes for each
+diagram element.
+
+### Multi-page XML template
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="ac.draw.io">
-  <diagram id="{unique_id}" name="Page-1">
+
+  <!-- PAGE 1: Overview (always first) -->
+  <diagram id="overview" name="Pipeline Overview">
     <mxGraphModel dx="2043" dy="1085" grid="1" gridSize="10" guides="1" tooltips="1"
                   connect="1" arrows="1" fold="1" page="1" pageScale="1"
                   pageWidth="827" pageHeight="1169" math="0" shadow="0">
@@ -318,71 +688,142 @@ Fail-related: add `strokeColor=#b85450;`
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
 
-        <!-- Input nodes: parent="1", absolute coordinates -->
+        <!-- Input nodes: parent="1", absolute page coordinates -->
         <mxCell id="cfg" parent="1" vertex="1"
           style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;html=1;"
           value="config.yaml">
-          <mxGeometry x="..." y="30" width="160" height="36" as="geometry" />
+          <mxGeometry x="333" y="30" width="160" height="36" as="geometry" />
         </mxCell>
 
-        <!-- Swimlane container: parent="1" -->
-        <mxCell id="sl1" parent="1" vertex="1"
-          style="swimlane;startSize=30;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=12;html=1;"
-          value="Processing Stage">
-          <mxGeometry x="..." y="..." width="316" height="..." as="geometry" />
+        <!-- Summary node with NavLink to drill-down page -->
+        <mxCell id="gen-summary" parent="1" vertex="1"
+          style="rounded=1;fillColor=#ffe6cc;strokeColor=#d79b00;html=1;link=page-detail-gen;"
+          value="Generation&lt;br&gt;gpt-4 · 3-7 turns per conversation">
+          <mxGeometry x="255" y="100" width="316" height="58" as="geometry" />
         </mxCell>
 
-        <!-- Step inside swimlane: parent="sl1", relative coordinates -->
-        <mxCell id="step1" parent="sl1" vertex="1"
+        <!-- Standard node (no drill-down, shown directly on overview) -->
+        <mxCell id="postproc" parent="1" vertex="1"
           style="rounded=1;fillColor=#fff4e6;strokeColor=#d79b00;html=1;"
-          value="Validate">
-          <mxGeometry x="18" y="45" width="280" height="36" as="geometry" />
+          value="Post-Processing&lt;br&gt;dedup · format output">
+          <mxGeometry x="255" y="200" width="316" height="58" as="geometry" />
         </mxCell>
 
-        <!-- Edge inside swimlane: parent="sl1" -->
-        <mxCell id="e1" parent="sl1" edge="1" source="step1" target="step2"
+        <!-- Cross-row edge with waypoints: parent="1" -->
+        <mxCell id="e-cfg-gen" parent="1" edge="1" source="cfg" target="gen-summary"
           style="edgeStyle=orthogonalEdgeStyle;exitX=0.5;exitY=1;exitDx=0;exitDy=0;
                  entryX=0.5;entryY=0;entryDx=0;entryDy=0;"
           value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
-        <!-- Cross-row edge with waypoints: parent="1" -->
-        <mxCell id="e2" parent="1" edge="1" source="pass1" target="agg"
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <!-- PAGE 2: Drill-down for Generation stage -->
+  <diagram id="detail-gen" name="Step 1: Generation">
+    <mxGraphModel dx="2043" dy="1085" grid="1" gridSize="10" guides="1" tooltips="1"
+                  connect="1" arrows="1" fold="1" page="1" pageScale="1"
+                  pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Swimlane container: parent="1", absolute page coordinates -->
+        <mxCell id="sl-gen" parent="1" vertex="1"
+          style="swimlane;startSize=30;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=12;html=1;"
+          value="Generation Pipeline">
+          <mxGeometry x="255" y="30" width="316" height="300" as="geometry" />
+        </mxCell>
+
+        <!-- Steps inside swimlane: parent="sl-gen", RELATIVE coordinates -->
+        <mxCell id="gen-step1" parent="sl-gen" vertex="1"
+          style="rounded=1;fillColor=#fff4e6;strokeColor=#d79b00;html=1;"
+          value="Prompt Assembly&lt;br&gt;model: gpt-4&lt;br&gt;temp: 0.7">
+          <mxGeometry x="18" y="45" width="280" height="58" as="geometry" />
+        </mxCell>
+
+        <mxCell id="gen-step2" parent="sl-gen" vertex="1"
+          style="rounded=1;fillColor=#fff4e6;strokeColor=#d79b00;html=1;"
+          value="LLM Call&lt;br&gt;max_tokens: 4096&lt;br&gt;📄 src/generate.py">
+          <mxGeometry x="18" y="119" width="280" height="58" as="geometry" />
+        </mxCell>
+
+        <!-- Edge inside swimlane: parent="sl-gen" -->
+        <mxCell id="e-gen1" parent="sl-gen" edge="1" source="gen-step1" target="gen-step2"
           style="edgeStyle=orthogonalEdgeStyle;exitX=0.5;exitY=1;exitDx=0;exitDy=0;
-                 entryX=0.1;entryY=0;entryDx=0;entryDy=0;strokeColor=#82b366;"
+                 entryX=0.5;entryY=0;entryDx=0;entryDy=0;"
           value="">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="{source_cx}" y="{band_y}" />
-              <mxPoint x="{target_entry_x}" y="{band_y}" />
-            </Array>
-          </mxGeometry>
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
       </root>
     </mxGraphModel>
   </diagram>
+
 </mxfile>
 ```
 
-Key parent rules:
+### Multi-page rules
+
+1. **One `<diagram>` per page.** Each DiagramPage from the decomposition plan becomes its
+   own `<diagram id="..." name="...">` element within the single `<mxfile>`.
+
+2. **Unique `id` per diagram element.** Every `<diagram>` must have a unique `id` attribute
+   (scoped within the mxfile). Use descriptive IDs like `"overview"`, `"detail-gen"`,
+   `"detail-scoring"`.
+
+3. **`name` attribute = tab label.** The `name` attribute on each `<diagram>` becomes the
+   tab label in draw.io. Use human-readable names:
+   - Overview page: `"Pipeline Overview"`
+   - Drill-down pages: `"Step 1: Generation"`, `"Step 2: Annotation & Scoring"`, etc.
+
+4. **Page dimensions per diagram.** Each `<mxGraphModel>` gets its own `pageWidth` and
+   `pageHeight` from the `layout.py multipage` command. Overview pages are always
+   827×1169 (portrait). Drill-down pages with ≥ 4 parallel swimlanes use 1169×827
+   (landscape).
+
+5. **NavLink encoding.** When a summary node on the OVERVIEW page links to a drill-down
+   page, add `link=page-{target_diagram_id}` to the node's `style` attribute. The
+   `{target_diagram_id}` must match the `id` attribute of the target `<diagram>` element.
+   ```
+   style="rounded=1;fillColor=#ffe6cc;strokeColor=#d79b00;html=1;link=page-detail-gen;"
+   ```
+
+6. **Coordinate rules:**
+   - Top-level nodes (`parent="1"`) use **absolute page coordinates** within that page
+   - Child nodes within containers (swimlanes, groups) use **relative coordinates** to
+     the container's origin
+   - Each page has its own independent coordinate space starting at (0, 0)
+
+### Key parent rules
+
 - Input nodes, swimlane containers, output nodes, cross-row edges → `parent="1"`
 - Steps, pass/fail boxes, within-swimlane edges → `parent="{swimlane_id}"`
+- These rules apply **identically on every page** — the parent-child relationship
+  structure is the same whether you are on the overview or a drill-down page
+- Node IDs must be **unique across all pages** in the mxfile
 
 ---
 
-## Step 7 — Validate before writing
+## Step 8 — Validate before writing
 
-Before writing the file, check every edge:
+Before writing the file, check every edge **and every node placement**:
+
+### Edge checks
 
 1. **Overlap**: do two edges share the same horizontal segment (same y, overlapping x)?
    Or the same vertical segment (same x, overlapping y)? If yes, shift one to a
    different entry point or routing band.
 
-2. **Box-crossing**: does any segment pass through the bounding box of any vertex?
+2. **Box-crossing**: does any edge segment pass through the bounding box of any vertex
+   that is NOT the edge's source or target? This is the most common issue.
    A segment at y=500 crosses a box at y=490–540 if its x-range intersects the box width.
-   Fix by routing through the margin (x < 18 or x > 298 inside a swimlane).
+   Fix by:
+   - Routing the edge around the outside (x < leftmost_box_edge or x > rightmost_box_edge)
+   - Using a different routing band that avoids the obstructing box
+   - Re-ordering the nodes to eliminate the crossing entirely (preferred)
 
 3. **Labels**: decision branches labelled, sequential edges unlabelled.
 
@@ -399,35 +840,144 @@ Before writing the file, check every edge:
    only 10px for band_3. Use `row_gap = 60` when there are 3+ cross-row edges between
    two rows, giving approach distances of 50/40/30px.
 
-Fix before writing. Then write `architecture.drawio` (or the filename from `$ARGUMENTS`).
+5. **Unnecessary waypoints / kinks**: if an edge has waypoints that create a zigzag
+   but could go straight down (source and target are vertically aligned), remove the
+   waypoints. A straight vertical edge with no waypoints is always preferred when
+   source exitX and target entryX are the same.
+
+### Layout sanity checks
+
+6. **Node ordering vs edges**: trace every edge from source to target. If an edge must
+   cross over an unrelated node to reach its target, consider swapping node positions
+   to eliminate the crossing. The node ordering from Step 3 should prevent this, but
+   verify here.
+
+7. **Long-distance edges**: if an input at the top must reach a stage many rows down
+   (skipping intermediate stages), route it along the outside margin of the diagram
+   (x < 30 or x > pageWidth − 30) so it doesn't cross intermediate content. Use
+   waypoints to go: straight down along the margin → horizontal to the target → down
+   to the entry point.
+
+Fix ALL issues before writing. Then write `architecture.drawio` (or the filename from `$ARGUMENTS`).
 
 ---
 
-## Step 8 — Mermaid companion
+## Step 9 — Mermaid companion
 
-After writing the draw.io file, write `architecture.md` (same directory) with a high-level
-Mermaid flowchart. Keep it simple — one box per major phase, not per internal step. The
-goal is a quick-glance overview readable in GitHub or any markdown viewer.
+After writing the draw.io file, write `architecture.md` (same directory) with a rich
+Mermaid companion document. This goes beyond a simple overview — it mirrors the multi-page
+draw.io structure with subgraph groupings, rich labels, loop annotations, and data shapes.
 
-```markdown
+---
+
+### Overview diagram
+
+- Use `flowchart TD` with `subgraph` blocks grouping related stages
+- Each subgraph represents a logical phase (e.g., "Generation", "Annotation", "Post-Processing")
+- Show connections between subgraphs as well as within them
+
+### Rich node labels
+
+- Format: `NodeID["Title<br/>detail1<br/>detail2"]` for multi-line labels
+- Use `<br/>` for line breaks inside Mermaid node labels (NOT `\n` — that renders as literal text)
+- Include config values extracted from the repo (model names, key parameters)
+- Keep each label line under 40 characters
+
+### Loop annotations
+
+- Represent loops using Mermaid note annotations or back-edge syntax with bounds labels
+- Example: add an edge from the last node in a loop back to the first with label `-->|"repeated 3-7×"|`
+- Or use `%%` comments to annotate loop regions
+
+### Drill-down diagrams
+
+- Generate one Mermaid code block per drill-down page (mirroring the draw.io pages)
+- Use separate markdown sections: `### Overview`, `### Step 1: Generation Internals`, etc.
+- Each drill-down diagram shows detailed internal steps with rich labels
+
+### Node ID rules
+
+- Use ONLY alphanumeric characters and underscores (pattern: `[a-zA-Z0-9_]+`)
+- No spaces, hyphens, or special characters in node IDs
+- Use descriptive IDs: `Gen_QueryGen`, `Ann_Scoring`, not `n1`, `n2`
+
+### Data shape section
+
+- After all diagrams, include a "## Data Shapes" section
+- Document input/output schemas at each stage boundary using markdown tables or JSON code blocks
+- Include a "## Config Snapshot" table with key config parameters and their current values
+
+### Pass/fail and parallel syntax
+
+- Show pass/fail splits with `-->|pass|` and `-->|fail|` edge labels
+- Parallel phases: `A & B & C --> Target`
+- Conditional routing with labelled edges for all N outcomes
+
+### Example structure
+
+````markdown
 # Architecture
+
+### Pipeline Overview
 
 ```mermaid
 flowchart TD
-    Inputs["Input Files\nfile1 · file2 · file3"]
-    PhaseA["Phase A\nbrief description"]
-    PhaseB["Phase B\nbrief description"]
-    Outputs["output1.json · output2.json"]
+    subgraph Inputs
+        Config["config.yaml<br/>generation_plan"]
+        Personas["persona_banking.jsonl"]
+    end
 
-    Inputs --> PhaseA
-    PhaseA --> PhaseB
-    PhaseB --> Outputs
-```
+    subgraph Generation["Step 1: Generation"]
+        QueryGen["Query Generation<br/>model: gpt-4 · temp: 0.9"]
+        AnswerGen["Answer Generation<br/>model: gpt-4 · temp: 0.3"]
+    end
+
+    Inputs --> Generation
+    Generation --> Annotation
+    Annotation -->|pass| Output
+    Annotation -->|fail| Discard
 ```
 
-Rules:
-- Use `["label\ndescription"]` for multi-line node labels
-- Show pass/fail splits with `-->|pass|` and `-->|fail|` edge labels
-- Parallel phases that feed the same target can be written as `A & B & C --> Target`
-- Keep each label under ~40 characters per line
-- No swimlane syntax — flat `flowchart TD` only
+### Step 1: Generation Internals
+
+```mermaid
+flowchart TD
+    subgraph Gen_Internal["Generation Pipeline"]
+        Gen_Prompt["Prompt Assembly<br/>template: multi_turn_v2"]
+        Gen_LLM["LLM Call<br/>model: gpt-4 · temp: 0.9"]
+        Gen_Parse["Response Parsing<br/>format: json"]
+    end
+
+    Gen_Prompt --> Gen_LLM
+    Gen_LLM --> Gen_Parse
+    Gen_Parse -->|"repeated 3-7×"| Gen_Prompt
+```
+
+## Data Shapes
+
+| Stage | Input | Output |
+|---|---|---|
+| Generation | config.yaml, personas.jsonl | raw/multi_turn.json |
+| Annotation | raw/multi_turn.json | final/multi_turn.json |
+
+## Config Snapshot
+
+| Parameter | Value |
+|---|---|
+| model | gpt-4 |
+| threshold | 8.0 |
+````
+
+---
+
+## Security
+
+- The skill SHALL read but never execute code from the target repository.
+- Never include API keys, tokens, or credentials in diagram labels or Mermaid output.
+  Secret filtering rules are defined in the **Label Composition Rules** section above
+  (keys ending in `_KEY`, `_SECRET`, `_TOKEN`, `_PASSWORD`, `_CREDENTIAL`, or exactly
+  matching `password`, `secret`, `token`, `api_key` — case-insensitive).
+- All file paths in labels must be relative to the repo root — no absolute paths or
+  home directory prefixes (`/Users/`, `/home/`, `C:\Users\`, `~`). See **Relative Paths
+  Only** in Label Composition Rules.
+- Do not transmit any project data to external services.
