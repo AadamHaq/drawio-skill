@@ -17,12 +17,13 @@ import unittest
 LAYOUT_PY = "claude/skills/diagram/layout.py"
 NUM_TRIALS = 80
 VALID_LAYERS = ["client", "gateway", "service", "worker", "infrastructure"]
-PAGE_W = 1169
-PAGE_H = 827
 
 
 def run_service_map(n_services, layer_hints):
-    """Run the service-map command and parse its output."""
+    """Run the service-map command and parse its output.
+    
+    Returns (services_list, page_w, page_h).
+    """
     cmd = [sys.executable, LAYOUT_PY, "service-map", str(n_services)] + layer_hints
     result = subprocess.run(
         cmd,
@@ -33,8 +34,14 @@ def run_service_map(n_services, layer_hints):
         raise RuntimeError(f"service-map failed: {result.stderr}")
 
     services = []
+    page_w = 1169
+    page_h = 827
     for line in result.stdout.strip().splitlines():
-        if line.startswith("service["):
+        if line.startswith("page_w="):
+            page_w = int(line.split("=")[1])
+        elif line.startswith("page_h="):
+            page_h = int(line.split("=")[1])
+        elif line.startswith("service["):
             # Parse: service[0]: x=494 y=60 w=180 h=120 layer=client
             parts = line.split(":", 1)[1].strip().split()
             entry = {}
@@ -46,7 +53,7 @@ def run_service_map(n_services, layer_hints):
                     elif key == "layer":
                         entry[key] = val
             services.append(entry)
-    return services
+    return services, page_w, page_h
 
 
 def boxes_overlap(a, b):
@@ -85,7 +92,7 @@ class TestServiceMapNoOverlapProperty(unittest.TestCase):
 
             with self.subTest(trial=trial, n_services=n_services,
                               layer_hints=layer_hints):
-                services = run_service_map(n_services, layer_hints)
+                services, page_w, page_h = run_service_map(n_services, layer_hints)
 
                 self.assertEqual(
                     len(services), n_services,
@@ -112,14 +119,14 @@ class TestServiceMapNoOverlapProperty(unittest.TestCase):
                         f"Service {i} y={svc['y']} is negative"
                     )
                     self.assertLessEqual(
-                        svc["x"] + svc["w"], PAGE_W,
+                        svc["x"] + svc["w"], page_w,
                         f"Service {i} right edge {svc['x'] + svc['w']} "
-                        f"exceeds page width {PAGE_W}"
+                        f"exceeds page width {page_w}"
                     )
                     self.assertLessEqual(
-                        svc["y"] + svc["h"], PAGE_H,
+                        svc["y"] + svc["h"], page_h,
                         f"Service {i} bottom edge {svc['y'] + svc['h']} "
-                        f"exceeds page height {PAGE_H}"
+                        f"exceeds page height {page_h}"
                     )
 
                 # Invariant 3: Services in the same layer have the same y

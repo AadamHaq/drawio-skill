@@ -225,55 +225,41 @@ def cmd_service_map(n_services, *layer_hints):
     for i, layer in enumerate(assignments):
         layers[layer].append(i)
 
-    # Page dimensions (landscape)
-    page_w = 1169
-    page_h = 827
-    margin_x = 40
-    margin_y = 40
-    min_gap = 20
-
     # Determine active layers (those with services)
     active_layers = [l for l in layer_order if layers[l]]
     n_active = len(active_layers)
-
-    # Compute container dimensions to fit within page bounds
-    # Vertical: margin_y + n_active * container_h + (n_active - 1) * layer_gap + margin_y <= page_h
-    # Horizontal: margin_x + max_in_layer * container_w + (max_in_layer - 1) * h_gap + margin_x <= page_w
     max_in_layer = max(len(layers[l]) for l in active_layers)
-    available_h = page_h - 2 * margin_y
+
+    # Page dimensions: scale up for complex layouts
+    # Base landscape page, but expand if needed for readability
+    container_w = 200
+    container_h = 140
+    margin_x = 60
+    margin_y = 60
+    min_h_gap = 60   # minimum horizontal gap between services (space for edge labels)
+    min_layer_gap = 80  # minimum vertical gap between layers (space for edge routing)
+
+    # Compute required page dimensions
+    needed_w = 2 * margin_x + max_in_layer * container_w + (max(0, max_in_layer - 1)) * min_h_gap
+    needed_h = 2 * margin_y + n_active * container_h + (max(0, n_active - 1)) * min_layer_gap
+
+    # Use at least the standard landscape size, but expand if needed
+    page_w = max(1169, needed_w)
+    page_h = max(827, needed_h)
+
+    # Compute actual gaps with the final page size
     available_w = page_w - 2 * margin_x
+    available_h = page_h - 2 * margin_y
 
-    # Start with ideal dimensions
-    container_w = 180
-    container_h = 120
-
-    # Scale vertically: ensure all layers fit
-    if n_active == 1:
-        layer_gap = 0
+    if max_in_layer > 1:
+        h_gap = (available_w - max_in_layer * container_w) // (max_in_layer - 1)
     else:
-        # container_h * n_active + layer_gap * (n_active - 1) <= available_h
-        # Try with ideal container_h first, compute max layer_gap
-        total_container_h = n_active * container_h
-        if total_container_h > available_h:
-            # Must shrink container_h
-            container_h = available_h // n_active
-            layer_gap = 0
-        else:
-            remaining = available_h - total_container_h
-            layer_gap = min(80, remaining // (n_active - 1))
-
-    # Scale horizontally: ensure widest layer fits
-    if max_in_layer == 1:
         h_gap = 0
+
+    if n_active > 1:
+        layer_gap = (available_h - n_active * container_h) // (n_active - 1)
     else:
-        total_container_w = max_in_layer * container_w
-        if total_container_w > available_w:
-            # Shrink container_w to fit
-            container_w = (available_w - (max_in_layer - 1) * min_gap) // max_in_layer
-            h_gap = min_gap
-        else:
-            remaining_w = available_w - total_container_w
-            h_gap = min(60, remaining_w // (max_in_layer - 1))
+        layer_gap = 0
 
     print(f"page_w={page_w}")
     print(f"page_h={page_h}")
