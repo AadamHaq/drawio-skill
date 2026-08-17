@@ -124,13 +124,12 @@ Labels appear at the midpoint of the edge path by default. To avoid overlap:
 
 ## Colour Legend
 
-Add a legend in the top-left or bottom-left corner of EVERY page:
+Add a legend that does NOT overlap any service box. Position it BELOW all content:
 ```xml
 <mxCell id="legend" value="━━ &lt;font color=&quot;#6c8ebf&quot;&gt;HTTP&lt;/font&gt;&lt;br/&gt;━━━ &lt;font color=&quot;#9673a6&quot;&gt;gRPC&lt;/font&gt;&lt;br/&gt;┄┄ &lt;font color=&quot;#d79b00&quot;&gt;WebSocket&lt;/font&gt;&lt;br/&gt;┄┄ &lt;font color=&quot;#82b366&quot;&gt;pub/sub&lt;/font&gt;"
   style="text;html=1;align=left;verticalAlign=top;fontSize=10;fillColor=none;strokeColor=none;"
   vertex="1" parent="1">
-  <mxGeometry x="20" y="60" width="130" height="70" as="geometry" />
+  <mxGeometry x="20" y="{lowest_element_bottom + 40}" width="130" height="70" as="geometry" />
 </mxCell>
 ```
-
-Place it where it won't conflict with service boxes (typically top-left since services are centred).
+**Position rule**: find the y of the lowest element on the page + its height + 40px margin. Place the legend there. NEVER use a fixed y value that might land on top of a service container.

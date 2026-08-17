@@ -177,14 +177,15 @@ For pass/fail edges: the label IS the pass/fail condition (e.g., "≥ 8", "< 8",
 
 ## Colour Legend
 
-Add a legend in the bottom-left corner of each page:
+Add a legend BELOW all content on each page — never overlapping any box:
 ```xml
 <mxCell id="legend" value="━━ sequential&lt;br/&gt;━━ &lt;font color=&quot;#82b366&quot;&gt;pass&lt;/font&gt;&lt;br/&gt;━━ &lt;font color=&quot;#b85450&quot;&gt;fail&lt;/font&gt;"
   style="text;html=1;align=left;verticalAlign=top;fontSize=10;fillColor=none;strokeColor=none;"
   vertex="1" parent="1">
-  <mxGeometry x="20" y="{page_h - 60}" width="120" height="50" as="geometry" />
+  <mxGeometry x="20" y="{lowest_element_bottom + 40}" width="120" height="50" as="geometry" />
 </mxCell>
 ```
+**Position rule**: compute the y of the lowest element on the page (last output node, last swimlane bottom, etc.), then place the legend 40px below that. NEVER place it at a fixed y that might conflict with content.
 
 ## Pipeline Edge Limits
 
