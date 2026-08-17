@@ -30,6 +30,8 @@ Steps inside at x=18, width=280, with 30px gaps.
 
 **CRITICAL: Every cell that uses `<br/>` in its value MUST include `html=1;` in the style.** Without it, `<br/>` renders as literal text instead of a line break.
 
+**ALWAYS use `layout.py steps` to compute step positions inside swimlanes.** Never manually place steps — the minimum gap between steps is 30px and manual placement often makes them too close (resulting in tiny unreadable arrows between steps).
+
 ### Standalone boxes
 Atomic stages (1 step) → rounded box:
 ```xml
