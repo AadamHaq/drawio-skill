@@ -29,7 +29,7 @@ Follow `explore.md`. Read the repo's entrypoints, configs, services. Classify as
 - MICROSERVICE: decide which services to show, which edges to include (max 12 per page), which data flow to detail on page 2
 
 ### Step 3: Compute Layout
-Use `layout.py` for all coordinate math. The script is at `~/.kiro/skills/diagram/layout.py`:
+The Python scripts (`layout.py`, `edge_planner.py`, `validate.py`) are in the same directory as this SKILL.md. Find them at `~/.kiro/skills/diagram/` and execute from there:
 ```bash
 python3 ~/.kiro/skills/diagram/layout.py swimlanes <n>
 python3 ~/.kiro/skills/diagram/layout.py inputs <n>
