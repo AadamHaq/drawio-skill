@@ -26,7 +26,9 @@ Any stage with 2+ sub-steps → swimlane container with steps inside:
   <mxGeometry x="..." y="..." width="316" height="..." as="geometry" />
 </mxCell>
 ```
-Steps inside at x=18, width=280, with 16px gaps.
+Steps inside at x=18, width=280, with 30px gaps.
+
+**CRITICAL: Every cell that uses `<br/>` in its value MUST include `html=1;` in the style.** Without it, `<br/>` renders as literal text instead of a line break.
 
 ### Standalone boxes
 Atomic stages (1 step) → rounded box:

@@ -13,6 +13,18 @@ edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor={color};strokeWidth={width};
 - For sequential edges inside swimlanes: no waypoints needed (straight down)
 - Include `<Array as="points">` ONLY when the edge planner provides waypoints
 
+**Exit/entry point rules:**
+- Sequential (top→bottom): exitX=0.5 exitY=1 → entryX=0.5 entryY=0 (centre bottom → centre top)
+- NEVER use 0.0 or 1.0 for the non-direction axis (e.g., exitX=0.0 looks like the arrow starts at the very pixel edge)
+- Keep exit/entry values between 0.15 and 0.85 to stay visually inside the box border
+- The arrow head direction is determined by the ENTRY point: entryY=0 means the arrow approaches from above (points down), entryX=0 means it approaches from the left (points right)
+
+**Arrow head direction must match approach:**
+- If the edge arrives at the TOP of a box → use entryY=0 (arrow points down into box)
+- If the edge arrives at the BOTTOM → use entryY=1 (arrow points up into box)
+- If the edge arrives from the LEFT → use entryX=0 (arrow points right into box)
+- If the edge arrives from the RIGHT → use entryX=1 (arrow points left into box)
+
 ## Protocol Colours (service maps)
 
 | Protocol | Color | Width | Extra |

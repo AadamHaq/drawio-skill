@@ -2,6 +2,8 @@
 
 Use this for MICROSERVICE or HYBRID topology repos.
 
+**CRITICAL: Every mxCell that uses `<br/>` in its value MUST include `html=1;` in the style.** Without `html=1`, line breaks render as literal text.
+
 ## Page Structure
 
 Always generate at least 2 pages:
