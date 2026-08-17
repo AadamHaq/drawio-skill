@@ -25,7 +25,7 @@ _SW_GAP   = 26
 _MARGIN   = 60
 _INPUT_W  = 160
 _INPUT_GAP = 20
-_STEP_GAP = 16
+_STEP_GAP = 30
 _SPLIT_H  = 36
 
 

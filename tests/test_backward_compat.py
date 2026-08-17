@@ -90,9 +90,9 @@ class TestBackwardCompatSteps(unittest.TestCase):
 
         self.assertEqual(step_data["0"]["y"], "45")
         self.assertEqual(step_data["0"]["h"], "40")
-        self.assertEqual(step_data["1"]["y"], "101")
+        self.assertEqual(step_data["1"]["y"], "115")
         self.assertEqual(step_data["1"]["h"], "58")
-        self.assertEqual(step_data["2"]["y"], "175")
+        self.assertEqual(step_data["2"]["y"], "203")
         self.assertEqual(step_data["2"]["h"], "40")
 
 
@@ -129,7 +129,7 @@ class TestBackwardCompatNestedContainer(unittest.TestCase):
         out = parse_output(result.stdout)
         self.assertEqual(out["container_w"], "292")
         self.assertEqual(out["child_step_w"], "256")
-        self.assertEqual(out["container_h"], "210")
+        self.assertEqual(out["container_h"], "238")
 
 
 class TestBackwardCompatLoopAnnotation(unittest.TestCase):
