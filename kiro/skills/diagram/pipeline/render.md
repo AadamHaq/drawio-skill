@@ -167,7 +167,11 @@ When a swimlane has a pass/fail split at the bottom:
 
 ### Minimum edge length between rows
 
-Leave at least 40px vertical gap between swimlanes/boxes in different rows. This gives edges room to show labels and arrowheads clearly. An edge shorter than 30px looks like floating text.
+Leave at least **60px vertical gap** between swimlanes/boxes in different rows. This gives edges room to show labels and arrowheads clearly. An edge shorter than 40px looks like floating text.
+
+When computing swimlane y-positions: `next_row_y = previous_row_y + previous_row_height + 60`
+
+This gap also keeps edge labels from overlapping with the boxes above/below.
 
 ## Edge Label Positioning
 

@@ -45,10 +45,14 @@ edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor={color};strokeWidth={width};
 
 ## Labels
 
-- Cross-service edges: MUST have a label (5-15 chars)
+- Cross-service/cross-row edges: SHOULD have a label (5-12 chars max)
 - Sequential edges within a swimlane: no label (value="")
-- Keep labels SHORT: "REST /api", "gRPC audio", "queries", "sessions", "WebSocket", "completions"
-- If label > 15 chars, abbreviate
+- **HARD LIMIT: 12 characters maximum.** If the natural label is longer, abbreviate:
+  - "ceval_to_responses.py" → "adapt" or "transform"
+  - "uv run --frozen" → "run cell"
+  - "raw/multi_turn.json" → "raw blocks"
+- If you can't fit it in 12 chars, omit the label entirely (value="")
+- The edge colour and context already communicates most meaning — labels are supplementary
 
 ## Exit/Entry Point Spreading
 
