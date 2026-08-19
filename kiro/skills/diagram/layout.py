@@ -15,6 +15,9 @@ Usage:
   layout.py service-map <n_services> [layer_hints...]
   layout.py service-container <n_components> [container_w]
   layout.py conditional-group <x,y,w,h> <x,y,w,h> [<x,y,w,h>...]
+  layout.py palette [role]                    (show colour pairs by semantic role)
+  layout.py layers <n_layers> [items_per_layer...]
+  layout.py boilerplate <page_name> [page_name...]
 """
 
 import math
@@ -356,6 +359,157 @@ def cmd_conditional_group(*service_positions):
     print(f"label_y={label_y}")
 
 
+# ─── Colour palette ──────────────────────────────────────────────────────────
+
+# Standard draw.io default palette — pastel fill + saturated stroke of same hue.
+_PALETTE = {
+    "config":       {"fill": "#dae8fc", "stroke": "#6c8ebf", "name": "Light Blue"},
+    "input":        {"fill": "#dae8fc", "stroke": "#6c8ebf", "name": "Light Blue"},
+    "generator":    {"fill": "#fff2cc", "stroke": "#d6b656", "name": "Light Yellow"},
+    "process":      {"fill": "#fff2cc", "stroke": "#d6b656", "name": "Light Yellow"},
+    "validator":    {"fill": "#d5e8d4", "stroke": "#82b366", "name": "Light Green"},
+    "postprocess":  {"fill": "#e1d5e7", "stroke": "#9673a6", "name": "Light Purple"},
+    "environment":  {"fill": "#f8cecc", "stroke": "#b85450", "name": "Light Red"},
+    "domain":       {"fill": "#f8cecc", "stroke": "#b85450", "name": "Light Red"},
+    "submodule":    {"fill": "#ffffff", "stroke": "#b85450", "name": "White/Red border"},
+    "lane_bg":      {"fill": "#f5f5f5", "stroke": "#666666", "name": "Neutral grey"},
+    "lane_header":  {"fill": "#f0f0f0", "stroke": "#999999", "name": "Darker grey"},
+    "output":       {"fill": "#d5e8d4", "stroke": "#82b366", "name": "Light Green"},
+    "fail":         {"fill": "#f8cecc", "stroke": "#b85450", "name": "Light Red"},
+    "pass":         {"fill": "#d5e8d4", "stroke": "#82b366", "name": "Light Green"},
+    "neutral":      {"fill": "#fff4e6", "stroke": "#d79b00", "name": "Light Orange"},
+}
+
+
+def cmd_palette(*args):
+    """Output draw.io colour pairs by semantic role. Optionally filter to a single role."""
+    if args:
+        role = args[0].lower()
+        if role in _PALETTE:
+            p = _PALETTE[role]
+            print(f"fillColor={p['fill']};strokeColor={p['stroke']};  # {p['name']}")
+        else:
+            print(f"unknown role: {role}", file=sys.stderr)
+            print(f"available: {', '.join(sorted(_PALETTE.keys()))}", file=sys.stderr)
+            sys.exit(1)
+    else:
+        # Print all roles grouped by colour
+        print("# Semantic colour palette (draw.io defaults)")
+        print("# Paste fill+stroke into style strings")
+        print()
+        for role, p in _PALETTE.items():
+            print(f"{role:14s}  fill={p['fill']}  stroke={p['stroke']}  ({p['name']})")
+
+
+# ─── Layer layout ────────────────────────────────────────────────────────────
+
+def cmd_layers(n_layers, *items_per_layer):
+    """Compute horizontal band positions for a layered architecture diagram.
+
+    Layers are full-width bands stacked top-to-bottom. Each layer can contain
+    N items arranged in a row within it.
+
+    Args:
+        n_layers: number of horizontal bands
+        items_per_layer: optional count of items in each layer (default 1 each)
+    """
+    n_layers = int(n_layers)
+    if n_layers < 1 or n_layers > 10:
+        print("usage: layout.py layers <n_layers> [items_per_layer...]\n"
+              "  n_layers must be between 1 and 10", file=sys.stderr)
+        sys.exit(1)
+
+    # Parse items per layer (default 1)
+    items = []
+    for i in range(n_layers):
+        if i < len(items_per_layer):
+            items.append(int(items_per_layer[i]))
+        else:
+            items.append(1)
+
+    page_w = 827
+    margin_x = 30
+    margin_y = 30
+    layer_gap = 20
+    item_gap = 26
+    item_padding = 18  # padding inside layer band around items
+
+    # Layer band width is full page minus margins
+    band_w = page_w - 2 * margin_x
+    # Layer heights: scale with item count (more items = taller to fit labels)
+    base_layer_h = 80
+    per_item_extra = 20  # extra height if layer has many items (rows)
+
+    # Compute total height to see if we need landscape
+    total_h = 2 * margin_y + sum(
+        base_layer_h + (max(0, items[i] - 3) * per_item_extra)
+        for i in range(n_layers)
+    ) + (n_layers - 1) * layer_gap
+
+    orientation = "portrait"
+    page_h = 1169
+    if total_h > 1100:
+        orientation = "landscape"
+        page_w = 1169
+        page_h = 827
+        band_w = page_w - 2 * margin_x
+
+    print(f"page_w={page_w}")
+    print(f"page_h={page_h}")
+    print(f"orientation={orientation}")
+    print(f"band_w={band_w}")
+    print()
+
+    y = margin_y
+    for i in range(n_layers):
+        n_items = items[i]
+        layer_h = base_layer_h + max(0, n_items - 3) * per_item_extra
+        print(f"layer[{i}]: x={margin_x} y={y} w={band_w} h={layer_h}")
+
+        # Compute item positions within this layer
+        item_w = min(200, (band_w - 2 * item_padding - (n_items - 1) * item_gap) // max(1, n_items))
+        items_total_w = n_items * item_w + (n_items - 1) * item_gap
+        first_item_x = (band_w - items_total_w) // 2  # centred within band
+        item_y = 30  # relative to layer (below header)
+        item_h = layer_h - 30 - 10  # fill available height minus header and bottom pad
+
+        for j in range(n_items):
+            ix = first_item_x + j * (item_w + item_gap)
+            print(f"  item[{i},{j}]: x={ix} y={item_y} w={item_w} h={item_h}  (relative to layer)")
+
+        y += layer_h + layer_gap
+        print()
+
+    print(f"total_h={y - layer_gap + margin_y}")
+
+
+# ─── Multi-page boilerplate ──────────────────────────────────────────────────
+
+def cmd_boilerplate(*page_names):
+    """Output the mxfile XML skeleton for multi-page diagrams."""
+    if not page_names:
+        print("usage: layout.py boilerplate <page_name> [page_name...]", file=sys.stderr)
+        sys.exit(1)
+
+    print('<?xml version="1.0" encoding="UTF-8"?>')
+    print('<mxfile host="ac.draw.io">')
+    for i, name in enumerate(page_names):
+        page_id = f"page-{i}"
+        # Default portrait; service-map/deployment pages get landscape
+        is_landscape = any(kw in name.lower() for kw in ("service", "deploy", "map"))
+        pw, ph = (1169, 827) if is_landscape else (827, 1169)
+        print(f'  <diagram id="{page_id}" name="{name}">')
+        print(f'    <mxGraphModel pageWidth="{pw}" pageHeight="{ph}" math="0" shadow="0">')
+        print('      <root>')
+        print('        <mxCell id="0" />')
+        print('        <mxCell id="1" parent="0" />')
+        print('        <!-- nodes and edges here -->')
+        print('      </root>')
+        print('    </mxGraphModel>')
+        print(f'  </diagram>')
+    print('</mxfile>')
+
+
 def cmd_bidirectional_edge(src_x, src_y, src_w, src_h, tgt_x, tgt_y, tgt_w, tgt_h, offset=8):
     """Compute forward and reverse edge exit/entry points for bidirectional edges.
 
@@ -486,6 +640,9 @@ def main():
         "service-container": lambda: cmd_service_container(*args),
         "conditional-group": lambda: cmd_conditional_group(*args),
         "bidirectional-edge": lambda: cmd_bidirectional_edge(*args),
+        "palette":          lambda: cmd_palette(*args),
+        "layers":           lambda: cmd_layers(*args),
+        "boilerplate":      lambda: cmd_boilerplate(*args),
     }
     fn = dispatch.get(cmd)
     if fn is None:

@@ -18,15 +18,17 @@ Analyse the repository and produce `architecture.drawio` + `architecture.md`.
 **Then read the appropriate strategy for the topology you detect:**
 - For PIPELINE repos: #[[file:pipeline/render.md]]
 - For MICROSERVICE repos: #[[file:microservice/render.md]]
+- For LAYERED repos: #[[file:layered/render.md]]
 
 ## Workflow
 
 ### Step 1: Explore
-Follow `explore.md`. Read the repo's entrypoints, configs, services. Classify as PIPELINE or MICROSERVICE.
+Follow `explore.md`. Read the repo's entrypoints, configs, services. Classify as PIPELINE, MICROSERVICE, or LAYERED.
 
 ### Step 2: Plan
 - PIPELINE: decide which stages get drill-down pages (≥3 sub-steps or loops)
 - MICROSERVICE: decide which services to show, which edges to include (max 12 per page), which data flow to detail on page 2
+- LAYERED: decide how many layers, which items belong in each, which cross-layer edges to show
 
 ### Step 3: Compute Layout
 The Python scripts (`layout.py`, `edge_planner.py`, `validate.py`) are in the same directory as this SKILL.md. Find them at `~/.kiro/skills/diagram/` and execute from there:
@@ -37,6 +39,9 @@ python3 ~/.kiro/skills/diagram/layout.py steps <sw_w> <startSize> <lines...>
 python3 ~/.kiro/skills/diagram/layout.py service-map <n_services> <layer_hints...>
 python3 ~/.kiro/skills/diagram/layout.py service-container <n_components>
 python3 ~/.kiro/skills/diagram/layout.py multipage <page_type>
+python3 ~/.kiro/skills/diagram/layout.py layers <n_layers> <items_per_layer...>
+python3 ~/.kiro/skills/diagram/layout.py palette [role]
+python3 ~/.kiro/skills/diagram/layout.py boilerplate <page_name> [page_name...]
 ```
 
 ### Step 4: Plan Edges
@@ -62,7 +67,7 @@ If the planner returns empty waypoints `[]`, omit the `<Array as="points">` elem
 For sequential edges WITHIN swimlanes (step→step): no planner needed, just use exitX=0.5 exitY=1 → entryX=0.5 entryY=0 with no waypoints.
 
 ### Step 5: Render XML
-Follow `pipeline/render.md` or `microservice/render.md` depending on topology.
+Follow `pipeline/render.md`, `microservice/render.md`, or `layered/render.md` depending on topology.
 
 Key rules (from `edge-rules.md`):
 - Every edge: `edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;`
