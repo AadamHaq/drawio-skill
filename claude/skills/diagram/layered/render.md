@@ -19,7 +19,7 @@ Generate 1–2 pages:
 
 ## Layout Approach
 
-Use horizontal full-width bands stacked top-to-bottom. Items sit inside each band.
+Use horizontal full-width bands stacked top-to-bottom. Items sit inside each band visually.
 
 ```bash
 python3 ~/.kiro/skills/diagram/layout.py layers <n_layers> <items_per_layer...>
@@ -30,11 +30,11 @@ python3 ~/.kiro/skills/diagram/layout.py boilerplate "Architecture Overview" "To
 ### Layer Band Style (the outer rectangle for each band)
 ```
 rounded=1;whiteSpace=wrap;html=1;fillColor={from palette};strokeColor={from palette};
-verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize=30;
+verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize=28;
 ```
 
 ### Items Inside Layers
-Items are rounded boxes centred inside their band:
+Items are rounded boxes positioned inside their band area:
 ```
 rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor={layer_stroke};
 verticalAlign=middle;fontSize=11;
@@ -54,48 +54,189 @@ Use `layout.py palette` for exact values. Typical mapping:
 | Environment item (solid) | `#f8cecc` | `#b85450` | `environment` |
 | Sub-module (inside env) | `#ffffff` | `#b85450` | `submodule` |
 
-**Environment containers** MUST have a background fill (`#fef5f5` — barely-there pink). Without it, the dashed border floats over white and doesn't register as a layer. Use `env_container` for the outer band and `submodule` (white + red border) for items inside.
+### Band header fill contrast
+
+Band headers MUST have a visibly opaque fill — NOT near-white values like `#f9f9f9` or `#fafafa`. Use at least `#f0f0f0` for neutral bands. This ensures edge lines are visually masked when they pass behind the header in z-order.
+
+Coloured bands (Generator=#fff2cc, Validator=#d5e8d4) already have sufficient contrast.
+
+**Environment containers** MUST have a visible background fill (`#fef5f5` — barely-there pink). Without it, the dashed border floats over white and doesn't register as a layer.
 
 ## Coordinate Computation
 
 ```bash
-# 3-layer architecture with 2 config items, 3 pipeline tools, 2 environment items
-python3 ~/.kiro/skills/diagram/layout.py layers 3 2 3 2
+python3 ~/.kiro/skills/diagram/layout.py layers 3 1 3 3
 ```
 
 Output gives you:
 - `layer[i]: x y w h` — the full-width band rectangle
 - `item[i,j]: x y w h` — positions relative to their layer band
 
-Place items as children of their layer band (parent = layer cell id).
+### Arrow clearance below band headers (CRITICAL)
+
+When edges arrive at items from a layer above, items MUST be positioned with enough gap below the band header for arrowheads to be fully visible:
+
+```
+item_y_absolute = band_y + startSize + 24px (minimum)
+```
+
+24px clearance = 10px arrowhead + 14px breathing room.
+
+**Example:** Band at y=150 with startSize=28 → header bottom at y=178 → items start at y=202 minimum.
+
+If you violate this, arrowheads will be clipped by the header rendering on top, or arrows will appear to start/end in mid-air behind the header. This looks broken in both draw.io proper AND the SVG renderer.
+
+### Items as root-level siblings (REQUIRED when edges arrive from above)
+
+For items that receive edges from a layer above, place them as **root-level siblings** (`parent="1"`) positioned visually inside the band area. Do NOT make them children of the band. This avoids:
+- Parent offset confusion in entry point calculation
+- Arrowheads hidden behind parent band headers (z-order issue)
+- Validator false positives about edges "crossing" the parent band
+- Edges appearing to enter "through" the band header
+
+The band becomes a pure visual background rectangle. Items use absolute coordinates.
+
+```xml
+<!-- Band is visual background only — no children with incoming edges -->
+<mxCell id="L1" value="Pipeline" style="swimlane;startSize=28;fillColor=#f0f0f0;..." parent="1">
+  <mxGeometry x="30" y="150" width="767" height="320" />
+</mxCell>
+
+<!-- Items are root-level siblings, positioned inside L1's visual area -->
+<mxCell id="gen" value="Generator" style="swimlane;startSize=22;fillColor=#fff2cc;..." parent="1">
+  <mxGeometry x="48" y="204" width="210" height="250" />  <!-- y = 150+28+26 = 204 -->
+</mxCell>
+<mxCell id="val" value="Validator" style="swimlane;startSize=22;fillColor=#d5e8d4;..." parent="1">
+  <mxGeometry x="308" y="204" width="210" height="250" />
+</mxCell>
+```
+
+Items that DON'T receive edges from outside (sub-steps inside modules, env tool specs) can remain as children of their container.
+
+### Horizontal gap between sibling items
+
+Items side-by-side in the same layer need **at least 50px horizontal gap**. This ensures:
+- Horizontal data-flow edges between them are visible
+- Edge labels have room (or can be omitted cleanly)
+
+For a 767px-wide band with 3 items of width 210: gap = (767 - 3×210 - 2×18) / 2 ≈ 50px.
+
+If your labels are short (≤6 chars), 50px is fine. If labels are longer, widen gaps to 80px+ (shrink items accordingly).
+
+### Vertical gap between layers
+
+Leave at least **50px vertical gap** between band bottoms and the next band top:
+
+```
+Config band:     y=30,  h=70   → bottom at y=100
+                 50px gap
+Pipeline band:   y=150, h=320  → bottom at y=470
+                 75px gap (dashed env-call labels sit here)
+Environment:     y=545, h=105  → bottom at y=650
+```
+
+The gap between Pipeline and Environment should be **75px minimum** because dashed edges + their labels traverse this gap. 75px gives: 15px below pipeline + 45px label space + 15px above environment.
 
 ## Edge Rules
 
-- Edges go **between layers** (top band → middle band, middle → bottom)
-- **Target the band, not child items** — an edge from Config to the Pipeline band implies all children receive config. This avoids edges crossing through band headers.
-- Within a layer, items are peers — no edges between them unless there's a clear dependency
-- Use `edge_planner.py` for cross-layer edges that target specific items (item-to-item)
-- Edge labels: short (≤12 chars) — describe *what* flows, not *how*
-- Max 12 edges on the overview page
+### Config → Pipeline edges
 
-### Edge routing for cross-layer edges
-- Config→Pipeline: source=config_band (exitX=0.5, exitY=1), target=pipeline_band (entryX=0.5, entryY=0). **ONE arrow, band-to-band**. Implies all children receive config. Do NOT draw separate edges from config to each module — it creates header crossings.
-- Item→Item (e.g. gen→env_tool): source the item directly, target the item. Use edge_planner.py for waypoints.
-- **NEVER draw an edge that enters a child directly from outside its parent band.** If you need to show config feeding individual modules, use a text annotation inside the band header (e.g., "← config") instead of an arrow.
-- Between sibling items in the same layer (gen→val, val→post): these horizontal edges are fine since they don't cross any headers.
+**Option A (simplest): Single band-to-band arrow.**
+Draw ONE edge from config band to pipeline band. Implies all children receive config. No header-crossing risk.
 
-### Edge styling
-- Config → processor: solid `#6c8ebf` strokeWidth=2
-- Processor → environment: solid `#82b366` strokeWidth=2
-- Optional/conditional edges: `dashed=1;dashPattern=8 4;strokeColor=#d79b00;`
+**Option B: Config item to individual modules.**
+If you want separate arrows per module:
+1. Source from the config ITEM (white box), not the config band
+2. Use `exitX` spread (0.25, 0.5, 0.75) to fan out
+3. Route through the GAP between bands (the 50px space between config bottom and pipeline top)
+4. Horizontal jog at gap midpoint to align with target module center
+5. Then straight down into the module top
 
-## Multi-Page Boilerplate
+```xml
+<!-- Left arrow: exit bottom-left, horizontal jog in gap at y=140, down to gen -->
+<mxCell id="e-cfg-gen" edge="1" source="cfg" target="gen"
+  style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;
+         exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+  <mxGeometry relative="1" as="geometry">
+    <Array as="points">
+      <mxPoint x="318" y="140" />
+      <mxPoint x="153" y="140" />
+    </Array>
+  </mxGeometry>
+</mxCell>
 
-```bash
-python3 ~/.kiro/skills/diagram/layout.py boilerplate "Pipeline Architecture" "Tool Behavior Dispatch"
+<!-- Middle arrow: straight down (no waypoints needed if aligned) -->
+<mxCell id="e-cfg-val" edge="1" source="cfg" target="val"
+  style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;
+         exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+  <mxGeometry relative="1" as="geometry" />
+</mxCell>
 ```
 
-Use the output as your starting XML skeleton, then fill in nodes and edges.
+**NEVER** draw an edge that passes through a band header with visible text. The arrow will appear clipped or crossing through the title.
+
+### Horizontal data-flow edges (sibling-to-sibling)
+
+For edges between adjacent modules in the same layer (gen→val, val→post):
+
+- Style: `exitX=1;exitY=0.5` → `entryX=0;entryY=0.5` (center of side faces)
+- **Gap < 80px → NO LABEL on the edge.** Set `value=""`. Place a text annotation cell above the gap instead:
+
+```xml
+<!-- Edge with no label (gap too narrow) -->
+<mxCell id="e-gen-val" edge="1" source="gen" target="val" value=""
+  style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#82b366;strokeWidth=2;
+         exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" />
+
+<!-- Separate text annotation above the gap -->
+<mxCell id="lbl-gen-val" value="raw blocks"
+  style="text;html=1;fontSize=8;fillColor=none;strokeColor=none;fontColor=#82b366;fontStyle=2;"
+  vertex="1" parent="1">
+  <mxGeometry x="255" y="310" width="60" height="14" />
+</mxCell>
+```
+
+- **Gap ≥ 80px → label is fine** on the edge itself (value="raw blocks").
+
+### Vertical/dashed edges to Environment layer
+
+For edges going from pipeline modules down to the environment band:
+
+1. **Label placement: ALWAYS to the side, never centered on the line.**
+   Add `labelPosition=right;align=left;` to the edge style:
+
+```xml
+<mxCell id="e-gen-env" edge="1" source="gen" target="env" value="execute_tool()"
+  style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#b85450;strokeWidth=2;
+         dashed=1;dashPattern=8 4;labelPosition=right;align=left;
+         exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.2;entryY=0;entryDx=0;entryDy=0;">
+```
+
+   This places the label text to the right of the edge in draw.io proper. For renderers that don't support `labelPosition`, use a waypoint trick:
+
+2. **Waypoint trick for label positioning:**
+   Add a short horizontal jog in the gap between layers. The label attaches to this horizontal segment (which has room):
+
+```xml
+<Array as="points">
+  <mxPoint x="153" y="510" />  <!-- down to gap midpoint -->
+  <mxPoint x="183" y="510" />  <!-- short 30px horizontal jog -->
+</Array>
+```
+
+   The label sits on the horizontal segment, offset from the vertical portion of the line.
+
+3. **Label proximity to boxes above:**
+   The waypoint y should be at least **30px below** the module bottom. If the module bottom is at y=454 (204+250), place the waypoint at y=490+ so the label doesn't crowd the module.
+
+### Edge styling summary
+
+| Edge type | Color | Style | Label rule |
+|---|---|---|---|
+| Config → pipeline | `#6c8ebf` | solid, strokeWidth=2 | no label |
+| Data flow (sibling→sibling) | `#82b366` | solid, strokeWidth=2 | only if gap ≥ 80px; else text annotation |
+| Module → environment | `#b85450` | dashed (8 4), strokeWidth=2 | labelPosition=right OR waypoint trick |
+| Optional/conditional | `#d79b00` | dashed (8 4), strokeWidth=2 | short label, same rules |
 
 ## Validation
 
@@ -104,34 +245,41 @@ After rendering, run:
 python3 ~/.kiro/skills/diagram/validate.py architecture.drawio
 ```
 
-Fix any issues before writing the final file. Key things to watch:
-- Layer bands must be tall enough to contain their items (no overflow)
-- Edges must not cross through layer bands they don't connect to
-- Edge labels must not overlap items
+**Expected false positives for layered diagrams:** The validator will flag edges as "crossing" the Pipeline band (L1) because L1 is a full-width background and all edges pass through its area. This is correct by design when using root-level siblings. Suppress these for background bands.
 
-## SVG Companion (optional)
+Fix any OTHER issues. Key checks:
+- Layer bands tall enough to contain their items
+- Edge labels not overlapping items
+- Arrowheads not clipped by headers (24px clearance rule)
+- No label on edges crossing gaps < 80px
 
-For repos hosted on GitHub/GitLab where inline preview matters, also produce `architecture.svg`:
-- SVGs render inline in READMEs; `.drawio` files don't
-- Use the same layout/colours but as hand-authored SVG (not a draw.io export)
-- Keep it simple: rectangles + text + lines with `marker-end` for arrows
+## SVG Export
+
+```bash
+python3 ~/.kiro/skills/diagram/render_svg.py architecture.drawio architecture.svg
+```
+
+If the SVG has artefacts, the fix is almost always in the **drawio XML** (better waypoints, wider gaps, labelPosition style), not in the renderer. The renderer faithfully reproduces what the drawio says.
 
 ## Example Structure
 
 ```
 ┌──────────────────── Config Layer ────────────────────┐
-│  [prompts.yaml]    [eval_config.yaml]                │
+│  [generation_plan_*.yaml]                            │
 └──────────────────────────────────────────────────────┘
-          │                    │
-          ▼                    ▼
+     │              │              │
+     ▼              ▼              ▼         ← arrows clear of header (24px gap)
 ┌──────────────────── Pipeline Layer ──────────────────┐
-│  [Generator]    [Validator]    [Post-processor]      │
+│                                                      │
+│  ┌─────────┐  ──→  ┌──────────┐  ──→  ┌──────────┐│
+│  │Generator│       │ Validator │       │Post-Proc  ││
+│  └─────────┘       └──────────┘       └──────────┘│
+│                                                      │
 └──────────────────────────────────────────────────────┘
-          │                    │
-          ▼                    ▼
-┌──────────────────── Environment Layer ───────────────┐
-│  [LLM endpoint]         [Output storage]             │
-└──────────────────────────────────────────────────────┘
+     ┊                     ┊
+     ┊ execute_tool()      ┊ validate()    ← labels to the RIGHT of dashes
+     ▼                     ▼
+┌╌╌╌╌╌╌╌╌╌╌╌╌ Environment Layer ╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┐
+┊  [tool_1]         [tool_2]         [tool_3]          ┊
+└╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┘
 ```
-
-Each `[box]` is an mxCell inside its parent layer band. Edges connect across layers.

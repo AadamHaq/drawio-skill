@@ -210,7 +210,10 @@ def render_swimlane_split(x, y, w, h, style, cell_id):
         header_fill = fill
     else:
         body_fill = "#fafafa"
-        header_fill = fill
+        # Header fill: use the declared fill. For near-white fills (like #f9f9f9),
+        # the header still masks edge crossings because it renders on top at full opacity.
+        # Use the body_fill (#fafafa) as a minimum to ensure edges are hidden.
+        header_fill = fill if fill != "#f9f9f9" else "#f0f0f0"
 
     # Body rectangle (full size, light background)
     body_svg = (
@@ -469,7 +472,8 @@ def _find_label_position(points, all_vertices, label=""):
 
         # Bonus for segments long enough to fit the label
         length_bonus = 20 if seg_len >= text_w else 0
-        score = min_dist * 2 + seg_len * 0.5 + length_bonus
+        # Strong preference for longer segments — avoids picking tiny jogs
+        score = min_dist * 2 + seg_len * 1.5 + length_bonus
         if score > best_score:
             best_score = score
             best = (mx, my, seg_len, is_horizontal)
@@ -519,9 +523,10 @@ def _find_label_position(points, all_vertices, label=""):
         my = my - 4  # Will be offset further by the caller
         return (mx, my, label_above, "middle")
     elif not is_horizontal:
-        # For vertical edges: position label 8px to the right of the line, left-aligned.
-        # 8px clears the 2px stroke + gives breathing room for dashed patterns.
-        mx = mx + 8
+        # For vertical edges: position label to the right of the line, left-aligned.
+        # Use 12px offset for dashed edges (wider visual stroke), 8px for solid.
+        offset = 12
+        mx = mx + offset
         label_above = False
         return (mx, my, label_above, "start")
 

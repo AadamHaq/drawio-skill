@@ -84,3 +84,43 @@ Run through EVERY item below before writing the .drawio file. If ANY check fails
 18. **Is there at least 40px vertical gap between rows?**
     - Edges between rows need room for labels and arrowheads
     - An edge shorter than 30px will look like floating text
+
+## Layered Architecture Specific
+
+19. **Arrow clearance below band headers: Is there at least 24px between the header bottom and the top of items that receive edges from above?**
+    - Header bottom = band_y + startSize
+    - Item top must be at header_bottom + 24px minimum
+    - If violated: arrowheads get clipped behind the header, arrows appear to start/end in mid-air
+    - Fix: move items down, or increase the gap by reducing startSize
+
+20. **Are items receiving cross-layer edges defined as root-level siblings (parent="1"), NOT children of a band?**
+    - Children of a band have coordinates relative to the band — entry points resolve incorrectly for edges arriving from outside
+    - Root-level siblings use absolute coordinates — edges arrive exactly where expected
+    - Only items WITHOUT incoming cross-layer edges should be children (sub-steps, env tool specs)
+
+21. **For horizontal edges between adjacent items: is the gap ≥ 80px if the edge has a label?**
+    - Label text width ≈ chars × 6.5 + 8px
+    - If "raw blocks" (10 chars) → ~73px. Needs 80px+ gap to not overflow into boxes
+    - If gap < 80px: set value="" on the edge and use a separate text annotation cell
+    - If gap ≥ 80px: label on the edge is fine
+
+22. **For vertical/dashed edges: does the edge style include `labelPosition=right;align=left;`?**
+    - Labels centered on vertical dashed lines break the dash pattern visually
+    - Labels must sit to the side of the line, not on top of it
+    - Alternative: use a horizontal waypoint jog so the label attaches to a horizontal segment
+
+23. **Does the middle config→pipeline arrow cross through the Pipeline band header text?**
+    - Check: is there a straight vertical edge from config area (y < 150) to an item inside pipeline (y > 178)?
+    - If yes and the edge has no waypoints to avoid the header zone: it WILL cross through "Pipeline" text
+    - Fix: route through the gap with a waypoint at y = gap_midpoint (between config bottom and pipeline top)
+    - Or: use band-to-band single arrow (config band → pipeline band) to avoid the problem entirely
+
+24. **Is the gap between Pipeline bottom and Environment top at least 75px?**
+    - Dashed env-call edges + their labels need this space
+    - Label should sit 30px+ below the module bottom
+    - If gap < 75px: labels will crowd against the module or overlap the environment header
+
+25. **Does the Pipeline band header have a fill colour with sufficient contrast (not near-white)?**
+    - `#f9f9f9` or `#fafafa` → TOO LIGHT. Edge lines show through even with z-order masking
+    - `#f0f0f0` or darker → GOOD. Visually masks any edge segments that pass behind it
+    - Coloured bands (yellow, green, purple) are always fine
