@@ -27,12 +27,15 @@ After exploration, answer these questions IN ORDER to determine the topology. Do
 ### Question 2: Can the main modules run independently of each other?
 
 Pick any two modules you identified. Ask:
-- If I deleted module A entirely, would module B still function on its own (given its inputs)?
-- Do the modules import from each other, or do they only share a common dependency below them?
+- If I deleted module A entirely, would module B still function on its own (given its inputs from somewhere else)?
+- Do the modules import from each other's internals, or do they only share a common dependency below them?
 - Could someone use module A in a completely different project without bringing module B?
 
-**If YES** — the modules are **peers** (they live at the same level, not feeding each other).
-**If NO** — the modules are **sequential** (one's output is the next's input, they form a chain).
+**If YES to all** — the modules are **peers** (they live at the same level, not feeding each other).
+**If NO to all** — the modules are **sequential** (one's output is literally the next's input, they form a tight chain with no shared lower layer).
+**If MIXED** — some modules feed each other's data, BUT they share a common abstraction/dependency layer below them that each module calls into independently. They are **peers with a data flow** — the execution order exists but it's not what defines the architecture. The shared lower layer is the defining relationship.
+
+Key distinction: "Module A produces data that Module B consumes" does NOT automatically make them sequential. Ask: "Do A and B ALSO both independently call into a shared lower layer?" If yes, the architecture is layered (peers sharing a dependency) with a data pipeline on top (operational ordering). The diagram should show the layers, not just the sequence.
 
 ### Question 3: Is there a shared abstraction that multiple modules depend on?
 
@@ -55,16 +58,21 @@ Pick any two modules you identified. Ask:
 Apply this logic:
 
 ```
-If Q1 = YES                                    → MICROSERVICE
-If Q2 = YES (peers) AND Q3 = YES (lower layer) → LAYERED  
-If Q2 = NO (sequential chain)                   → PIPELINE
-If Q2 = mixed (some peers, some sequential)     → HYBRID
+If Q1 = YES                                              → MICROSERVICE
+If Q2 = YES (peers) AND Q3 = YES (lower layer)          → LAYERED
+If Q2 = MIXED (data flow + shared lower layer)           → LAYERED (not pipeline!)
+If Q2 = NO (tight chain, no shared lower abstraction)    → PIPELINE
+If none clearly fit                                      → HYBRID
 ```
 
-**IMPORTANT:** A system can have a script that runs modules in sequence (an orchestrator) and still be LAYERED. The orchestrator is just execution order — it doesn't define the architecture. Ask: "Is the sequential ordering the DEFINING relationship, or are the modules peers that happen to be run in a particular order?"
+**The critical test for LAYERED vs PIPELINE:**
 
-- If removing the ordering would break the system's design → PIPELINE
-- If the modules would still make sense as independent units without the ordering → LAYERED (the ordering is just operational convenience)
+Ask yourself: "What is the DEFINING architectural relationship in this codebase?"
+
+- If it's "data flows from A → B → C in sequence" and there's no shared abstraction below → **PIPELINE**
+- If it's "A, B, C all independently use a shared protocol/layer below them, and config drives everything from above" → **LAYERED** (even if A's output happens to feed B during execution)
+
+A LAYERED system often HAS a data pipeline running through it operationally. But the architecture diagram should show the layers (what depends on what), not just the execution sequence. The execution order can be shown with small flow arrows between peers in the same layer.
 
 ### Common traps
 
