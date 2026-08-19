@@ -14,76 +14,75 @@ Read entrypoints, orchestrators, configs, and service directories. Answer ALL of
 
 ## Topology Classification
 
-After exploration, answer these questions IN ORDER to determine the topology. Do not match on file names, directory names, or keywords. Reason about the actual architectural relationships.
+**DO NOT conclude the topology until you have written answers to ALL FOUR questions below.** Do not use words like "clearly" or "obviously" — reason through each question with evidence.
 
 ### Question 1: Are the main modules independently deployable/runnable processes?
 
+Answer YES or NO with evidence:
 - Can each module run as its own long-lived process with its own network endpoint?
 - Do they communicate over the network (HTTP, gRPC, WebSocket, message queues)?
 - Is there a container/deployment manifest defining how to run them separately?
 
 **If YES to 2+ of these → MICROSERVICE.** Stop here.
 
-### Question 2: Can the main modules run independently of each other?
+### Question 2: Do the main modules share a common abstraction/protocol that they independently consume?
 
-Pick any two modules you identified. Ask:
-- If I deleted module A entirely, would module B still function on its own (given its inputs from somewhere else)?
-- Do the modules import from each other's internals, or do they only share a common dependency below them?
-- Could someone use module A in a completely different project without bringing module B?
+Answer YES or NO with evidence:
+- Is there a base class, protocol, interface, or registry that multiple modules call into?
+- Do the modules each independently depend on a shared lower layer (not just passing data between each other)?
+- Could you swap out that lower layer (different implementation) and the modules would still work unchanged?
 
-**If YES to all** — the modules are **peers** (they live at the same level, not feeding each other).
-**If NO to all** — the modules are **sequential** (one's output is literally the next's input, they form a tight chain with no shared lower layer).
-**If MIXED** — some modules feed each other's data, BUT they share a common abstraction/dependency layer below them that each module calls into independently. They are **peers with a data flow** — the execution order exists but it's not what defines the architecture. The shared lower layer is the defining relationship.
+Write your answer before moving to Q3.
 
-Key distinction: "Module A produces data that Module B consumes" does NOT automatically make them sequential. Ask: "Do A and B ALSO both independently call into a shared lower layer?" If yes, the architecture is layered (peers sharing a dependency) with a data pipeline on top (operational ordering). The diagram should show the layers, not just the sequence.
+### Question 3: Can each module function given arbitrary input, without the other modules existing?
 
-### Question 3: Is there a shared abstraction that multiple modules depend on?
+Answer YES or NO with evidence for each pair:
+- Could the generator work if the validator didn't exist (someone else scores its output)?
+- Could the validator work if the generator didn't exist (it just receives data from somewhere)?
+- Could post-processing work if both generator and validator didn't exist (given pre-scored data)?
+- Do modules import from each other's internals, or only from the shared layer below?
 
-- Is there a base class, protocol, interface, or registry that multiple modules consume?
-- Do the modules call into a common lower layer (a domain layer, an execution engine, a shared API)?
-- Is there a config that selects/activates which parts of this shared layer are used?
+Write your answer before moving to Q4.
 
-**If YES** — there's a **lower layer** that the modules sit above.
+### Question 4: Is there a config/input layer that drives all modules from above?
 
-### Question 4: Is there a config/input layer that drives the modules from above?
+Answer YES or NO with evidence:
+- Does a single config file determine what ALL modules do?
+- Do the modules read from shared config rather than being hardcoded?
+- Could you change system behavior entirely by editing config without changing module code?
 
-- Does a single config file determine what modules do (which models, which parameters, which features)?
-- Do the modules read from a shared config rather than being hardcoded?
-- Could you change the system's behavior entirely by editing config without touching module code?
+### Classification Decision (ONLY after answering all four questions)
 
-**If YES** — there's an **upper layer** (config) that the modules sit below.
-
-### Classification Decision
-
-Apply this logic:
+Read your answers above and apply:
 
 ```
-If Q1 = YES                                              → MICROSERVICE
-If Q2 = YES (peers) AND Q3 = YES (lower layer)          → LAYERED
-If Q2 = MIXED (data flow + shared lower layer)           → LAYERED (not pipeline!)
-If Q2 = NO (tight chain, no shared lower abstraction)    → PIPELINE
-If none clearly fit                                      → HYBRID
+Q1 = YES                                              → MICROSERVICE
+Q2 = YES AND Q3 = YES                                 → LAYERED
+Q2 = YES AND Q3 = MIXED (modules pass data but also   → LAYERED
+    independently consume a shared lower abstraction)     (the shared layer is the defining relationship)
+Q2 = NO AND Q3 = NO (tight chain, no shared layer)    → PIPELINE
+None clearly fit                                       → HYBRID
 ```
 
-**The critical test for LAYERED vs PIPELINE:**
+**The critical test:** Ask yourself: "What would I draw to explain this system to someone new — the sequence of data flow, or the layers of abstraction?" 
 
-Ask yourself: "What is the DEFINING architectural relationship in this codebase?"
+- If the first thing you'd explain is "data goes from A to B to C" → PIPELINE
+- If the first thing you'd explain is "there are these independent modules, they all plug into this shared protocol/layer, and config wires them together" → LAYERED
 
-- If it's "data flows from A → B → C in sequence" and there's no shared abstraction below → **PIPELINE**
-- If it's "A, B, C all independently use a shared protocol/layer below them, and config drives everything from above" → **LAYERED** (even if A's output happens to feed B during execution)
-
-A LAYERED system often HAS a data pipeline running through it operationally. But the architecture diagram should show the layers (what depends on what), not just the execution sequence. The execution order can be shown with small flow arrows between peers in the same layer.
+A system where modules happen to run sequentially (orchestrated by a script) but architecturally depend on a shared protocol below them is LAYERED, not PIPELINE. The script is operations; the protocol is architecture.
 
 ### Common traps
 
-- A `run_pipeline.sh` that calls modules in order does NOT automatically mean PIPELINE topology. That's orchestration, not architecture.
-- An `environments/` or `plugins/` directory does NOT automatically mean LAYERED. Check if modules actually depend on it.
-- Multiple directories with `__init__.py` does NOT mean they're peers. Check if they import from each other in a chain.
+- A `run_pipeline.sh` that calls modules in order is ORCHESTRATION, not architecture. Don't let it bias your classification.
+- "Module A's output feeds Module B" does not mean PIPELINE if A and B also independently depend on a shared layer below. That's LAYERED with a data flow on top.
+- Multiple directories with Python packages does NOT tell you the topology. Look at what they DEPEND ON, not how they're organized on disk.
+- READMEs often describe the execution order ("first generate, then validate, then assemble"). That describes operations, not necessarily architecture. Read the actual imports and abstractions.
 
 ## Output of this step
 
-A mental model of:
-- Topology type (PIPELINE / MICROSERVICE / LAYERED / HYBRID) with the reasoning for each question
-- List of modules with their relationships (peer, sequential, or depends-on)
-- The layers if LAYERED/HYBRID: what sits above, what's in the middle, what's below
-- Key config values extracted
+Write out:
+1. Your answer to each question (Q1, Q2, Q3, Q4) with specific evidence
+2. Your topology classification with reasoning
+3. List of modules with their relationships (peer, sequential, or depends-on)
+4. The layers if LAYERED/HYBRID: what sits above, what's in the middle, what's below
+5. Key config values extracted
