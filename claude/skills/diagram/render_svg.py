@@ -168,7 +168,9 @@ def orthogonal_route(start, end, waypoints, exit_x=0.5, exit_y=1.0):
     else:
         # Top/bottom exit (default): go VERTICAL first, then horizontal, then vertical
         # Pattern: ↓ → ↓ (or ↑ → ↑)
-        mid_y = sy + dy / 2
+        # Bias jog toward source (1/3) so it stays in the gap between bands
+        # and doesn't land inside the next band's header zone.
+        mid_y = sy + dy * 0.33
         return [(sx, sy), (sx, mid_y), (ex, mid_y), (ex, ey)]
 
 
@@ -517,8 +519,9 @@ def _find_label_position(points, all_vertices, label=""):
         my = my - 4  # Will be offset further by the caller
         return (mx, my, label_above, "middle")
     elif not is_horizontal:
-        # For vertical edges: position label 4px to the right of the line, left-aligned.
-        mx = mx + 4
+        # For vertical edges: position label 8px to the right of the line, left-aligned.
+        # 8px clears the 2px stroke + gives breathing room for dashed patterns.
+        mx = mx + 8
         label_above = False
         return (mx, my, label_above, "start")
 
@@ -528,7 +531,7 @@ def _find_label_position(points, all_vertices, label=""):
     overall_dy = abs(points[-1][1] - points[0][1])
     if overall_dy > overall_dx * 2 and is_horizontal:
         edge_center_x = (points[0][0] + points[-1][0]) / 2
-        mx = edge_center_x + 4
+        mx = edge_center_x + 8
         label_above = False
         return (mx, my, label_above, "start")
 
