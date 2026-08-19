@@ -18,6 +18,10 @@ Usage:
   layout.py palette [role]                    (show colour pairs by semantic role)
   layout.py layers <n_layers> [items_per_layer...]
   layout.py boilerplate <page_name> [page_name...]
+  layout.py legend <lowest_y> [topology]      (pipeline|microservice|layered)
+  layout.py step-height "Label<br/>Line 2"    (compute box height from label)
+  layout.py shared-layer <n_items> [y] [page_w]
+  layout.py scaffold <topology> [n_stages]    (pipeline|microservice|layered)
 """
 
 import math
@@ -510,6 +514,369 @@ def cmd_boilerplate(*page_names):
     print('</mxfile>')
 
 
+# ─── Legend helper ────────────────────────────────────────────────────────────
+
+def cmd_legend(lowest_y, topology="pipeline"):
+    """Output legend position and mxCell XML snippet.
+
+    Args:
+        lowest_y: y coordinate of the bottom of the lowest element on the page
+        topology: pipeline | microservice | layered (determines which colours to show)
+    """
+    lowest_y = int(lowest_y)
+    topology = topology.lower()
+
+    legend_y = lowest_y + 40
+    legend_x = 20
+    legend_w = 140
+    legend_h = 70
+
+    print(f"legend_x={legend_x}")
+    print(f"legend_y={legend_y}")
+    print(f"legend_w={legend_w}")
+    print(f"legend_h={legend_h}")
+    print()
+
+    if topology == "microservice":
+        value = (
+            '━━ &lt;font color=&quot;#6c8ebf&quot;&gt;HTTP&lt;/font&gt;&lt;br/&gt;'
+            '━━━ &lt;font color=&quot;#9673a6&quot;&gt;gRPC&lt;/font&gt;&lt;br/&gt;'
+            '┄┄ &lt;font color=&quot;#d79b00&quot;&gt;WebSocket&lt;/font&gt;&lt;br/&gt;'
+            '┄┄ &lt;font color=&quot;#82b366&quot;&gt;pub/sub&lt;/font&gt;'
+        )
+        legend_h = 80
+    elif topology == "layered":
+        value = (
+            '━━ &lt;font color=&quot;#6c8ebf&quot;&gt;config flow&lt;/font&gt;&lt;br/&gt;'
+            '━━ &lt;font color=&quot;#82b366&quot;&gt;data flow&lt;/font&gt;&lt;br/&gt;'
+            '┄┄ &lt;font color=&quot;#d79b00&quot;&gt;optional&lt;/font&gt;'
+        )
+        legend_h = 60
+    else:  # pipeline
+        value = (
+            '━━ sequential&lt;br/&gt;'
+            '━━ &lt;font color=&quot;#82b366&quot;&gt;pass&lt;/font&gt;&lt;br/&gt;'
+            '━━ &lt;font color=&quot;#b85450&quot;&gt;fail&lt;/font&gt;'
+        )
+        legend_h = 60
+
+    print("# Paste this mxCell into your drawio XML:")
+    print(f'<mxCell id="legend" value="{value}"')
+    print(f'  style="text;html=1;align=left;verticalAlign=top;fontSize=10;fillColor=none;strokeColor=none;"')
+    print(f'  vertex="1" parent="1">')
+    print(f'  <mxGeometry x="{legend_x}" y="{legend_y}" width="{legend_w}" height="{legend_h}" as="geometry" />')
+    print(f'</mxCell>')
+
+
+# ─── Step height helper ──────────────────────────────────────────────────────
+
+def cmd_step_height(*label_parts):
+    """Compute step box height from a label containing <br/> line breaks.
+
+    Accepts the label as one or more arguments (joined with spaces).
+    Counts <br/> occurrences to determine line count, then applies formula:
+      h = max(36, 22 + n_lines * 18)
+    """
+    label = " ".join(label_parts)
+    if not label:
+        print("usage: layout.py step-height \"Line 1<br/>Line 2<br/>Line 3\"", file=sys.stderr)
+        sys.exit(1)
+
+    n_breaks = label.lower().count("<br/>") + label.lower().count("<br>")
+    n_lines = n_breaks + 1
+    h = max(36, 22 + n_lines * 18)
+
+    print(f"n_lines={n_lines}")
+    print(f"height={h}")
+    print(f"# Formula: max(36, 22 + {n_lines} × 18) = {h}")
+
+
+# ─── Shared layer helper ─────────────────────────────────────────────────────
+
+def cmd_shared_layer(n_items, container_y=None, page_w=None):
+    """Compute full-width dashed container with N evenly-spaced child boxes inside.
+
+    For "environment" or "shared domain" bands that span the full page width
+    with individual service/component boxes inside.
+
+    Args:
+        n_items: number of child boxes inside the container
+        container_y: y position of the container (default: 800, near bottom)
+        page_w: page width (default: 827)
+    """
+    n_items = int(n_items)
+    container_y = int(container_y) if container_y else 800
+    page_w = int(page_w) if page_w else 827
+
+    if n_items < 1 or n_items > 12:
+        print("usage: layout.py shared-layer <n_items> [container_y] [page_w]\n"
+              "  n_items must be 1-12", file=sys.stderr)
+        sys.exit(1)
+
+    margin_x = 30
+    container_x = margin_x
+    container_w = page_w - 2 * margin_x
+    container_h = 100
+    header_h = 30
+    item_h = 50
+    item_gap = 20
+    item_padding = 20
+
+    # Child items
+    available_w = container_w - 2 * item_padding
+    item_w = min(160, (available_w - (n_items - 1) * item_gap) // n_items)
+    items_total_w = n_items * item_w + (n_items - 1) * item_gap
+    first_item_x = (container_w - items_total_w) // 2
+
+    container_h = header_h + 10 + item_h + 15  # header + gap + items + bottom
+
+    print(f"# Full-width dashed container (shared layer / environment band)")
+    print(f"container: x={container_x} y={container_y} w={container_w} h={container_h}")
+    print(f'style="rounded=1;fillColor=none;strokeColor=#b85450;strokeWidth=2;'
+          f'dashed=1;dashPattern=8 4;verticalAlign=top;fontStyle=1;fontSize=12;'
+          f'swimlane;startSize={header_h};html=1;"')
+    print()
+    for i in range(n_items):
+        ix = first_item_x + i * (item_w + item_gap)
+        iy = header_h + 10
+        print(f"  child[{i}]: x={ix} y={iy} w={item_w} h={item_h}  (relative to container)")
+
+    print()
+    print(f"container_h={container_h}")
+
+
+# ─── Scaffold helper ─────────────────────────────────────────────────────────
+
+def cmd_scaffold(topology, n_stages="3"):
+    """Output a complete positioned drawio XML with swimlanes and stub edges.
+
+    Args:
+        topology: pipeline | microservice | layered
+        n_stages: number of stages/services/layers (default 3)
+    """
+    topology = topology.lower()
+    n = int(n_stages)
+
+    if topology not in ("pipeline", "microservice", "layered"):
+        print("usage: layout.py scaffold <pipeline|microservice|layered> [n_stages]",
+              file=sys.stderr)
+        sys.exit(1)
+
+    if topology == "pipeline":
+        _scaffold_pipeline(n)
+    elif topology == "microservice":
+        _scaffold_microservice(n)
+    elif topology == "layered":
+        _scaffold_layered(n)
+
+
+def _scaffold_pipeline(n):
+    """Generate a complete pipeline drawio with N swimlanes."""
+    # Compute layout
+    sw_w = min(316, math.floor((_PAGE_W - _MARGIN - (n - 1) * _SW_GAP) / n))
+    step_w = sw_w - 36
+    total_w = n * sw_w + (n - 1) * _SW_GAP
+    first_x = math.floor((_PAGE_W - total_w) / 2)
+
+    # Input row
+    input_y = 30
+    input_h = 40
+    # Swimlane row
+    sl_y = input_y + input_h + 60
+    sl_start_size = 30
+    # Each swimlane gets 3 stub steps (2 lines each)
+    step_h = 58  # max(36, 22 + 2*18)
+    n_steps = 3
+    sl_h = sl_start_size + 15 + n_steps * (step_h + _STEP_GAP) - _STEP_GAP + 20
+
+    print('<?xml version="1.0" encoding="UTF-8"?>')
+    print('<mxfile host="ac.draw.io">')
+    print('  <diagram id="overview" name="Pipeline Overview">')
+    print(f'    <mxGraphModel pageWidth="827" pageHeight="1169" math="0" shadow="0">')
+    print('      <root>')
+    print('        <mxCell id="0" />')
+    print('        <mxCell id="1" parent="0" />')
+
+    # Input nodes
+    inp_total_w = n * _INPUT_W + (n - 1) * _INPUT_GAP
+    inp_first_x = math.floor((_PAGE_W - inp_total_w) / 2)
+    for i in range(n):
+        ix = inp_first_x + i * (_INPUT_W + _INPUT_GAP)
+        print(f'        <mxCell id="input-{i}" value="Input {i+1}" '
+              f'style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;html=1;" '
+              f'vertex="1" parent="1">')
+        print(f'          <mxGeometry x="{ix}" y="{input_y}" width="{_INPUT_W}" height="{input_h}" as="geometry" />')
+        print(f'        </mxCell>')
+
+    # Swimlanes with steps
+    for i in range(n):
+        sl_x = first_x + i * (sw_w + _SW_GAP)
+        sl_id = f"sl-{i}"
+        print(f'        <mxCell id="{sl_id}" value="Stage {i+1}" '
+              f'style="swimlane;startSize={sl_start_size};fillColor=#ffe6cc;strokeColor=#d79b00;'
+              f'fontStyle=1;fontSize=12;html=1;" vertex="1" parent="1">')
+        print(f'          <mxGeometry x="{sl_x}" y="{sl_y}" width="{sw_w}" height="{sl_h}" as="geometry" />')
+        print(f'        </mxCell>')
+
+        # Steps inside
+        step_y = sl_start_size + 15
+        for j in range(n_steps):
+            step_id = f"step-{i}-{j}"
+            print(f'        <mxCell id="{step_id}" value="Step {j+1}&lt;br/&gt;detail" '
+                  f'style="rounded=1;fillColor=#fff4e6;strokeColor=#d79b00;html=1;" '
+                  f'vertex="1" parent="{sl_id}">')
+            print(f'          <mxGeometry x="18" y="{step_y}" width="{step_w}" height="{step_h}" as="geometry" />')
+            print(f'        </mxCell>')
+            step_y += step_h + _STEP_GAP
+
+    # Edges: input → swimlane
+    for i in range(n):
+        print(f'        <mxCell id="e-in-{i}" edge="1" source="input-{i}" target="sl-{i}" '
+              f'style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;'
+              f'exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" '
+              f'parent="1">')
+        print(f'          <mxGeometry relative="1" as="geometry" />')
+        print(f'        </mxCell>')
+
+    print('      </root>')
+    print('    </mxGraphModel>')
+    print('  </diagram>')
+    print('</mxfile>')
+
+
+def _scaffold_microservice(n):
+    """Generate a microservice scaffold with N services in a 2-layer layout."""
+    page_w, page_h = 1169, 827
+    margin = 60
+    container_w = 180
+    container_h = 120
+    h_gap = (page_w - 2 * margin - n * container_w) // max(1, n - 1) if n > 1 else 0
+
+    print('<?xml version="1.0" encoding="UTF-8"?>')
+    print('<mxfile host="ac.draw.io">')
+    print('  <diagram id="service-map" name="Service Map">')
+    print(f'    <mxGraphModel pageWidth="{page_w}" pageHeight="{page_h}" math="0" shadow="0">')
+    print('      <root>')
+    print('        <mxCell id="0" />')
+    print('        <mxCell id="1" parent="0" />')
+
+    # Gateway layer
+    gw_y = margin
+    gw_x = (page_w - container_w) // 2
+    print(f'        <mxCell id="gateway" value="API Gateway" '
+          f'style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;html=1;'
+          f'verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize=30;" '
+          f'vertex="1" parent="1">')
+    print(f'          <mxGeometry x="{gw_x}" y="{gw_y}" width="{container_w}" height="{container_h}" as="geometry" />')
+    print(f'        </mxCell>')
+
+    # Service layer
+    svc_y = gw_y + container_h + 100
+    svc_total_w = n * container_w + (n - 1) * max(60, h_gap)
+    svc_first_x = (page_w - svc_total_w) // 2
+
+    for i in range(n):
+        sx = svc_first_x + i * (container_w + max(60, h_gap))
+        svc_id = f"svc-{i}"
+        print(f'        <mxCell id="{svc_id}" value="Service {i+1}" '
+              f'style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;html=1;'
+              f'verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize=30;" '
+              f'vertex="1" parent="1">')
+        print(f'          <mxGeometry x="{sx}" y="{svc_y}" width="{container_w}" height="{container_h}" as="geometry" />')
+        print(f'        </mxCell>')
+
+        # Edge from gateway
+        print(f'        <mxCell id="e-gw-{i}" edge="1" source="gateway" target="{svc_id}" '
+              f'style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;'
+              f'exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" '
+              f'value="REST" parent="1">')
+        print(f'          <mxGeometry relative="1" as="geometry" />')
+        print(f'        </mxCell>')
+
+    # Infrastructure layer
+    infra_y = svc_y + container_h + 100
+    infra_x = (page_w - container_w) // 2
+    print(f'        <mxCell id="db" value="PostgreSQL" '
+          f'style="shape=cylinder3;fillColor=#dae8fc;strokeColor=#6c8ebf;html=1;'
+          f'boundedLbl=1;backgroundOutline=1;size=10;fontSize=12;" '
+          f'vertex="1" parent="1">')
+    print(f'          <mxGeometry x="{infra_x}" y="{infra_y}" width="{container_w}" height="{container_h}" as="geometry" />')
+    print(f'        </mxCell>')
+
+    print('      </root>')
+    print('    </mxGraphModel>')
+    print('  </diagram>')
+    print('</mxfile>')
+
+
+def _scaffold_layered(n):
+    """Generate a layered architecture scaffold with N layers."""
+    page_w = 827
+    margin_x = 30
+    margin_y = 30
+    band_w = page_w - 2 * margin_x
+    layer_gap = 30
+    layer_h = 90
+
+    roles = ["Config", "Processing", "Environment"]
+    palette_keys = ["config", "generator", "environment"]
+
+    print('<?xml version="1.0" encoding="UTF-8"?>')
+    print('<mxfile host="ac.draw.io">')
+    print('  <diagram id="arch" name="Architecture Overview">')
+    print(f'    <mxGraphModel pageWidth="{page_w}" pageHeight="1169" math="0" shadow="0">')
+    print('      <root>')
+    print('        <mxCell id="0" />')
+    print('        <mxCell id="1" parent="0" />')
+
+    y = margin_y
+    for i in range(min(n, len(roles))):
+        role = roles[i] if i < len(roles) else f"Layer {i+1}"
+        pk = palette_keys[i] if i < len(palette_keys) else "neutral"
+        p = _PALETTE.get(pk, _PALETTE["neutral"])
+
+        layer_id = f"layer-{i}"
+        print(f'        <mxCell id="{layer_id}" value="{role}" '
+              f'style="rounded=1;fillColor={p["fill"]};strokeColor={p["stroke"]};html=1;'
+              f'verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize=30;" '
+              f'vertex="1" parent="1">')
+        print(f'          <mxGeometry x="{margin_x}" y="{y}" width="{band_w}" height="{layer_h}" as="geometry" />')
+        print(f'        </mxCell>')
+
+        # 2 stub items inside
+        item_w = 160
+        item_h = 40
+        item_y = 35
+        ix1 = (band_w - 2 * item_w - 40) // 2
+        ix2 = ix1 + item_w + 40
+        print(f'        <mxCell id="item-{i}-0" value="Component A" '
+              f'style="rounded=1;fillColor=#ffffff;strokeColor={p["stroke"]};html=1;" '
+              f'vertex="1" parent="{layer_id}">')
+        print(f'          <mxGeometry x="{ix1}" y="{item_y}" width="{item_w}" height="{item_h}" as="geometry" />')
+        print(f'        </mxCell>')
+        print(f'        <mxCell id="item-{i}-1" value="Component B" '
+              f'style="rounded=1;fillColor=#ffffff;strokeColor={p["stroke"]};html=1;" '
+              f'vertex="1" parent="{layer_id}">')
+        print(f'          <mxGeometry x="{ix2}" y="{item_y}" width="{item_w}" height="{item_h}" as="geometry" />')
+        print(f'        </mxCell>')
+
+        y += layer_h + layer_gap
+
+    # Edges between layers
+    for i in range(min(n, len(roles)) - 1):
+        print(f'        <mxCell id="e-layer-{i}" edge="1" source="layer-{i}" target="layer-{i+1}" '
+              f'style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;'
+              f'exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" '
+              f'parent="1">')
+        print(f'          <mxGeometry relative="1" as="geometry" />')
+        print(f'        </mxCell>')
+
+    print('      </root>')
+    print('    </mxGraphModel>')
+    print('  </diagram>')
+    print('</mxfile>')
+
+
 def cmd_bidirectional_edge(src_x, src_y, src_w, src_h, tgt_x, tgt_y, tgt_w, tgt_h, offset=8):
     """Compute forward and reverse edge exit/entry points for bidirectional edges.
 
@@ -643,6 +1010,10 @@ def main():
         "palette":          lambda: cmd_palette(*args),
         "layers":           lambda: cmd_layers(*args),
         "boilerplate":      lambda: cmd_boilerplate(*args),
+        "legend":           lambda: cmd_legend(*args),
+        "step-height":      lambda: cmd_step_height(*args),
+        "shared-layer":     lambda: cmd_shared_layer(*args),
+        "scaffold":         lambda: cmd_scaffold(*args),
     }
     fn = dispatch.get(cmd)
     if fn is None:
