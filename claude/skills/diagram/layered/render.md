@@ -79,9 +79,10 @@ Place items as children of their layer band (parent = layer cell id).
 - Max 12 edges on the overview page
 
 ### Edge routing for cross-layer edges
-- Config→Pipeline: source=config_band (exitY=1), target=pipeline_band (entryY=0). One arrow, implies all children.
+- Config→Pipeline: source=config_band (exitX=0.5, exitY=1), target=pipeline_band (entryX=0.5, entryY=0). **ONE arrow, band-to-band**. Implies all children receive config. Do NOT draw separate edges from config to each module — it creates header crossings.
 - Item→Item (e.g. gen→env_tool): source the item directly, target the item. Use edge_planner.py for waypoints.
-- **Never draw edges that cross through a band's header text** — either target the band (not child) or use the edge planner with the band as an obstacle node.
+- **NEVER draw an edge that enters a child directly from outside its parent band.** If you need to show config feeding individual modules, use a text annotation inside the band header (e.g., "← config") instead of an arrow.
+- Between sibling items in the same layer (gen→val, val→post): these horizontal edges are fine since they don't cross any headers.
 
 ### Edge styling
 - Config → processor: solid `#6c8ebf` strokeWidth=2

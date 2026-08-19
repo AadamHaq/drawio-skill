@@ -166,21 +166,39 @@ def orthogonal_route(start, end, waypoints):
     dx = ex - sx
     dy = ey - sy
 
-    # Key insight: the LAST segment must approach the target correctly.
-    # If target is below (dy > 0), last segment should be vertical (approaching from top)
-    # If target is to the right (dx > 0), last segment should be horizontal (approaching from left)
+    # Routing strategy: the edge should ALWAYS start in the direction it exits.
+    # - exitY=1 (bottom): first move is DOWN
+    # - exitY=0 (top): first move is UP
+    # - exitX=1 (right): first move is RIGHT
+    # - exitX=0 (left): first move is LEFT
     #
-    # So we route: start → align with target on one axis → straight to target
-    # This means the FIRST move aligns us, the SECOND move goes straight in.
+    # And the LAST segment must approach the target correctly:
+    # - entryY=0 (top): last segment is vertical DOWN
+    # - entryX=0 (left): last segment is horizontal RIGHT
+    #
+    # For the common case (exitY=1, entryY=0 — top-to-bottom flow):
+    # Route: down from exit → horizontal jog to align X → down to entry.
+    # This creates a Z-shape: ↓ → ↓ which looks natural.
 
-    if abs(dy) >= abs(dx):
-        # Target is mostly below/above: go horizontal first to align X, then straight down/up
-        # This ensures the final segment is vertical (clean top/bottom entry)
-        return [(sx, sy), (ex, sy), (ex, ey)]
+    if abs(dy) > 15:
+        # Significant vertical distance: go down first (natural exit direction),
+        # then horizontal to align, then down to target.
+        # Jog point: midway vertically
+        mid_y = sy + dy / 2
+        if abs(dx) < 1:
+            # Already aligned horizontally — straight line
+            return [(sx, sy), (ex, ey)]
+        else:
+            return [(sx, sy), (sx, mid_y), (ex, mid_y), (ex, ey)]
     else:
-        # Target is mostly left/right: go vertical first to align Y, then straight across
-        # This ensures the final segment is horizontal (clean left/right entry)
-        return [(sx, sy), (sx, ey), (ex, ey)]
+        # Short vertical distance: just do L-route
+        if abs(dx) < 1:
+            return [(sx, sy), (ex, ey)]
+        elif abs(dy) < 1:
+            return [(sx, sy), (ex, ey)]
+        else:
+            # Go vertical first to align Y, then horizontal
+            return [(sx, sy), (sx, ey), (ex, ey)]
 
 
 # ─── SVG rendering ───────────────────────────────────────────────────────────
@@ -514,9 +532,11 @@ def _find_label_position(points, all_vertices, label=""):
 
     if is_horizontal and label_above:
         my = my - 4  # Will be offset further by the caller
-    elif not is_horizontal and label_above:
-        # For short vertical segments, offset horizontally
-        mx = mx + 12
+    elif not is_horizontal:
+        # For vertical edges: ALWAYS position label to the right of the line.
+        # This prevents labels from sitting on top of the dashed/solid line.
+        mx = mx + text_w / 2 + 8  # Offset right: half text width + gap
+        label_above = False  # Use centered positioning (not above/below)
 
     return (mx, my, label_above)
 
