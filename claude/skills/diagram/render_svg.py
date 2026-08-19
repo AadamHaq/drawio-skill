@@ -115,7 +115,12 @@ def orthogonal_route(start, end, waypoints):
 
     If waypoints are provided, they define the route.
     Otherwise, compute a clean L-shaped orthogonal path.
-    Uses exit/entry direction hints from the points to choose the best route.
+
+    Key rule: the final approach to the target must match the entry direction.
+    - entryY=0 (top entry) → last segment must be vertical going DOWN
+    - entryY=1 (bottom entry) → last segment must be vertical going UP
+    - entryX=0 (left entry) → last segment must be horizontal going RIGHT
+    - entryX=1 (right entry) → last segment must be horizontal going LEFT
     """
     if waypoints:
         # Waypoints already define the orthogonal path
@@ -126,14 +131,24 @@ def orthogonal_route(start, end, waypoints):
             prev = result[-1]
             curr = all_pts[i]
             if abs(prev[0] - curr[0]) > 1 and abs(prev[1] - curr[1]) > 1:
-                # Diagonal — insert an L-bend
-                # Prefer: go in the direction of the larger delta first
-                if abs(curr[1] - prev[1]) >= abs(curr[0] - prev[0]):
-                    # More vertical — go vertical first, then horizontal
-                    result.append((prev[0], curr[1]))
+                # Diagonal — need an L-bend. Choose direction based on context:
+                # If this is the last point (target), approach from the correct direction
+                if i == len(all_pts) - 1:
+                    # Approach target: determine entry direction
+                    # If target is below prev, go horizontal first then vertical (top entry)
+                    # If target is to the right, go vertical first then horizontal (left entry)
+                    if abs(curr[1] - prev[1]) >= abs(curr[0] - prev[0]):
+                        # More vertical distance — go horizontal to align X, then vertical down
+                        result.append((curr[0], prev[1]))
+                    else:
+                        # More horizontal distance — go vertical to align Y, then horizontal
+                        result.append((prev[0], curr[1]))
                 else:
-                    # More horizontal — go horizontal first, then vertical
-                    result.append((curr[0], prev[1]))
+                    # Intermediate point: prefer going in the larger-delta direction first
+                    if abs(curr[1] - prev[1]) >= abs(curr[0] - prev[0]):
+                        result.append((prev[0], curr[1]))
+                    else:
+                        result.append((curr[0], prev[1]))
             result.append(curr)
         return result
 
@@ -148,20 +163,24 @@ def orthogonal_route(start, end, waypoints):
         # Horizontally aligned — straight line
         return [start, end]
 
-    # Simple L-route: determine which direction the edge exits
-    # If exitY=1 (bottom) or exitY=0 (top), the edge starts vertically
-    # If exitX=0 or exitX=1 (side), the edge starts horizontally
     dx = ex - sx
     dy = ey - sy
 
-    # Heuristic: if the vertical distance is larger, go vertical first (cleaner)
-    # This avoids the "go away then come back" problem with horizontal-first routing
+    # Key insight: the LAST segment must approach the target correctly.
+    # If target is below (dy > 0), last segment should be vertical (approaching from top)
+    # If target is to the right (dx > 0), last segment should be horizontal (approaching from left)
+    #
+    # So we route: start → align with target on one axis → straight to target
+    # This means the FIRST move aligns us, the SECOND move goes straight in.
+
     if abs(dy) >= abs(dx):
-        # Go vertical to target's y-level, then horizontal
-        return [(sx, sy), (sx, ey), (ex, ey)]
-    else:
-        # Go horizontal to target's x-level, then vertical
+        # Target is mostly below/above: go horizontal first to align X, then straight down/up
+        # This ensures the final segment is vertical (clean top/bottom entry)
         return [(sx, sy), (ex, sy), (ex, ey)]
+    else:
+        # Target is mostly left/right: go vertical first to align Y, then straight across
+        # This ensures the final segment is horizontal (clean left/right entry)
+        return [(sx, sy), (sx, ey), (ex, ey)]
 
 
 # ─── SVG rendering ───────────────────────────────────────────────────────────
@@ -444,8 +463,37 @@ def _find_label_position(points, all_vertices, label=""):
     # If the segment is shorter than the label text, position label above/below
     label_above = seg_len < text_w
 
+    # Check if placing the label above would collide with a box
+    if label_above and is_horizontal:
+        label_rect_top = my - 18  # approx: 14px height + 4px gap
+        label_rect_bottom = my - 4
+        label_half_w = text_w / 2
+        collision_above = False
+        collision_below = False
+        for v in all_vertices.values():
+            if v["w"] == 0 or v["h"] == 0:
+                continue
+            # Check above position
+            if (v["x"] < mx + label_half_w and v["x"] + v["w"] > mx - label_half_w
+                    and v["y"] < label_rect_bottom and v["y"] + v["h"] > label_rect_top):
+                collision_above = True
+            # Check below position
+            below_top = my + 4
+            below_bottom = my + 18
+            if (v["x"] < mx + label_half_w and v["x"] + v["w"] > mx - label_half_w
+                    and v["y"] < below_bottom and v["y"] + v["h"] > below_top):
+                collision_below = True
+
+        if collision_above and not collision_below:
+            # Place below instead
+            my = my + 14
+            label_above = False  # Signal: use "below" positioning
+        elif collision_above and collision_below:
+            # Both collide — place centred on the edge line with white bg
+            label_above = False
+        # else: above is fine, keep label_above = True
+
     if is_horizontal and label_above:
-        # Place above the horizontal segment
         my = my - 4  # Will be offset further by the caller
     elif not is_horizontal and label_above:
         # For short vertical segments, offset horizontally
@@ -602,6 +650,32 @@ def convert_drawio_to_svg(drawio_path):
 
             # Build orthogonal route
             points = orthogonal_route(start, end, waypoints)
+
+            # Fix approach direction: if the final segment is horizontal but it
+            # arrives AT the target's top/bottom edge (skimming), insert a vertical
+            # approach segment so the arrow enters cleanly from above/below.
+            if len(points) >= 2 and target_id in vertices:
+                entry_y_val = float(style.get("entryY", "0"))
+                last_pt = points[-1]
+                pen_pt = points[-2]
+
+                last_is_horizontal = abs(last_pt[1] - pen_pt[1]) < 1
+                last_seg_len = ((last_pt[0] - pen_pt[0])**2 + (last_pt[1] - pen_pt[1])**2) ** 0.5
+
+                # Only fix if the final segment is horizontal AND non-trivial (>10px)
+                # AND the entry is at top (entryY=0) or bottom (entryY=1)
+                if last_is_horizontal and last_seg_len > 10 and entry_y_val in (0.0, 1.0):
+                    # The edge is arriving horizontally at the target's top/bottom — bad.
+                    # Insert a jog: end the horizontal 8px above/below target, then go vertical.
+                    clearance = 8
+                    if entry_y_val == 0:
+                        jog_y = last_pt[1] - clearance
+                    else:
+                        jog_y = last_pt[1] + clearance
+
+                    # Rewrite: ... → pen_pt → (last_x, jog_y) shifted up → (last_x, pen_y as jog) → last_pt
+                    # Actually simpler: just move the horizontal jog above and add vertical approach
+                    points = points[:-2] + [(pen_pt[0], jog_y), (last_pt[0], jog_y), last_pt]
 
             # Get label
             label_text = html_to_plain(value)
