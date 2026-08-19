@@ -180,7 +180,16 @@ def escape_xml(s):
 
 
 def render_swimlane(x, y, w, h, style, cell_id):
-    """Render a swimlane: coloured header + light grey body."""
+    """Render a swimlane: coloured header + light grey body (combined)."""
+    body, header = render_swimlane_split(x, y, w, h, style, cell_id)
+    return body + "\n" + header
+
+
+def render_swimlane_split(x, y, w, h, style, cell_id):
+    """Render a swimlane as two separate SVG strings: (body, header).
+
+    Body renders behind edges; header renders on top of edges to cover crossings.
+    """
     fill = style.get("fillColor", "#ffe6cc")
     stroke = style.get("strokeColor", "#d79b00")
     stroke_w = style.get("strokeWidth", "1")
@@ -191,42 +200,40 @@ def render_swimlane(x, y, w, h, style, cell_id):
     dash_attr = ' stroke-dasharray="8 4"' if dashed else ""
     opacity_attr = f' opacity="{opacity}"' if opacity < 1.0 else ""
 
-    # Handle fillColor=none (e.g., environment containers)
     if fill == "none" or fill == "":
         body_fill = "none"
         header_fill = "none"
+    elif dashed:
+        body_fill = fill
+        header_fill = fill
     else:
-        # For dashed containers (shared layers), use the fill as body too
-        # since it's already very light. For normal swimlanes, use grey body.
-        if dashed:
-            body_fill = fill
-            header_fill = fill  # Dashed containers don't have a distinct header
-        else:
-            body_fill = "#fafafa"  # Light body
-            header_fill = fill      # Saturated header
+        body_fill = "#fafafa"
+        header_fill = fill
 
-    parts = []
     # Body rectangle (full size, light background)
-    parts.append(
+    body_svg = (
         f'  <rect id="{cell_id}-body" x="{x:.1f}" y="{y:.1f}" '
         f'width="{w:.1f}" height="{h:.1f}" rx="4" ry="4" '
         f'fill="{body_fill}" stroke="{stroke}" stroke-width="{stroke_w}"{dash_attr}{opacity_attr} />'
     )
-    # Header bar (coloured)
+
+    # Header bar (coloured, rendered ON TOP of edges)
+    header_parts = []
     if header_fill != "none":
-        parts.append(
+        header_parts.append(
             f'  <rect id="{cell_id}-header" x="{x:.1f}" y="{y:.1f}" '
             f'width="{w:.1f}" height="{start_size:.1f}" rx="4" ry="4" '
             f'fill="{header_fill}" stroke="{stroke}" stroke-width="{stroke_w}"{dash_attr}{opacity_attr} />'
         )
-        # Bottom corners of header should be square (overlap with body)
-        parts.append(
+        # Square bottom corners of header (overlap cover)
+        header_parts.append(
             f'  <rect x="{x:.1f}" y="{y + start_size - 4:.1f}" '
             f'width="{w:.1f}" height="4.0" '
             f'fill="{header_fill}" stroke="none" />'
         )
+    header_svg = "\n".join(header_parts)
 
-    return "\n".join(parts)
+    return body_svg, header_svg
 
 
 def render_rect(x, y, w, h, style, cell_id):
@@ -510,8 +517,8 @@ def _find_label_position(points, all_vertices, label=""):
         my = my - 4  # Will be offset further by the caller
         return (mx, my, label_above, "middle")
     elif not is_horizontal:
-        # For vertical edges: position label just to the right of the line (left-aligned).
-        mx = mx + 5  # 5px right of line center
+        # For vertical edges: position label 4px to the right of the line, left-aligned.
+        mx = mx + 4
         label_above = False
         return (mx, my, label_above, "start")
 
@@ -521,7 +528,7 @@ def _find_label_position(points, all_vertices, label=""):
     overall_dy = abs(points[-1][1] - points[0][1])
     if overall_dy > overall_dx * 2 and is_horizontal:
         edge_center_x = (points[0][0] + points[-1][0]) / 2
-        mx = edge_center_x + 5
+        mx = edge_center_x + 4
         label_above = False
         return (mx, my, label_above, "start")
 
@@ -585,8 +592,9 @@ def convert_drawio_to_svg(drawio_path):
             # Register as potential parent
             parent_offsets[cell_id] = (abs_x, abs_y)
 
-        # Render vertices
-        svg_elements = []
+        # Render vertices — split into bodies (background) and headers (foreground)
+        svg_bodies = []    # Band body rects, regular rects, sub-step rects
+        svg_headers = []   # Swimlane header bars (render AFTER edges to cover crossings)
         svg_texts = []
 
         for cell_id, v in vertices.items():
@@ -603,13 +611,15 @@ def convert_drawio_to_svg(drawio_path):
             )
 
             if not is_text_only:
-                # Swimlanes get special two-tone rendering
+                # Swimlanes get special two-tone rendering (body separate from header)
                 if "swimlane" in style:
-                    svg_elements.append(
-                        render_swimlane(v["x"], v["y"], v["w"], v["h"], style, cell_id)
+                    body_svg, header_svg = render_swimlane_split(
+                        v["x"], v["y"], v["w"], v["h"], style, cell_id
                     )
+                    svg_bodies.append(body_svg)
+                    svg_headers.append(header_svg)
                 else:
-                    svg_elements.append(
+                    svg_bodies.append(
                         render_rect(v["x"], v["y"], v["w"], v["h"], style, cell_id)
                     )
 
@@ -682,46 +692,7 @@ def convert_drawio_to_svg(drawio_path):
             points = orthogonal_route(start, end, waypoints,
                                       exit_x=exit_x_val, exit_y=exit_y_val)
 
-            # Header clipping: if a vertical segment crosses a swimlane header
-            # that is NOT the edge's source or target, gap the line so it starts
-            # below the header. This prevents edges from visually crossing through
-            # band header text.
-            swimlane_headers = []
-            for vid, vdata in vertices.items():
-                # Skip if this swimlane IS the source or target
-                if vid == source_id or vid == target_id:
-                    continue
-                vs = vdata.get("style", {})
-                if "swimlane" in vs:
-                    ss = int(vs.get("startSize", "30"))
-                    swimlane_headers.append((
-                        vdata["x"], vdata["y"], vdata["x"] + vdata["w"], vdata["y"] + ss
-                    ))  # (left_x, top_y, right_x, header_bottom_y)
-
-            if swimlane_headers and len(points) >= 2:
-                new_points = [points[0]]
-                for k in range(1, len(points)):
-                    prev = new_points[-1]
-                    curr = points[k]
-                    px, py = prev
-                    cx, cy = curr
-                    clipped = False
-                    # Only check vertical downward segments
-                    if abs(px - cx) < 1 and cy > py:
-                        for (sl_left, sl_top, sl_right, hdr_bot) in swimlane_headers:
-                            # Is this segment's x within the band?
-                            if sl_left <= px <= sl_right:
-                                # Does segment cross from above header to below it?
-                                if py < hdr_bot and cy > hdr_bot:
-                                    # Clip: replace start of this segment with header_bottom
-                                    # Remove everything above header, start line from below
-                                    new_points[-1] = (px, hdr_bot + 2)
-                                    clipped = True
-                                    break
-                    new_points.append(curr)
-                points = new_points
-
-            # Fix 2: Approach direction. If the final segment is horizontal but
+            # Approach direction fix: If the final segment is horizontal but
             # arrives AT the target's top/bottom edge, insert a vertical approach.
             if len(points) >= 2 and target_id in vertices:
                 entry_y_val = float(style.get("entryY", "0"))
@@ -778,11 +749,15 @@ def convert_drawio_to_svg(drawio_path):
         page_svg.append(f'  <!-- Page: {escape_xml(page_name)} -->')
         page_svg.append('  <style>text { font-family: Inter, Arial, sans-serif; }</style>')
 
-        # Z-order: all filled shapes first, then ALL edges on top, then text.
-        # This matches draw.io behaviour where edges always render over boxes.
-        page_svg.extend(svg_elements)
+        # Z-order: bodies → edges → headers → text
+        # Band bodies (light backgrounds) render first.
+        # Edges render on top of bodies (visible over grey backgrounds).
+        # Headers render on top of edges (cover edge segments crossing through headers).
+        # Text renders on top of everything.
+        page_svg.extend(svg_bodies)
         for edge_svg, _ in svg_edges:
             page_svg.append(edge_svg)
+        page_svg.extend(svg_headers)
         page_svg.extend(svg_texts)
 
         page_svg.append('</svg>')
