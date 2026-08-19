@@ -13,6 +13,7 @@ Input JSON format:
   "page_h": 1140,
   "nodes": {
     "node-id": {"x": 100, "y": 200, "w": 200, "h": 140},
+    "child-id": {"x": 18, "y": 45, "w": 160, "h": 50, "parent": "node-id"},
     ...
   },
   "edges": [
@@ -293,12 +294,47 @@ def spread_slots(n):
         return [0.15 + (0.7 * i / (n - 1)) for i in range(n)]
 
 
+def resolve_hierarchy(nodes):
+    """Resolve hierarchical node positions to absolute coordinates.
+
+    If a node has a "parent" field, its x/y are relative to that parent.
+    This function computes absolute x/y by walking up the parent chain.
+    Nodes without a parent are already absolute.
+
+    Returns a new dict with the same keys but absolute x/y values.
+    """
+    resolved = {}
+
+    def resolve_node(node_id):
+        if node_id in resolved:
+            return resolved[node_id]
+        node = nodes[node_id]
+        parent_id = node.get("parent")
+        if parent_id and parent_id in nodes:
+            parent = resolve_node(parent_id)
+            abs_x = node["x"] + parent["x"]
+            abs_y = node["y"] + parent["y"]
+        else:
+            abs_x = node["x"]
+            abs_y = node["y"]
+        resolved[node_id] = {"x": abs_x, "y": abs_y, "w": node["w"], "h": node["h"]}
+        return resolved[node_id]
+
+    for node_id in nodes:
+        resolve_node(node_id)
+
+    return resolved
+
+
 def plan_edges(data):
     """Main planning function."""
     nodes = data.get("nodes", {})
     edges = data.get("edges", [])
     page_w = data.get("page_w", 1169)
     page_h = data.get("page_h", 1140)
+
+    # Resolve hierarchical positions: if a node has "parent", compute absolute x/y
+    resolved_nodes = resolve_hierarchy(nodes)
 
     # Group edges by (exit_side, source) for slot spreading
     edges_by_source_side = defaultdict(list)
@@ -308,9 +344,9 @@ def plan_edges(data):
     for edge in edges:
         src_id = edge["source"]
         tgt_id = edge["target"]
-        if src_id not in nodes or tgt_id not in nodes:
+        if src_id not in resolved_nodes or tgt_id not in resolved_nodes:
             continue
-        exit_side, entry_side = determine_best_sides(nodes[src_id], nodes[tgt_id])
+        exit_side, entry_side = determine_best_sides(resolved_nodes[src_id], resolved_nodes[tgt_id])
         edge_sides[edge["id"]] = (exit_side, entry_side)
         edges_by_source_side[(src_id, exit_side)].append(edge["id"])
 
@@ -353,8 +389,8 @@ def plan_edges(data):
         exit_slot = edge_exit_slots.get(eid, 0.5)
         entry_slot = edge_entry_slots.get(eid, 0.5)
 
-        src_node = nodes[src_id]
-        tgt_node = nodes[tgt_id]
+        src_node = resolved_nodes[src_id]
+        tgt_node = resolved_nodes[tgt_id]
 
         # Compute absolute start/end points
         start_x, start_y = compute_exit_point(src_node, exit_side, exit_slot)
@@ -379,9 +415,9 @@ def plan_edges(data):
         elif entry_side == "right":
             entryX, entryY = 1.0, entry_slot
 
-        # Route with obstacle avoidance
+        # Route with obstacle avoidance (use resolved positions for all nodes)
         waypoints = route_edge_around_obstacles(
-            start_x, start_y, end_x, end_y, nodes, src_id, tgt_id
+            start_x, start_y, end_x, end_y, resolved_nodes, src_id, tgt_id
         )
 
         result.append({
