@@ -375,6 +375,7 @@ _PALETTE = {
     "postprocess":  {"fill": "#e1d5e7", "stroke": "#9673a6", "name": "Light Purple"},
     "environment":  {"fill": "#f8cecc", "stroke": "#b85450", "name": "Light Red"},
     "domain":       {"fill": "#f8cecc", "stroke": "#b85450", "name": "Light Red"},
+    "env_container": {"fill": "#fef5f5", "stroke": "#b85450", "name": "Very Light Red (dashed container)"},
     "submodule":    {"fill": "#ffffff", "stroke": "#b85450", "name": "White/Red border"},
     "lane_bg":      {"fill": "#f5f5f5", "stroke": "#666666", "name": "Neutral grey"},
     "lane_header":  {"fill": "#f0f0f0", "stroke": "#999999", "name": "Darker grey"},
@@ -633,7 +634,7 @@ def cmd_shared_layer(n_items, container_y=None, page_w=None):
 
     print(f"# Full-width dashed container (shared layer / environment band)")
     print(f"container: x={container_x} y={container_y} w={container_w} h={container_h}")
-    print(f'style="rounded=1;fillColor=none;strokeColor=#b85450;strokeWidth=2;'
+    print(f'style="rounded=1;fillColor=#fef5f5;strokeColor=#b85450;strokeWidth=2;'
           f'dashed=1;dashPattern=8 4;verticalAlign=top;fontStyle=1;fontSize=12;'
           f'swimlane;startSize={header_h};html=1;"')
     print()

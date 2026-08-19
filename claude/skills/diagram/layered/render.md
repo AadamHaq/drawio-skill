@@ -50,8 +50,11 @@ Use `layout.py palette` for exact values. Typical mapping:
 | Generator / process | `#fff2cc` | `#d6b656` | `generator` |
 | Validator | `#d5e8d4` | `#82b366` | `validator` |
 | Post-processing | `#e1d5e7` | `#9673a6` | `postprocess` |
-| Environment / domain | `#f8cecc` | `#b85450` | `environment` |
+| Environment container (dashed) | `#fef5f5` | `#b85450` | `env_container` |
+| Environment item (solid) | `#f8cecc` | `#b85450` | `environment` |
 | Sub-module (inside env) | `#ffffff` | `#b85450` | `submodule` |
+
+**Environment containers** MUST have a background fill (`#fef5f5` — barely-there pink). Without it, the dashed border floats over white and doesn't register as a layer. Use `env_container` for the outer band and `submodule` (white + red border) for items inside.
 
 ## Coordinate Computation
 

@@ -188,8 +188,14 @@ def render_swimlane(x, y, w, h, style, cell_id):
         body_fill = "none"
         header_fill = "none"
     else:
-        body_fill = "#fafafa"  # Light body
-        header_fill = fill      # Saturated header
+        # For dashed containers (shared layers), use the fill as body too
+        # since it's already very light. For normal swimlanes, use grey body.
+        if dashed:
+            body_fill = fill
+            header_fill = fill  # Dashed containers don't have a distinct header
+        else:
+            body_fill = "#fafafa"  # Light body
+            header_fill = fill      # Saturated header
 
     parts = []
     # Body rectangle (full size, light background)
@@ -298,6 +304,25 @@ def render_edge(points, style, label, cell_id, all_vertices):
     if len(points) < 2:
         return ""
 
+    # Clean up the point list: remove consecutive duplicates and zero-length segments
+    cleaned = [points[0]]
+    for i in range(1, len(points)):
+        px, py = cleaned[-1]
+        cx, cy = points[i]
+        if abs(px - cx) > 0.5 or abs(py - cy) > 0.5:
+            cleaned.append(points[i])
+    points = cleaned
+
+    if len(points) < 2:
+        return ""
+
+    # Ensure the final segment has meaningful length for arrowhead orientation.
+    # If the last two points are very close, extend back to find a directional segment.
+    last_seg_len = ((points[-1][0] - points[-2][0])**2 + (points[-1][1] - points[-2][1])**2) ** 0.5
+    if last_seg_len < 2 and len(points) > 2:
+        # Remove the near-duplicate penultimate point
+        points = points[:-2] + [points[-1]]
+
     stroke = style.get("strokeColor", "#000000")
     stroke_w = style.get("strokeWidth", "2")
     dashed = style.get("dashed", "0") == "1"
@@ -310,12 +335,13 @@ def render_edge(points, style, label, cell_id, all_vertices):
     # Arrowhead marker ID (unique per edge)
     marker_id = f"arrow-{cell_id}"
 
+    # Determine arrowhead size relative to stroke width
+    # Use userSpaceOnUse for consistent sizing regardless of stroke width
     parts = []
-    # Define arrowhead marker
     parts.append(
-        f'  <defs><marker id="{marker_id}" markerWidth="10" markerHeight="7" '
-        f'refX="9" refY="3.5" orient="auto" markerUnits="strokeWidth">'
-        f'<polygon points="0 0, 10 3.5, 0 7" fill="{stroke}" /></marker></defs>'
+        f'  <defs><marker id="{marker_id}" markerWidth="10" markerHeight="8" '
+        f'refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse">'
+        f'<polygon points="0 0, 10 4, 0 8" fill="{stroke}" /></marker></defs>'
     )
     # Polyline (orthogonal segments)
     parts.append(
