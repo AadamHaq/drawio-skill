@@ -110,17 +110,13 @@ def get_waypoints(cell):
 
 # ─── Orthogonal edge routing ─────────────────────────────────────────────────
 
-def orthogonal_route(start, end, waypoints):
+def orthogonal_route(start, end, waypoints, exit_x=0.5, exit_y=1.0):
     """Convert point list to orthogonal (H/V only) segments.
 
     If waypoints are provided, they define the route.
-    Otherwise, compute a clean L-shaped orthogonal path.
-
-    Key rule: the final approach to the target must match the entry direction.
-    - entryY=0 (top entry) → last segment must be vertical going DOWN
-    - entryY=1 (bottom entry) → last segment must be vertical going UP
-    - entryX=0 (left entry) → last segment must be horizontal going RIGHT
-    - entryX=1 (right entry) → last segment must be horizontal going LEFT
+    Otherwise, compute a route based on exit direction:
+    - exitY=1 or exitY=0 (top/bottom exit): first move is VERTICAL (↓→↓ Z-pattern)
+    - exitX=0 or exitX=1 (side exit): first move is HORIZONTAL (→↓→ Z-pattern)
     """
     if waypoints:
         # Waypoints already define the orthogonal path
@@ -131,20 +127,14 @@ def orthogonal_route(start, end, waypoints):
             prev = result[-1]
             curr = all_pts[i]
             if abs(prev[0] - curr[0]) > 1 and abs(prev[1] - curr[1]) > 1:
-                # Diagonal — need an L-bend. Choose direction based on context:
-                # If this is the last point (target), approach from the correct direction
+                # Diagonal — need an L-bend
                 if i == len(all_pts) - 1:
-                    # Approach target: determine entry direction
-                    # If target is below prev, go horizontal first then vertical (top entry)
-                    # If target is to the right, go vertical first then horizontal (left entry)
+                    # Last point: approach correctly for entry direction
                     if abs(curr[1] - prev[1]) >= abs(curr[0] - prev[0]):
-                        # More vertical distance — go horizontal to align X, then vertical down
                         result.append((curr[0], prev[1]))
                     else:
-                        # More horizontal distance — go vertical to align Y, then horizontal
                         result.append((prev[0], curr[1]))
                 else:
-                    # Intermediate point: prefer going in the larger-delta direction first
                     if abs(curr[1] - prev[1]) >= abs(curr[0] - prev[0]):
                         result.append((prev[0], curr[1]))
                     else:
@@ -157,48 +147,29 @@ def orthogonal_route(start, end, waypoints):
 
     # No waypoints: create orthogonal route
     if abs(sx - ex) < 1:
-        # Vertically aligned — straight line
-        return [start, end]
+        return [start, end]  # Vertically aligned
     if abs(sy - ey) < 1:
-        # Horizontally aligned — straight line
-        return [start, end]
+        return [start, end]  # Horizontally aligned
 
     dx = ex - sx
     dy = ey - sy
 
-    # Routing strategy: the edge should ALWAYS start in the direction it exits.
-    # - exitY=1 (bottom): first move is DOWN
-    # - exitY=0 (top): first move is UP
-    # - exitX=1 (right): first move is RIGHT
-    # - exitX=0 (left): first move is LEFT
-    #
-    # And the LAST segment must approach the target correctly:
-    # - entryY=0 (top): last segment is vertical DOWN
-    # - entryX=0 (left): last segment is horizontal RIGHT
-    #
-    # For the common case (exitY=1, entryY=0 — top-to-bottom flow):
-    # Route: down from exit → horizontal jog to align X → down to entry.
-    # This creates a Z-shape: ↓ → ↓ which looks natural.
+    # Determine exit direction from exit_x/exit_y:
+    # exitY in (0, 1) with exitX near 0.5 → exiting top/bottom (vertical first)
+    # exitX in (0, 1) with exitY near 0.5 → exiting left/right (horizontal first)
+    exits_vertically = (exit_y in (0.0, 1.0)) and (0.15 < exit_x < 0.85)
+    exits_horizontally = (exit_x in (0.0, 1.0)) and (0.15 < exit_y < 0.85)
 
-    if abs(dy) > 15:
-        # Significant vertical distance: go down first (natural exit direction),
-        # then horizontal to align, then down to target.
-        # Jog point: midway vertically
-        mid_y = sy + dy / 2
-        if abs(dx) < 1:
-            # Already aligned horizontally — straight line
-            return [(sx, sy), (ex, ey)]
-        else:
-            return [(sx, sy), (sx, mid_y), (ex, mid_y), (ex, ey)]
+    if exits_horizontally:
+        # Side exit: go HORIZONTAL first, then vertical, then horizontal to target
+        # Pattern: → ↓ → (or ← ↓ ←)
+        mid_x = sx + dx / 2
+        return [(sx, sy), (mid_x, sy), (mid_x, ey), (ex, ey)]
     else:
-        # Short vertical distance: just do L-route
-        if abs(dx) < 1:
-            return [(sx, sy), (ex, ey)]
-        elif abs(dy) < 1:
-            return [(sx, sy), (ex, ey)]
-        else:
-            # Go vertical first to align Y, then horizontal
-            return [(sx, sy), (sx, ey), (ex, ey)]
+        # Top/bottom exit (default): go VERTICAL first, then horizontal, then vertical
+        # Pattern: ↓ → ↓ (or ↑ → ↑)
+        mid_y = sy + dy / 2
+        return [(sx, sy), (sx, mid_y), (ex, mid_y), (ex, ey)]
 
 
 # ─── SVG rendering ───────────────────────────────────────────────────────────
@@ -538,6 +509,18 @@ def _find_label_position(points, all_vertices, label=""):
         mx = mx + text_w / 2 + 8  # Offset right: half text width + gap
         label_above = False  # Use centered positioning (not above/below)
 
+    # Additional check: if the overall edge is mostly vertical (start-to-end),
+    # offset label to the right even if the best segment happened to be horizontal
+    # (e.g., a Z-jog midpoint). This handles dashed edges that are conceptually vertical.
+    overall_dx = abs(points[-1][0] - points[0][0])
+    overall_dy = abs(points[-1][1] - points[0][1])
+    if overall_dy > overall_dx * 2 and is_horizontal:
+        # Edge is mostly vertical but label landed on a horizontal jog segment
+        # Still offset to the right of the edge's x-center
+        edge_center_x = (points[0][0] + points[-1][0]) / 2
+        mx = edge_center_x + text_w / 2 + 8
+        label_above = False
+
     return (mx, my, label_above)
 
 
@@ -687,8 +670,43 @@ def convert_drawio_to_svg(drawio_path):
             waypoints = get_waypoints(cell)
             waypoints = [(wx + off_x, wy + off_y) for wx, wy in waypoints]
 
-            # Build orthogonal route
-            points = orthogonal_route(start, end, waypoints)
+            # Build orthogonal route — pass exit direction for smart routing
+            exit_x_val = float(style.get("exitX", "0.5"))
+            exit_y_val = float(style.get("exitY", "1"))
+            points = orthogonal_route(start, end, waypoints,
+                                      exit_x=exit_x_val, exit_y=exit_y_val)
+
+            # Header clipping: if a vertical segment crosses a swimlane header,
+            # clip it to start below the header.
+            swimlane_headers = []
+            for vid, vdata in vertices.items():
+                vs = vdata.get("style", {})
+                if "swimlane" in vs:
+                    ss = int(vs.get("startSize", "30"))
+                    swimlane_headers.append((
+                        vdata["x"], vdata["y"], vdata["w"], vdata["y"] + ss
+                    ))  # (left_x, top_y, right_x_offset_w, header_bottom_y)
+
+            if swimlane_headers and len(points) >= 2:
+                new_points = []
+                for k in range(len(points)):
+                    pt = points[k]
+                    if k > 0:
+                        prev = new_points[-1] if new_points else points[0]
+                        px, py = prev
+                        cx, cy = pt
+                        # Vertical segment going down?
+                        if abs(px - cx) < 1 and cy > py:
+                            for (sl_x, sl_y, sl_w, hdr_bot) in swimlane_headers:
+                                # Check if segment is within band's x range
+                                if sl_x <= px <= sl_x + sl_w:
+                                    # Segment crosses from above header to below it
+                                    if py < hdr_bot and cy > hdr_bot:
+                                        # Clip: skip the header zone, start from below
+                                        new_points.append((px, hdr_bot + 2))
+                                        break
+                    new_points.append(pt)
+                points = new_points
 
             # Fix 2: Approach direction. If the final segment is horizontal but
             # arrives AT the target's top/bottom edge, insert a vertical approach.
