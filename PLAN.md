@@ -64,9 +64,20 @@ Tested the skill against 3 repos (auto-eval, convai-lab, convai). Key findings:
 ### Phase 3: Fix Rendering Quality (make diagrams pretty)
 
 9. **Page size: auto-fit content**
-   - File: `layered/render.md`
+   - File: `layered/render.md`, `render_svg.py`
    - Add guidance: "Compute total content height. Set page height = content_height + 80px margin. Never use default 1169px for a diagram that only needs 700px."
-   - Why: auto-eval page is 1169px tall but content only reaches ~940px
+   - In render_svg.py: viewBox should be tight to content bounds (already does this), but check the convai multi-page case
+   - Why: auto-eval page is 1169px tall but content only reaches ~940px. Oversized pages waste space and look unprofessional.
+
+9b. **Convai SVG does not render in Kiro editor**
+   - File: `render_svg.py`
+   - The multi-page convai SVG (2 pages concatenated with `<!-- Page N -->` comments) does not display in Kiro's built-in image preview
+   - Root cause: likely the concatenated multi-SVG format (two `<svg>` root elements in one file) is invalid. Only one `<svg>` root is allowed per file.
+   - Fix options:
+     a. Output separate files: `architecture_p1.svg`, `architecture_p2.svg`
+     b. Wrap in a single SVG with nested `<svg>` elements (each page as a positioned sub-SVG)
+     c. Only output page 1 as the SVG (service map / overview) and note that page 2 requires opening the .drawio
+   - Recommendation: Option (a) — separate files per page. Simple, always valid, editor-compatible.
 
 10. **Service map edge density / routing**
     - File: `microservice/render.md`
@@ -105,5 +116,5 @@ Tested the skill against 3 repos (auto-eval, convai-lab, convai). Key findings:
 |-------|-------|--------|
 | 1: Hard Bugs | #1–#4 | Prevents broken output (overlaps, invisible arrows, false alarms) |
 | 2: Content | #5–#8 | Makes diagrams actually useful (not just pretty boxes with filenames) |
-| 3: Rendering | #9–#12 | Makes diagrams look professional (proper sizing, clean arrows) |
+| 3: Rendering | #9–#12 | Makes diagrams look professional (proper sizing, clean arrows, valid SVGs) |
 | 4: Testing | #13–#14 | Ensures improvements stick across future uses |
