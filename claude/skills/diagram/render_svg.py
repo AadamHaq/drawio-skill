@@ -367,7 +367,7 @@ def render_edge(points, style, label, cell_id, all_vertices):
         )
         text_w = len(label) * 6.5 + 8  # approximate width
 
-        lx, ly, label_above = _find_label_position(points, all_vertices, label)
+        lx, ly, label_above, text_anchor = _find_label_position(points, all_vertices, label)
         escaped = escape_xml(label)
         text_h = 14
 
@@ -375,10 +375,9 @@ def render_edge(points, style, label, cell_id, all_vertices):
         # For labels that fit: place with capped pill
         if text_w > edge_total_len - 10:
             # Label is wider than edge — render as offset text, no pill background
-            # Position above the midpoint of the longest segment
             parts.append(
                 f'  <text x="{lx:.1f}" y="{ly - 8:.1f}" font-family="Inter, Arial, sans-serif" '
-                f'font-size="9" text-anchor="middle" fill="{stroke}" '
+                f'font-size="9" text-anchor="{text_anchor}" fill="{stroke}" '
                 f'font-style="italic">{escaped}</text>'
             )
         else:
@@ -395,14 +394,20 @@ def render_edge(points, style, label, cell_id, all_vertices):
             # For dashed edges, use lower opacity so dashes stay visible
             pill_opacity = "0.6" if dashed else "0.9"
 
+            # Pill x position depends on anchor
+            if text_anchor == "start":
+                pill_x = lx - 2  # small padding before text start
+            else:
+                pill_x = lx - pill_w / 2
+
             parts.append(
-                f'  <rect x="{lx - pill_w/2:.1f}" y="{rect_y:.1f}" '
+                f'  <rect x="{pill_x:.1f}" y="{rect_y:.1f}" '
                 f'width="{pill_w:.1f}" height="{text_h}" rx="2" ry="2" '
                 f'fill="white" stroke="none" opacity="{pill_opacity}" />'
             )
             parts.append(
                 f'  <text x="{lx:.1f}" y="{text_y:.1f}" font-family="Inter, Arial, sans-serif" '
-                f'font-size="10" text-anchor="middle" fill="{stroke}">{escaped}</text>'
+                f'font-size="10" text-anchor="{text_anchor}" fill="{stroke}">{escaped}</text>'
             )
 
     return "\n".join(parts)
@@ -428,7 +433,7 @@ def _find_label_position(points, all_vertices, label=""):
         segments.append((mx, my, seg_len, is_horizontal))
 
     if not segments:
-        return (points[0][0], points[0][1] - 12, True)
+        return (points[0][0], points[0][1] - 12, True, "middle")
 
     # Score each midpoint: prefer longer segments, avoid box interiors
     best = None
@@ -464,7 +469,7 @@ def _find_label_position(points, all_vertices, label=""):
         # Fallback: first segment midpoint, above
         mx = (points[0][0] + points[1][0]) / 2
         my = (points[0][1] + points[1][1]) / 2
-        return (mx, my - 12, True)
+        return (mx, my - 12, True, "middle")
 
     mx, my, seg_len, is_horizontal = best
 
@@ -503,23 +508,24 @@ def _find_label_position(points, all_vertices, label=""):
 
     if is_horizontal and label_above:
         my = my - 4  # Will be offset further by the caller
+        return (mx, my, label_above, "middle")
     elif not is_horizontal:
-        # For vertical edges: ALWAYS position label to the right of the line.
-        # This prevents labels from sitting on top of the dashed/solid line.
-        mx = mx + text_w / 2 + 8  # Offset right: half text width + gap
-        label_above = False  # Use centered positioning (not above/below)
+        # For vertical edges: position label just to the right of the line (left-aligned).
+        mx = mx + 5  # 5px right of line center
+        label_above = False
+        return (mx, my, label_above, "start")
 
     # Additional check: if the overall edge is mostly vertical (start-to-end),
     # offset label to the right even if the best segment happened to be horizontal
-    # (e.g., a Z-jog midpoint). This handles dashed edges that are conceptually vertical.
     overall_dx = abs(points[-1][0] - points[0][0])
     overall_dy = abs(points[-1][1] - points[0][1])
     if overall_dy > overall_dx * 2 and is_horizontal:
-        # Edge is mostly vertical but label landed on a horizontal jog segment
-        # Still offset to the right of the edge's x-center
         edge_center_x = (points[0][0] + points[-1][0]) / 2
-        mx = edge_center_x + text_w / 2 + 8
+        mx = edge_center_x + 5
         label_above = False
+        return (mx, my, label_above, "start")
+
+    return (mx, my, label_above, "middle")
 
     return (mx, my, label_above)
 
@@ -676,36 +682,43 @@ def convert_drawio_to_svg(drawio_path):
             points = orthogonal_route(start, end, waypoints,
                                       exit_x=exit_x_val, exit_y=exit_y_val)
 
-            # Header clipping: if a vertical segment crosses a swimlane header,
-            # clip it to start below the header.
+            # Header clipping: if a vertical segment crosses a swimlane header
+            # that is NOT the edge's source or target, gap the line so it starts
+            # below the header. This prevents edges from visually crossing through
+            # band header text.
             swimlane_headers = []
             for vid, vdata in vertices.items():
+                # Skip if this swimlane IS the source or target
+                if vid == source_id or vid == target_id:
+                    continue
                 vs = vdata.get("style", {})
                 if "swimlane" in vs:
                     ss = int(vs.get("startSize", "30"))
                     swimlane_headers.append((
-                        vdata["x"], vdata["y"], vdata["w"], vdata["y"] + ss
-                    ))  # (left_x, top_y, right_x_offset_w, header_bottom_y)
+                        vdata["x"], vdata["y"], vdata["x"] + vdata["w"], vdata["y"] + ss
+                    ))  # (left_x, top_y, right_x, header_bottom_y)
 
             if swimlane_headers and len(points) >= 2:
-                new_points = []
-                for k in range(len(points)):
-                    pt = points[k]
-                    if k > 0:
-                        prev = new_points[-1] if new_points else points[0]
-                        px, py = prev
-                        cx, cy = pt
-                        # Vertical segment going down?
-                        if abs(px - cx) < 1 and cy > py:
-                            for (sl_x, sl_y, sl_w, hdr_bot) in swimlane_headers:
-                                # Check if segment is within band's x range
-                                if sl_x <= px <= sl_x + sl_w:
-                                    # Segment crosses from above header to below it
-                                    if py < hdr_bot and cy > hdr_bot:
-                                        # Clip: skip the header zone, start from below
-                                        new_points.append((px, hdr_bot + 2))
-                                        break
-                    new_points.append(pt)
+                new_points = [points[0]]
+                for k in range(1, len(points)):
+                    prev = new_points[-1]
+                    curr = points[k]
+                    px, py = prev
+                    cx, cy = curr
+                    clipped = False
+                    # Only check vertical downward segments
+                    if abs(px - cx) < 1 and cy > py:
+                        for (sl_left, sl_top, sl_right, hdr_bot) in swimlane_headers:
+                            # Is this segment's x within the band?
+                            if sl_left <= px <= sl_right:
+                                # Does segment cross from above header to below it?
+                                if py < hdr_bot and cy > hdr_bot:
+                                    # Clip: replace start of this segment with header_bottom
+                                    # Remove everything above header, start line from below
+                                    new_points[-1] = (px, hdr_bot + 2)
+                                    clipped = True
+                                    break
+                    new_points.append(curr)
                 points = new_points
 
             # Fix 2: Approach direction. If the final segment is horizontal but
