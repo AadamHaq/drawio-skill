@@ -28,7 +28,7 @@ import math
 import sys
 
 _PAGE_W   = 827
-_SW_GAP   = 26
+_SW_GAP   = 40
 _MARGIN   = 60
 _INPUT_W  = 160
 _INPUT_GAP = 20
@@ -382,6 +382,7 @@ _PALETTE = {
     "fail":         {"fill": "#f8cecc", "stroke": "#b85450", "name": "Light Red"},
     "pass":         {"fill": "#d5e8d4", "stroke": "#82b366", "name": "Light Green"},
     "neutral":      {"fill": "#fff4e6", "stroke": "#d79b00", "name": "Light Orange"},
+    "step":         {"fill": "#ffffff", "stroke": "inherit", "name": "White (use parent stroke)"},
 }
 
 
@@ -723,7 +724,7 @@ def _scaffold_pipeline(n):
         for j in range(n_steps):
             step_id = f"step-{i}-{j}"
             print(f'        <mxCell id="{step_id}" value="Step {j+1}&lt;br/&gt;detail" '
-                  f'style="rounded=1;fillColor=#fff4e6;strokeColor=#d79b00;html=1;" '
+                  f'style="rounded=1;fillColor=#ffffff;strokeColor=#d79b00;html=1;" '
                   f'vertex="1" parent="{sl_id}">')
             print(f'          <mxGeometry x="18" y="{step_y}" width="{step_w}" height="{step_h}" as="geometry" />')
             print(f'        </mxCell>')

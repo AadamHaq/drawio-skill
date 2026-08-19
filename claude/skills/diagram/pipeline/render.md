@@ -54,9 +54,11 @@ python3 layout.py n-split <sw_w> <last_y> <last_h> <n_outcomes>
 |---|---|---|
 | Input node | `#dae8fc` | `#6c8ebf` |
 | Swimlane header | `#ffe6cc` | `#d79b00` |
-| Process step | `#fff4e6` | `#d79b00` |
+| Process step (inside swimlane) | `#ffffff` | same as parent swimlane stroke |
 | Pass / output | `#d5e8d4` | `#82b366` |
 | Fail | `#f8cecc` | `#b85450` |
+
+**Step colouring rule**: Steps inside swimlanes MUST use white (`#ffffff`) fill with the swimlane's stroke colour as their border. This ensures steps pop from the swimlane body (`#fafafa`). Do NOT use the swimlane's fill colour for steps — they'll be invisible against the header.
 
 ## Labels
 

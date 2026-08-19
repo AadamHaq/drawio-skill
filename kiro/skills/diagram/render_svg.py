@@ -114,7 +114,8 @@ def orthogonal_route(start, end, waypoints):
     """Convert point list to orthogonal (H/V only) segments.
 
     If waypoints are provided, they define the route.
-    Otherwise, compute an L-shaped or Z-shaped orthogonal path.
+    Otherwise, compute a clean L-shaped orthogonal path.
+    Uses exit/entry direction hints from the points to choose the best route.
     """
     if waypoints:
         # Waypoints already define the orthogonal path
@@ -125,8 +126,14 @@ def orthogonal_route(start, end, waypoints):
             prev = result[-1]
             curr = all_pts[i]
             if abs(prev[0] - curr[0]) > 1 and abs(prev[1] - curr[1]) > 1:
-                # Diagonal — insert an L-bend (go horizontal first)
-                result.append((curr[0], prev[1]))
+                # Diagonal — insert an L-bend
+                # Prefer: go in the direction of the larger delta first
+                if abs(curr[1] - prev[1]) >= abs(curr[0] - prev[0]):
+                    # More vertical — go vertical first, then horizontal
+                    result.append((prev[0], curr[1]))
+                else:
+                    # More horizontal — go horizontal first, then vertical
+                    result.append((curr[0], prev[1]))
             result.append(curr)
         return result
 
@@ -141,18 +148,20 @@ def orthogonal_route(start, end, waypoints):
         # Horizontally aligned — straight line
         return [start, end]
 
-    # Determine dominant direction for L-routing
+    # Simple L-route: determine which direction the edge exits
+    # If exitY=1 (bottom) or exitY=0 (top), the edge starts vertically
+    # If exitX=0 or exitX=1 (side), the edge starts horizontally
     dx = ex - sx
     dy = ey - sy
 
+    # Heuristic: if the vertical distance is larger, go vertical first (cleaner)
+    # This avoids the "go away then come back" problem with horizontal-first routing
     if abs(dy) >= abs(dx):
-        # Mostly vertical: go vertical first to midpoint, then horizontal, then vertical
-        mid_y = sy + dy / 2
-        return [(sx, sy), (sx, mid_y), (ex, mid_y), (ex, ey)]
+        # Go vertical to target's y-level, then horizontal
+        return [(sx, sy), (sx, ey), (ex, ey)]
     else:
-        # Mostly horizontal: go horizontal to midpoint, then vertical, then horizontal
-        mid_x = sx + dx / 2
-        return [(sx, sy), (mid_x, sy), (mid_x, ey), (ex, ey)]
+        # Go horizontal to target's x-level, then vertical
+        return [(sx, sy), (ex, sy), (ex, ey)]
 
 
 # ─── SVG rendering ───────────────────────────────────────────────────────────
@@ -315,45 +324,67 @@ def render_edge(points, style, label, cell_id, all_vertices):
         f'stroke-linejoin="round" marker-end="url(#{marker_id})" />'
     )
 
-    # Label positioning: find a segment midpoint that doesn't overlap any box
+    # Label positioning
     if label:
-        lx, ly = _find_label_position(points, all_vertices)
+        lx, ly, label_above = _find_label_position(points, all_vertices, label)
         escaped = escape_xml(label)
+        text_w = len(label) * 6.5 + 8  # approximate width
+        text_h = 14
+
+        # Position label above or on the edge
+        if label_above:
+            # Place above the edge segment with more clearance
+            rect_y = ly - text_h - 4
+            text_y = ly - 6
+        else:
+            # Place centred on the edge
+            rect_y = ly - text_h + 2
+            text_y = ly - 2
+
         # White background behind label for readability
-        text_w = len(label) * 6.5 + 4  # approximate
         parts.append(
-            f'  <rect x="{lx - text_w/2:.1f}" y="{ly - 12:.1f}" '
-            f'width="{text_w:.1f}" height="14" rx="2" ry="2" '
-            f'fill="white" stroke="none" opacity="0.85" />'
+            f'  <rect x="{lx - text_w/2:.1f}" y="{rect_y:.1f}" '
+            f'width="{text_w:.1f}" height="{text_h}" rx="2" ry="2" '
+            f'fill="white" stroke="none" opacity="0.9" />'
         )
         parts.append(
-            f'  <text x="{lx:.1f}" y="{ly - 2:.1f}" font-family="Inter, Arial, sans-serif" '
+            f'  <text x="{lx:.1f}" y="{text_y:.1f}" font-family="Inter, Arial, sans-serif" '
             f'font-size="10" text-anchor="middle" fill="{stroke}">{escaped}</text>'
         )
 
     return "\n".join(parts)
 
 
-def _find_label_position(points, all_vertices):
-    """Find a label position on the edge path that avoids overlapping boxes."""
+def _find_label_position(points, all_vertices, label=""):
+    """Find a label position on the edge path that avoids overlapping boxes.
+
+    Returns (x, y, label_above) where label_above=True means the label should
+    be placed above the segment rather than centred on it.
+    """
+    # Compute text width estimate
+    text_w = len(label) * 6.5 + 8 if label else 50
+
     # Try midpoints of each segment, pick the one furthest from any box centre
     segments = []
     for i in range(len(points) - 1):
         mx = (points[i][0] + points[i + 1][0]) / 2
         my = (points[i][1] + points[i + 1][1]) / 2
         seg_len = ((points[i+1][0] - points[i][0])**2 + (points[i+1][1] - points[i][1])**2) ** 0.5
-        segments.append((mx, my, seg_len))
+        # Determine if segment is horizontal or vertical
+        is_horizontal = abs(points[i][1] - points[i+1][1]) < 1
+        segments.append((mx, my, seg_len, is_horizontal))
 
     if not segments:
-        return (points[0][0], points[0][1] - 8)
+        return (points[0][0], points[0][1] - 12, True)
 
-    # Score each midpoint: prefer longer segments and points far from box interiors
-    best = segments[0]
+    # Score each midpoint: prefer longer segments, avoid box interiors
+    best = None
     best_score = -1
 
-    for mx, my, seg_len in segments:
-        if seg_len < 15:
-            continue  # Skip very short segments
+    for mx, my, seg_len, is_horizontal in segments:
+        if seg_len < 8:
+            continue  # Skip tiny segments
+
         # Distance to nearest box border
         min_dist = 999
         for v in all_vertices.values():
@@ -369,12 +400,32 @@ def _find_label_position(points, all_vertices):
             dist = (dx**2 + dy**2) ** 0.5
             min_dist = min(min_dist, dist)
 
-        score = min_dist * 2 + seg_len * 0.5
+        # Bonus for segments long enough to fit the label
+        length_bonus = 20 if seg_len >= text_w else 0
+        score = min_dist * 2 + seg_len * 0.5 + length_bonus
         if score > best_score:
             best_score = score
-            best = (mx, my, seg_len)
+            best = (mx, my, seg_len, is_horizontal)
 
-    return (best[0], best[1])
+    if best is None:
+        # Fallback: first segment midpoint, above
+        mx = (points[0][0] + points[1][0]) / 2
+        my = (points[0][1] + points[1][1]) / 2
+        return (mx, my - 12, True)
+
+    mx, my, seg_len, is_horizontal = best
+
+    # If the segment is shorter than the label text, position label above/below
+    label_above = seg_len < text_w
+
+    if is_horizontal and label_above:
+        # Place above the horizontal segment
+        my = my - 4  # Will be offset further by the caller
+    elif not is_horizontal and label_above:
+        # For short vertical segments, offset horizontally
+        mx = mx + 12
+
+    return (mx, my, label_above)
 
 
 # ─── Main conversion ─────────────────────────────────────────────────────────
@@ -466,8 +517,14 @@ def convert_drawio_to_svg(drawio_path):
                 # For swimlanes, text goes in the header area only
                 if "swimlane" in style:
                     start_size = int(style.get("startSize", "30"))
+                    # Dashed containers need more top padding for title
+                    is_dashed = style.get("dashed", "0") == "1"
+                    title_h = start_size
+                    title_y = v["y"]
+                    if is_dashed:
+                        title_y += 4  # Extra padding from top border
                     text_svg = render_text(
-                        v["x"], v["y"], v["w"], start_size, lines, style, f"{cell_id}-text"
+                        v["x"], title_y, v["w"], title_h, lines, style, f"{cell_id}-text"
                     )
                 else:
                     text_svg = render_text(
@@ -477,7 +534,7 @@ def convert_drawio_to_svg(drawio_path):
                     svg_texts.append(text_svg)
 
         # Second pass: edges
-        svg_edges = []
+        svg_edges = []  # (svg_string, total_path_length)
         for cell in cells:
             if cell.get("edge") != "1":
                 continue
@@ -523,7 +580,13 @@ def convert_drawio_to_svg(drawio_path):
             # Get label
             label_text = html_to_plain(value)
 
-            svg_edges.append(render_edge(points, style, label_text, cell_id, vertices))
+            edge_svg = render_edge(points, style, label_text, cell_id, vertices)
+            # Compute total path length for z-ordering
+            total_len = sum(
+                ((points[i+1][0] - points[i][0])**2 + (points[i+1][1] - points[i][1])**2) ** 0.5
+                for i in range(len(points) - 1)
+            )
+            svg_edges.append((edge_svg, total_len))
 
         # Assemble page SVG
         # Compute actual bounds from content
@@ -546,11 +609,20 @@ def convert_drawio_to_svg(drawio_path):
         page_svg.append(f'  <!-- Page: {escape_xml(page_name)} -->')
         page_svg.append('  <style>text { font-family: Inter, Arial, sans-serif; }</style>')
 
-        # Edges first (behind boxes)
-        page_svg.extend(svg_edges)
-        # Then boxes
+        # Split edges into background (long/routed) and foreground (short cross-lane)
+        bg_edges = []
+        fg_edges = []
+        for edge_svg, path_len in svg_edges:
+            if path_len < 100:
+                # Short edges render on top of boxes so they're visible
+                fg_edges.append(edge_svg)
+            else:
+                bg_edges.append(edge_svg)
+
+        # Layer order: background edges → boxes → foreground edges → text
+        page_svg.extend(bg_edges)
         page_svg.extend(svg_elements)
-        # Then text (on top)
+        page_svg.extend(fg_edges)
         page_svg.extend(svg_texts)
 
         page_svg.append('</svg>')
