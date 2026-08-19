@@ -7,7 +7,7 @@ context: full
 
 # Diagram Skill
 
-Analyse the repository and produce `architecture.drawio` + `architecture.md`.
+Analyse the repository and produce `architecture.drawio` + `architecture.md` (+ optional `architecture.svg` for README embedding).
 
 **Before starting, read these supporting files:**
 
@@ -31,8 +31,9 @@ Follow `explore.md`. Read the repo's entrypoints, configs, services. Classify as
 - LAYERED: decide how many layers, which items belong in each, which cross-layer edges to show
 
 ### Step 3: Compute Layout
-The Python scripts (`layout.py`, `edge_planner.py`, `validate.py`) are in the same directory as this SKILL.md. Find them at `~/.kiro/skills/diagram/` and execute from there:
+The Python scripts (`layout.py`, `edge_planner.py`, `validate.py`, `render_svg.py`) are in the same directory as this SKILL.md. Find them at `~/.kiro/skills/diagram/` and execute from there:
 ```bash
+# Core layout
 python3 ~/.kiro/skills/diagram/layout.py swimlanes <n>
 python3 ~/.kiro/skills/diagram/layout.py inputs <n>
 python3 ~/.kiro/skills/diagram/layout.py steps <sw_w> <startSize> <lines...>
@@ -40,8 +41,16 @@ python3 ~/.kiro/skills/diagram/layout.py service-map <n_services> <layer_hints..
 python3 ~/.kiro/skills/diagram/layout.py service-container <n_components>
 python3 ~/.kiro/skills/diagram/layout.py multipage <page_type>
 python3 ~/.kiro/skills/diagram/layout.py layers <n_layers> <items_per_layer...>
+
+# Helpers
 python3 ~/.kiro/skills/diagram/layout.py palette [role]
+python3 ~/.kiro/skills/diagram/layout.py step-height "Label<br/>Line 2"
+python3 ~/.kiro/skills/diagram/layout.py legend <lowest_y> [topology]
+python3 ~/.kiro/skills/diagram/layout.py shared-layer <n_items> [y] [page_w]
+
+# Scaffolding
 python3 ~/.kiro/skills/diagram/layout.py boilerplate <page_name> [page_name...]
+python3 ~/.kiro/skills/diagram/layout.py scaffold <pipeline|microservice|layered> [n_stages]
 ```
 
 ### Step 4: Plan Edges
@@ -49,6 +58,19 @@ For cross-row/cross-service edges, write a JSON file with all node positions and
 ```bash
 python3 ~/.kiro/skills/diagram/edge_planner.py /tmp/edge_plan.json
 ```
+
+The input JSON supports hierarchical nodes (children inside parents):
+```json
+{
+  "page_w": 827, "page_h": 1169,
+  "nodes": {
+    "sl-gen": {"x": 30, "y": 130, "w": 238, "h": 300},
+    "gen.step1": {"x": 18, "y": 45, "w": 202, "h": 58, "parent": "sl-gen"}
+  },
+  "edges": [{"id": "e1", "source": "gen.step1", "target": "val.step1", "label": "output", "protocol": "sequential"}]
+}
+```
+Child nodes with a `"parent"` field have x/y relative to their parent — the planner resolves to absolute positions automatically.
 The planner outputs waypoints that route around obstacles. Use the output exit/entry points AND waypoints in your XML:
 ```xml
 <mxCell id="e1" edge="1" source="src" target="tgt"
@@ -83,7 +105,18 @@ python3 ~/.kiro/skills/diagram/validate.py architecture.drawio
 ```
 Fix any issues reported before writing the final file.
 
-### Step 7: Mermaid Companion
+### Step 7: SVG Export (optional)
+For repos where inline rendering matters (GitHub/GitLab READMEs), produce an SVG:
+```bash
+python3 ~/.kiro/skills/diagram/render_svg.py architecture.drawio architecture.svg
+```
+This converts the drawio XML to a self-contained SVG. Alternatively, if the `drawio` CLI is installed:
+```bash
+drawio --export --format svg --output architecture.svg architecture.drawio
+```
+SVGs render inline in READMEs; `.drawio` files require users to open in an editor.
+
+### Step 8: Mermaid Companion
 Write `architecture.md` with:
 - Overview Mermaid flowchart (subgraph blocks, `<br/>` for multi-line labels)
 - Drill-down diagrams per page
