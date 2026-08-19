@@ -63,11 +63,17 @@ Tested the skill against 3 repos (auto-eval, convai-lab, convai). Key findings:
 
 ### Phase 3: Fix Rendering Quality (make diagrams pretty)
 
-9. **Page size: auto-fit content**
-   - File: `layered/render.md`, `render_svg.py`
-   - Add guidance: "Compute total content height. Set page height = content_height + 80px margin. Never use default 1169px for a diagram that only needs 700px."
-   - In render_svg.py: viewBox should be tight to content bounds (already does this), but check the convai multi-page case
-   - Why: auto-eval page is 1169px tall but content only reaches ~940px. Oversized pages waste space and look unprofessional.
+9. **Page size: custom page dimensions to fit content**
+   - Files: `layered/render.md`, `pipeline/render.md`, `microservice/render.md`, `SKILL.md`
+   - Instead of fixed A4 (827×1169 or 1169×827), compute page dimensions from actual content:
+     ```
+     page_w = max(content_right + 40, 600)   # minimum 600px wide
+     page_h = lowest_element_bottom + legend_h + 60
+     ```
+   - Set these in `<mxGraphModel pageWidth="..." pageHeight="...">` 
+   - Add to Step 5 (Render): "After placing all nodes, compute page dimensions. Set pageWidth/pageHeight to tightly fit the content with 40px margins. Do NOT use default A4 dimensions."
+   - Optionally add a `layout.py page-size <lowest_y> <rightmost_x>` helper
+   - Why: auto-eval uses 1169px height for ~940px of content. Custom size = no dead space in draw.io editor AND tighter SVG viewBox.
 
 9b. **Convai SVG does not render in Kiro editor**
    - File: `render_svg.py`
