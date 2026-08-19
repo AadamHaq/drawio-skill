@@ -371,31 +371,48 @@ def render_edge(points, style, label, cell_id, all_vertices):
 
     # Label positioning
     if label:
-        lx, ly, label_above = _find_label_position(points, all_vertices, label)
-        escaped = escape_xml(label)
+        # Compute the edge's total path length
+        edge_total_len = sum(
+            ((points[i+1][0] - points[i][0])**2 + (points[i+1][1] - points[i][1])**2) ** 0.5
+            for i in range(len(points) - 1)
+        )
         text_w = len(label) * 6.5 + 8  # approximate width
-        text_h = 14
 
-        # Position label above or on the edge
-        if label_above:
-            # Place above the edge segment with more clearance
-            rect_y = ly - text_h - 4
-            text_y = ly - 6
+        # Fix 3: If label is wider than the edge, don't render it
+        if text_w > edge_total_len - 10:
+            pass  # Skip label entirely — it would overflow
         else:
-            # Place centred on the edge
-            rect_y = ly - text_h + 2
-            text_y = ly - 2
+            lx, ly, label_above = _find_label_position(points, all_vertices, label)
+            escaped = escape_xml(label)
+            text_h = 14
 
-        # White background behind label for readability
-        parts.append(
-            f'  <rect x="{lx - text_w/2:.1f}" y="{rect_y:.1f}" '
-            f'width="{text_w:.1f}" height="{text_h}" rx="2" ry="2" '
-            f'fill="white" stroke="none" opacity="0.9" />'
-        )
-        parts.append(
-            f'  <text x="{lx:.1f}" y="{text_y:.1f}" font-family="Inter, Arial, sans-serif" '
-            f'font-size="10" text-anchor="middle" fill="{stroke}">{escaped}</text>'
-        )
+            # Fix 4: Cap pill width to not exceed edge endpoints spread
+            pill_w = min(text_w, edge_total_len - 10)
+
+            # Position label above or on the edge
+            if label_above:
+                rect_y = ly - text_h - 4
+                text_y = ly - 6
+            else:
+                rect_y = ly - text_h + 2
+                text_y = ly - 2
+
+            # Fix 5: For dashed edges, use lower opacity or skip background
+            # so dashes remain visible through the pill
+            if dashed:
+                pill_opacity = "0.6"
+            else:
+                pill_opacity = "0.9"
+
+            parts.append(
+                f'  <rect x="{lx - pill_w/2:.1f}" y="{rect_y:.1f}" '
+                f'width="{pill_w:.1f}" height="{text_h}" rx="2" ry="2" '
+                f'fill="white" stroke="none" opacity="{pill_opacity}" />'
+            )
+            parts.append(
+                f'  <text x="{lx:.1f}" y="{text_y:.1f}" font-family="Inter, Arial, sans-serif" '
+                f'font-size="10" text-anchor="middle" fill="{stroke}">{escaped}</text>'
+            )
 
     return "\n".join(parts)
 
@@ -651,9 +668,40 @@ def convert_drawio_to_svg(drawio_path):
             # Build orthogonal route
             points = orthogonal_route(start, end, waypoints)
 
-            # Fix approach direction: if the final segment is horizontal but it
-            # arrives AT the target's top/bottom edge (skimming), insert a vertical
-            # approach segment so the arrow enters cleanly from above/below.
+            # Fix 1: Band-header avoidance. If the target is a child of a
+            # swimlane/band, ensure the edge doesn't cross through the parent's
+            # header. Insert a waypoint at (entry_x, parent_y + startSize + 5).
+            if target_id in vertices:
+                tgt_v = vertices[target_id]
+                tgt_parent_id = tgt_v.get("parent", "1")
+                if tgt_parent_id in vertices:
+                    parent_v = vertices[tgt_parent_id]
+                    parent_style = parent_v.get("style", {})
+                    if "swimlane" in parent_style:
+                        start_size = int(parent_style.get("startSize", "30"))
+                        header_bottom = parent_v["y"] + start_size + 5
+                        # Check if any vertical segment in points crosses the header
+                        # (i.e., goes from above header_bottom to below it)
+                        new_points = []
+                        for k in range(len(points)):
+                            new_points.append(points[k])
+                            if k < len(points) - 1:
+                                py1 = points[k][1]
+                                py2 = points[k + 1][1]
+                                px1 = points[k][0]
+                                px2 = points[k + 1][0]
+                                # Vertical segment crossing through the header zone
+                                if (abs(px1 - px2) < 1 and
+                                        py1 < parent_v["y"] + start_size and
+                                        py2 > parent_v["y"] + start_size):
+                                    # Insert horizontal jog below header
+                                    new_points.append((px1, header_bottom))
+                                    if abs(px1 - points[-1][0]) > 1:
+                                        new_points.append((points[-1][0], header_bottom))
+                        points = new_points
+
+            # Fix 2: Approach direction. If the final segment is horizontal but
+            # arrives AT the target's top/bottom edge, insert a vertical approach.
             if len(points) >= 2 and target_id in vertices:
                 entry_y_val = float(style.get("entryY", "0"))
                 last_pt = points[-1]
@@ -709,20 +757,11 @@ def convert_drawio_to_svg(drawio_path):
         page_svg.append(f'  <!-- Page: {escape_xml(page_name)} -->')
         page_svg.append('  <style>text { font-family: Inter, Arial, sans-serif; }</style>')
 
-        # Split edges into background (long/routed) and foreground (short cross-lane)
-        bg_edges = []
-        fg_edges = []
-        for edge_svg, path_len in svg_edges:
-            if path_len < 100:
-                # Short edges render on top of boxes so they're visible
-                fg_edges.append(edge_svg)
-            else:
-                bg_edges.append(edge_svg)
-
-        # Layer order: background edges → boxes → foreground edges → text
-        page_svg.extend(bg_edges)
+        # Z-order: all filled shapes first, then ALL edges on top, then text.
+        # This matches draw.io behaviour where edges always render over boxes.
         page_svg.extend(svg_elements)
-        page_svg.extend(fg_edges)
+        for edge_svg, _ in svg_edges:
+            page_svg.append(edge_svg)
         page_svg.extend(svg_texts)
 
         page_svg.append('</svg>')
