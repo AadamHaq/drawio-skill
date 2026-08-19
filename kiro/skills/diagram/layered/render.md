@@ -72,10 +72,16 @@ Place items as children of their layer band (parent = layer cell id).
 ## Edge Rules
 
 - Edges go **between layers** (top band → middle band, middle → bottom)
+- **Target the band, not child items** — an edge from Config to the Pipeline band implies all children receive config. This avoids edges crossing through band headers.
 - Within a layer, items are peers — no edges between them unless there's a clear dependency
-- Use `edge_planner.py` for cross-layer edges
+- Use `edge_planner.py` for cross-layer edges that target specific items (item-to-item)
 - Edge labels: short (≤12 chars) — describe *what* flows, not *how*
 - Max 12 edges on the overview page
+
+### Edge routing for cross-layer edges
+- Config→Pipeline: source=config_band (exitY=1), target=pipeline_band (entryY=0). One arrow, implies all children.
+- Item→Item (e.g. gen→env_tool): source the item directly, target the item. Use edge_planner.py for waypoints.
+- **Never draw edges that cross through a band's header text** — either target the band (not child) or use the edge planner with the band as an obstacle node.
 
 ### Edge styling
 - Config → processor: solid `#6c8ebf` strokeWidth=2
