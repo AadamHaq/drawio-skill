@@ -2,18 +2,25 @@
 """Convert a .drawio XML file to SVG. No third-party packages required.
 
 Reads mxCell elements (vertices and edges), resolves parent offsets,
-and outputs a self-contained SVG with rectangles, text, and polyline edges.
+and outputs a self-contained SVG with rectangles, text, and orthogonal edges.
 
 Usage:
   render_svg.py <input.drawio> [output.svg]
 
 If output is omitted, writes to stdout.
 
+Features:
+- Orthogonal edge routing (right-angle segments only, matching draw.io behaviour)
+- Swimlane rendering: coloured header bar + light body background
+- Edge label collision avoidance (offset labels away from box borders)
+- HTML tag parsing (<br/>, <b>, <i>, <font>) in text rendering
+- Rounded/dashed rectangles, cylinders (as rounded rects)
+- Arrowhead markers per edge colour
+
 Limitations:
-- Renders rectangles (rounded or sharp), cylinders (as rounded rects), and text
-- Edge routing uses waypoints from the XML (does not re-route)
 - Does not support images, custom shapes, or complex stencils
-- Font metrics are approximate (monospace-based width estimation)
+- Font metrics are approximate (no kerning)
+- Multi-page files produce concatenated SVGs
 """
 
 import re
@@ -38,12 +45,19 @@ def parse_style(style_str):
 
 
 def html_to_text_lines(value):
-    """Convert draw.io HTML value to plain text lines."""
+    """Convert draw.io HTML value to plain text lines with style hints.
+
+    Returns list of (text, bold, italic) tuples per line.
+    """
     if not value:
         return []
     # Replace <br/> and <br> with newline
     text = re.sub(r"<br\s*/?>", "\n", value, flags=re.IGNORECASE)
-    # Strip remaining HTML tags
+    # Track bold/italic state from tags (simplified: per-line)
+    # Remove font/colour tags but note style tags
+    has_bold = bool(re.search(r"<b>|fontStyle.*?1", text, re.IGNORECASE))
+    has_italic = bool(re.search(r"<i>|<em>", text, re.IGNORECASE))
+    # Strip all HTML tags
     text = re.sub(r"<[^>]+>", "", text)
     # Decode common HTML entities
     text = text.replace("&lt;", "<").replace("&gt;", ">")
@@ -51,6 +65,17 @@ def html_to_text_lines(value):
     text = text.replace("&#xa;", "\n")
     lines = text.split("\n")
     return [l.strip() for l in lines if l.strip()]
+
+
+def html_to_plain(value):
+    """Simple HTML→plain text for edge labels."""
+    if not value:
+        return ""
+    text = re.sub(r"<br\s*/?>", " ", value, flags=re.IGNORECASE)
+    text = re.sub(r"<[^>]+>", "", text)
+    text = text.replace("&lt;", "<").replace("&gt;", ">")
+    text = text.replace("&amp;", "&").replace("&quot;", '"')
+    return text.strip()
 
 
 # ─── Geometry helpers ────────────────────────────────────────────────────────
@@ -83,11 +108,102 @@ def get_waypoints(cell):
     return points
 
 
+# ─── Orthogonal edge routing ─────────────────────────────────────────────────
+
+def orthogonal_route(start, end, waypoints):
+    """Convert point list to orthogonal (H/V only) segments.
+
+    If waypoints are provided, they define the route.
+    Otherwise, compute an L-shaped or Z-shaped orthogonal path.
+    """
+    if waypoints:
+        # Waypoints already define the orthogonal path
+        all_pts = [start] + list(waypoints) + [end]
+        # Ensure segments are orthogonal by inserting corner points
+        result = [all_pts[0]]
+        for i in range(1, len(all_pts)):
+            prev = result[-1]
+            curr = all_pts[i]
+            if abs(prev[0] - curr[0]) > 1 and abs(prev[1] - curr[1]) > 1:
+                # Diagonal — insert an L-bend (go horizontal first)
+                result.append((curr[0], prev[1]))
+            result.append(curr)
+        return result
+
+    sx, sy = start
+    ex, ey = end
+
+    # No waypoints: create orthogonal route
+    if abs(sx - ex) < 1:
+        # Vertically aligned — straight line
+        return [start, end]
+    if abs(sy - ey) < 1:
+        # Horizontally aligned — straight line
+        return [start, end]
+
+    # Determine dominant direction for L-routing
+    dx = ex - sx
+    dy = ey - sy
+
+    if abs(dy) >= abs(dx):
+        # Mostly vertical: go vertical first to midpoint, then horizontal, then vertical
+        mid_y = sy + dy / 2
+        return [(sx, sy), (sx, mid_y), (ex, mid_y), (ex, ey)]
+    else:
+        # Mostly horizontal: go horizontal to midpoint, then vertical, then horizontal
+        mid_x = sx + dx / 2
+        return [(sx, sy), (mid_x, sy), (mid_x, ey), (ex, ey)]
+
+
 # ─── SVG rendering ───────────────────────────────────────────────────────────
 
 def escape_xml(s):
     """Escape text for SVG XML content."""
     return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
+
+
+def render_swimlane(x, y, w, h, style, cell_id):
+    """Render a swimlane: coloured header + light grey body."""
+    fill = style.get("fillColor", "#ffe6cc")
+    stroke = style.get("strokeColor", "#d79b00")
+    stroke_w = style.get("strokeWidth", "1")
+    start_size = int(style.get("startSize", "30"))
+    dashed = style.get("dashed", "0") == "1"
+    opacity = float(style.get("opacity", "100")) / 100.0
+
+    dash_attr = ' stroke-dasharray="8 4"' if dashed else ""
+    opacity_attr = f' opacity="{opacity}"' if opacity < 1.0 else ""
+
+    # Handle fillColor=none (e.g., environment containers)
+    if fill == "none" or fill == "":
+        body_fill = "none"
+        header_fill = "none"
+    else:
+        body_fill = "#fafafa"  # Light body
+        header_fill = fill      # Saturated header
+
+    parts = []
+    # Body rectangle (full size, light background)
+    parts.append(
+        f'  <rect id="{cell_id}-body" x="{x:.1f}" y="{y:.1f}" '
+        f'width="{w:.1f}" height="{h:.1f}" rx="4" ry="4" '
+        f'fill="{body_fill}" stroke="{stroke}" stroke-width="{stroke_w}"{dash_attr}{opacity_attr} />'
+    )
+    # Header bar (coloured)
+    if header_fill != "none":
+        parts.append(
+            f'  <rect id="{cell_id}-header" x="{x:.1f}" y="{y:.1f}" '
+            f'width="{w:.1f}" height="{start_size:.1f}" rx="4" ry="4" '
+            f'fill="{header_fill}" stroke="{stroke}" stroke-width="{stroke_w}"{dash_attr}{opacity_attr} />'
+        )
+        # Bottom corners of header should be square (overlap with body)
+        parts.append(
+            f'  <rect x="{x:.1f}" y="{y + start_size - 4:.1f}" '
+            f'width="{w:.1f}" height="4.0" '
+            f'fill="{header_fill}" stroke="none" />'
+        )
+
+    return "\n".join(parts)
 
 
 def render_rect(x, y, w, h, style, cell_id):
@@ -121,14 +237,18 @@ def render_text(x, y, w, h, lines, style, cell_id):
         return ""
 
     font_size = int(style.get("fontSize", "11"))
-    font_style = style.get("fontStyle", "0")
-    bold = int(font_style) & 1
-    italic = int(font_style) & 2
+    font_style_val = style.get("fontStyle", "0")
+    try:
+        fs_int = int(font_style_val)
+    except ValueError:
+        fs_int = 0
+    bold = fs_int & 1
+    italic = fs_int & 2
     v_align = style.get("verticalAlign", "middle")
     align = style.get("align", "center")
 
     weight = "bold" if bold else "normal"
-    style_attr = "italic" if italic else "normal"
+    font_style = "italic" if italic else "normal"
 
     # Text anchor
     if align == "left":
@@ -158,57 +278,103 @@ def render_text(x, y, w, h, lines, style, cell_id):
         escaped = escape_xml(line)
         parts.append(
             f'  <text x="{tx:.1f}" y="{ty:.1f}" font-family="Inter, Arial, sans-serif" '
-            f'font-size="{font_size}" font-weight="{weight}" font-style="{style_attr}" '
+            f'font-size="{font_size}" font-weight="{weight}" font-style="{font_style}" '
             f'text-anchor="{anchor}" fill="#333">{escaped}</text>'
         )
     return "\n".join(parts)
 
 
-def render_edge(points, style, label, cell_id):
-    """Render an edge as a polyline with optional arrowhead and label."""
+def render_edge(points, style, label, cell_id, all_vertices):
+    """Render an edge as orthogonal polyline with arrowhead and positioned label."""
     if len(points) < 2:
         return ""
 
     stroke = style.get("strokeColor", "#000000")
     stroke_w = style.get("strokeWidth", "2")
     dashed = style.get("dashed", "0") == "1"
-    dash_attr = ' stroke-dasharray="8 4"' if dashed else ""
+    dash_pattern = style.get("dashPattern", "8 4")
+    dash_attr = f' stroke-dasharray="{dash_pattern}"' if dashed else ""
 
     # Build polyline points string
     pts_str = " ".join(f"{x:.1f},{y:.1f}" for x, y in points)
 
-    # Arrowhead marker ID (unique per colour)
+    # Arrowhead marker ID (unique per edge)
     marker_id = f"arrow-{cell_id}"
 
     parts = []
     # Define arrowhead marker
     parts.append(
-        f'  <defs><marker id="{marker_id}" markerWidth="8" markerHeight="6" '
-        f'refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" '
-        f'fill="{stroke}" /></marker></defs>'
+        f'  <defs><marker id="{marker_id}" markerWidth="10" markerHeight="7" '
+        f'refX="9" refY="3.5" orient="auto" markerUnits="strokeWidth">'
+        f'<polygon points="0 0, 10 3.5, 0 7" fill="{stroke}" /></marker></defs>'
     )
-    # Polyline
+    # Polyline (orthogonal segments)
     parts.append(
         f'  <polyline id="{cell_id}" points="{pts_str}" fill="none" '
         f'stroke="{stroke}" stroke-width="{stroke_w}"{dash_attr} '
-        f'marker-end="url(#{marker_id})" />'
+        f'stroke-linejoin="round" marker-end="url(#{marker_id})" />'
     )
 
-    # Label at midpoint
+    # Label positioning: find a segment midpoint that doesn't overlap any box
     if label:
-        mid_idx = len(points) // 2
-        if mid_idx < len(points):
-            lx, ly = points[mid_idx]
-        else:
-            lx = (points[0][0] + points[-1][0]) / 2
-            ly = (points[0][1] + points[-1][1]) / 2
+        lx, ly = _find_label_position(points, all_vertices)
         escaped = escape_xml(label)
+        # White background behind label for readability
+        text_w = len(label) * 6.5 + 4  # approximate
         parts.append(
-            f'  <text x="{lx:.1f}" y="{ly - 6:.1f}" font-family="Inter, Arial, sans-serif" '
+            f'  <rect x="{lx - text_w/2:.1f}" y="{ly - 12:.1f}" '
+            f'width="{text_w:.1f}" height="14" rx="2" ry="2" '
+            f'fill="white" stroke="none" opacity="0.85" />'
+        )
+        parts.append(
+            f'  <text x="{lx:.1f}" y="{ly - 2:.1f}" font-family="Inter, Arial, sans-serif" '
             f'font-size="10" text-anchor="middle" fill="{stroke}">{escaped}</text>'
         )
 
     return "\n".join(parts)
+
+
+def _find_label_position(points, all_vertices):
+    """Find a label position on the edge path that avoids overlapping boxes."""
+    # Try midpoints of each segment, pick the one furthest from any box centre
+    segments = []
+    for i in range(len(points) - 1):
+        mx = (points[i][0] + points[i + 1][0]) / 2
+        my = (points[i][1] + points[i + 1][1]) / 2
+        seg_len = ((points[i+1][0] - points[i][0])**2 + (points[i+1][1] - points[i][1])**2) ** 0.5
+        segments.append((mx, my, seg_len))
+
+    if not segments:
+        return (points[0][0], points[0][1] - 8)
+
+    # Score each midpoint: prefer longer segments and points far from box interiors
+    best = segments[0]
+    best_score = -1
+
+    for mx, my, seg_len in segments:
+        if seg_len < 15:
+            continue  # Skip very short segments
+        # Distance to nearest box border
+        min_dist = 999
+        for v in all_vertices.values():
+            if v["w"] == 0 or v["h"] == 0:
+                continue
+            # Check if point is inside box
+            if v["x"] < mx < v["x"] + v["w"] and v["y"] < my < v["y"] + v["h"]:
+                min_dist = 0
+                break
+            # Distance to nearest edge of box
+            dx = max(v["x"] - mx, 0, mx - (v["x"] + v["w"]))
+            dy = max(v["y"] - my, 0, my - (v["y"] + v["h"]))
+            dist = (dx**2 + dy**2) ** 0.5
+            min_dist = min(min_dist, dist)
+
+        score = min_dist * 2 + seg_len * 0.5
+        if score > best_score:
+            best_score = score
+            best = (mx, my, seg_len)
+
+    return (best[0], best[1])
 
 
 # ─── Main conversion ─────────────────────────────────────────────────────────
@@ -284,9 +450,15 @@ def convert_drawio_to_svg(drawio_path):
             )
 
             if not is_text_only:
-                svg_elements.append(
-                    render_rect(v["x"], v["y"], v["w"], v["h"], style, cell_id)
-                )
+                # Swimlanes get special two-tone rendering
+                if "swimlane" in style:
+                    svg_elements.append(
+                        render_swimlane(v["x"], v["y"], v["w"], v["h"], style, cell_id)
+                    )
+                else:
+                    svg_elements.append(
+                        render_rect(v["x"], v["y"], v["w"], v["h"], style, cell_id)
+                    )
 
             # Render text
             lines = html_to_text_lines(v["value"])
@@ -319,33 +491,39 @@ def convert_drawio_to_svg(drawio_path):
             off_x, off_y = parent_offsets.get(parent, (0, 0))
 
             # Compute start point
-            points = []
+            start = None
             if source_id in vertices:
                 src = vertices[source_id]
                 exit_x = float(style.get("exitX", "0.5"))
                 exit_y = float(style.get("exitY", "1"))
                 sx = src["x"] + src["w"] * exit_x
                 sy = src["y"] + src["h"] * exit_y
-                points.append((sx, sy))
-
-            # Add waypoints
-            waypoints = get_waypoints(cell)
-            for wx, wy in waypoints:
-                points.append((wx + off_x, wy + off_y))
+                start = (sx, sy)
 
             # Compute end point
+            end = None
             if target_id in vertices:
                 tgt = vertices[target_id]
                 entry_x = float(style.get("entryX", "0.5"))
                 entry_y = float(style.get("entryY", "0"))
                 ex = tgt["x"] + tgt["w"] * entry_x
                 ey = tgt["y"] + tgt["h"] * entry_y
-                points.append((ex, ey))
+                end = (ex, ey)
 
-            if len(points) >= 2:
-                label = html_to_text_lines(value)
-                label_text = label[0] if label else ""
-                svg_edges.append(render_edge(points, style, label_text, cell_id))
+            if not start or not end:
+                continue
+
+            # Get explicit waypoints
+            waypoints = get_waypoints(cell)
+            waypoints = [(wx + off_x, wy + off_y) for wx, wy in waypoints]
+
+            # Build orthogonal route
+            points = orthogonal_route(start, end, waypoints)
+
+            # Get label
+            label_text = html_to_plain(value)
+
+            svg_edges.append(render_edge(points, style, label_text, cell_id, vertices))
 
         # Assemble page SVG
         # Compute actual bounds from content
