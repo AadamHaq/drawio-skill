@@ -1,83 +1,60 @@
-# Improvement Plan — Round 3
+# Improvement Plan — Round 4 (Final Polish)
 
-## Context (from v2 test output)
+## Findings from v5
 
-Content richness is now good (model names, thresholds, specific descriptions). But:
-- Text overflows boxes in all 3 diagrams (content too long for box widths)
-- Module gaps are too narrow (25px auto-eval, 40px convai-lab vs 50px rule)
-- Arrows entering swimlanes are hidden behind headers (z-order) — the header masking is correct for edges CROSSING through, but arrows actually ENTERING the swimlane should be visible. The fix we did before was to position child items below the header with 24px clearance, but the agents aren't consistently doing this.
+- **auto-eval**: No complaints (PIPELINE vertical layout works well)
+- **convai p1**: Legend text at y=1084-1126 — viewBox goes to y=1160 so it should be visible. The "header overflows from the bottom" likely means the swimlane header rect at the bottom of the page is partially cut off. Need to check if the legend/footer content is being clipped.
+- **convai-lab**: Multiple issues:
+  - **Box overlap**: frozenarms (x=520, w=240) overlaps convai-note (x=700, w=220) by 60px
+  - **Items touch band bottom**: ALL items have 0px clearance from their band's bottom edge. Items at y=84,h=70 → bottom=154, band bottom=154. Looks like items are jammed against the band border with no breathing room.
+  - **Arrows cross headers**: edges from L1 items (bottom at y=328) to L2 items (y=432) cross through L2's header zone (y=378-406). Waypoints are at y=345 (in the gap) which is good, but then the edge goes straight to y=432 crossing through the L2 header (378-406).
+  - **Labels overlapping**: with 0px clearance at band bottom, labels on edges between bands sit in the 50px gap but overlap visually with the band border and header of the next band.
 
-## Priority Order
+## Root Causes
 
-### Phase 1: Text Fits In Box (most visible issue)
+1. **Band height too tight** — `h=124` for a band containing startSize=28 + 26 clearance + 70 item height = 124. That leaves ZERO bottom padding. Items touch the band border exactly. Need: 28 + 26 + 70 + **20 bottom pad** = 144 minimum.
 
-1. **Add a character-per-line rule to all render strategies**
-   - Files: `pipeline/render.md`, `layered/render.md`, `microservice/render.md`
-   - Rule: "Max characters per line = (box_width - 12) / 5.5. For a 200px box: max 34 chars. For a 270px box: max 47 chars."
-   - Add: "If your description text won't fit, either widen the box OR abbreviate. Check EVERY box."
-   - Add: "Use `layout.py step-height` to compute box height from actual line count."
+2. **Box overlap** — Two items (frozenarms + convai-note) positioned at same y with overlapping x ranges. The agent didn't check horizontal collision.
 
-2. **Add a `layout.py text-width` helper**
-   - Computes minimum box width from a label: `text-width "my label text<br/>second line"`
-   - Output: `min_width=N` (computed as max_line_length * 5.5 + 12)
-   - The agent can call this before placing boxes to ensure they'll fit.
+3. **Header crossing on entry** — Edge from L1→L2 has waypoint at y=345 (good, in gap) but then goes straight from y=345 to y=432. The segment from 345→432 crosses through L2's header (378-406). The waypoint rule says "waypoint in the GAP" but the gap ends at the NEXT band's top (378), and the edge continues straight through the header to the item at 432. Need another waypoint BELOW the header.
 
-3. **Update `layout.py layers` to support wider default items**
-   - Currently items are capped at 200px. For repos with detailed labels, this is too narrow.
-   - Auto-widen the page if items won't fit with 50px gaps at the needed width.
-   - Default item width: 240px (fits ~41 chars) unless page would exceed 1200px.
+4. **Convai legend clipping** — The viewBox calculation might not include all text at the very bottom if the text starts inside the box but extends below.
 
-### Phase 2: Gap Enforcement
+## Plan
 
-4. **Auto-eval: widen page for 4+ modules**
-   - With 4 modules in a row, a standard 827px page can't fit 50px gaps + readable boxes.
-   - Add to layered/render.md: "If you have 4+ modules in a row, use a wider page (1000-1200px) to maintain 50px+ gaps at 200px+ module width."
-   - Update `layout.py layers` to auto-widen when items won't fit.
+### Fix 1: Band bottom padding (15px minimum)
 
-5. **Update layers command to enforce minimum gap**
-   - If computed gap < 50px, auto-increase page width until gap >= 50.
-   - Print a warning: "page widened to {new_w} to maintain 50px gaps"
+- File: `layered/render.md`
+- Rule: "Band height = startSize + 26 (clearance) + item_height + **20** (bottom padding). Never less."
+- Update `layout.py layers`: compute layer_h = startSize + 26 + max_item_h + 20
+- This gives 10px between item bottom and band border, preventing the "touching" look.
 
-### Phase 3: Arrow Visibility (entry into swimlanes)
+### Fix 2: Horizontal collision detection in validate.py
 
-6. **Enforce 24px+ clearance below swimlane headers for child items**
-   - Files: `layered/render.md`, `pipeline/render.md`
-   - Make it LOUDER: "FIRST CHILD y-position inside a swimlane = startSize + 26. NEVER less. This ensures arrows entering the swimlane are visible between the header bar and the first content box."
-   - Currently agents use startSize + 6 or startSize + 12 — not enough.
+- New check: if two root-level sibling items (same y-range) overlap on the x-axis, flag it.
+- Already partially done (found the frozenarms/convai-note overlap) — just need it in validate.py.
 
-7. **Update scaffold command to use correct clearance**
-   - `layout.py scaffold` currently places steps at startSize + 15.
-   - Change to startSize + 26.
+### Fix 3: Edge must have waypoint BELOW target band header (not just in the gap)
 
-8. **render_svg.py: Headers should not cover edges that TARGET this swimlane**
-   - Currently ALL swimlane headers render after ALL edges.
-   - This is correct for edges CROSSING through the header zone.
-   - But for edges whose TARGET is this swimlane (or a child inside it), the arrow should be visible entering the swimlane. The header should NOT cover those.
-   - Fix approach: when building the header z-layer, for each header check which edges target this swimlane. Render those edges AFTER the header (in a "foreground edges" pass).
-   - OR (simpler, docs-only fix): the skill should target the first child inside the swimlane, not the swimlane itself. Then the arrow terminates below the header naturally.
-   - **Recommended**: Both. Docs say "target first child" AND renderer handles the case where someone targets the parent.
+- File: `layered/render.md`
+- Update the waypoint rule: "Cross-band edges need TWO waypoints: one in the gap between bands, AND one at target_band_y + startSize + 5 (below the header) if the target item is further inside."
+- OR simpler: "The edge should enter the item directly (not the band). If the item is a root-level sibling, the entry point is the item's own y=0, which is below the header. The edge just needs a waypoint in the gap — the Z-route from gap to item y will clear the header."
+- The real issue: the current waypoint at y=345 is in the L1→L2 gap, but the edge then goes straight to y=432 crossing L2's header (378-406). The fix: add a second waypoint at y=410 (just below L2 header at 406).
 
-### Phase 4: Minor Fixes
+### Fix 4: ViewBox includes bottom text
 
-9. **Output box heights: enforce step-height usage**
-   - gen-out/post-out are 32px for 2 lines (need 36px).
-   - Add to render guides: "ALWAYS compute box height with `layout.py step-height 'line1<br/>line2'`"
+- File: `render_svg.py`
+- The text bound scan already includes text y-positions but doesn't account for text HEIGHT (each line is ~14px below the y value). Add text_h (14px) to the max_y calculation for text elements.
 
-10. **Suppress false positives for service container children**
-    - validate.py flags 4px gaps inside service containers.
-    - These are stacked labels (no arrows between them), not sequential steps.
-    - Fix: only flag tight gaps if there are edges between the children.
+### Fix 5: Update layout.py layers to output band heights with padding
 
-11. **Add text-overflow check to validate.py**
-    - New check: estimate text width per line (chars * 5.5 + 12) vs box width.
-    - Flag: "TEXT OVERFLOW: '{id}' line '{line}' is ~{est}px in a {w}px box"
-    - This catches the problem BEFORE the user sees it.
+- Currently bands are 80px base height. With startSize=28 + 26 clearance + 40 item height (minimum), that's only 94px. For items that are 70px tall: 28+26+70+20=144.
+- The `layers` command should compute: `layer_h = startSize + 26 + item_h + 20`
+- Where item_h is computed from the number of lines (currently `layer_h - 30 - 10`).
 
-## Summary
+## Priority
 
-| Phase | Impact |
-|-------|--------|
-| 1: Text fits | Boxes are wide enough for their content — no clipping in draw.io or SVG |
-| 2: Gaps | Modules don't crowd each other — horizontal edges + labels have room |
-| 3: Arrows | Arrows entering swimlanes are visible — not hidden behind headers |
-| 4: Minor | Correct heights, fewer false positives, overflow detection |
+1. Fix 1 + Fix 5 (band padding) — prevents all the "touching bottom" issues
+2. Fix 3 (double waypoint) — prevents header crossing on band entry
+3. Fix 2 (horizontal overlap) — catches collision before user sees it
+4. Fix 4 (text height in viewBox) — prevents bottom clipping
