@@ -306,7 +306,7 @@ def validate_file(filepath):
                                 f"[{page_name}] BOX CROSSING: edge '{cell_id}' "
                                 f"passes through '{node_id}'"
                             )
-                        break  # One violation per edge is enough
+                            break  # One real violation per edge is enough
 
         # Check for overlapping segments between different edges
         for i in range(len(edge_paths)):

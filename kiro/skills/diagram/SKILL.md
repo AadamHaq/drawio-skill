@@ -57,6 +57,7 @@ python3 ~/.kiro/skills/diagram/layout.py scaffold <pipeline|microservice|layered
 **CRITICAL RULES:**
 - **NEVER manually compute step y-positions inside swimlanes.** ALWAYS run `layout.py steps` and use its output directly. Manual placement causes overlap and invisible arrows.
 - **ALWAYS run `layout.py page-size` after placing all content** to get custom pageWidth/pageHeight. Never use default A4 dimensions (827×1169).
+- **ALWAYS use `edge_planner.py` for ALL cross-row/cross-band edges.** NEVER hand-write waypoints or use empty `<mxGeometry relative="1" />` for edges that cross between different layers/rows. The planner routes around obstacles — manual waypoints frequently cross through boxes. Include ALL node positions (source, target, AND intermediate boxes) in the planner input JSON.
 
 ### Step 4: Plan Edges
 For cross-row/cross-service edges, write a JSON file with all node positions and edges, then run:
