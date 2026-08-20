@@ -433,6 +433,54 @@ def validate_file(filepath):
                     f"but startSize={start_size} — need y≥{start_size + 26} for arrow visibility"
                 )
 
+        # ─── Band overlap check (layered topology) ────────────────────────
+        # Root-level items positioned inside a band's header zone
+        # (common issue: item y < band_y + startSize)
+        band_headers = []  # (band_id, band_y, header_bottom, band_x, band_right)
+        for cell in cells:
+            if cell.get("vertex") != "1":
+                continue
+            style = parse_style(cell.get("style", ""))
+            if "swimlane" not in style:
+                continue
+            if cell.get("parent", "1") != "1":
+                continue  # only root-level bands
+            geom = get_geometry(cell)
+            if not geom or geom["w"] < 500:
+                continue  # only full-width bands
+            ss = int(style.get("startSize", "28"))
+            band_headers.append((
+                cell.get("id", ""),
+                geom["y"],
+                geom["y"] + ss,
+                geom["x"],
+                geom["x"] + geom["w"]
+            ))
+
+        for cell in cells:
+            if cell.get("vertex") != "1":
+                continue
+            if cell.get("parent", "1") != "1":
+                continue
+            style = parse_style(cell.get("style", ""))
+            if "swimlane" in style and get_geometry(cell) and get_geometry(cell)["w"] > 500:
+                continue  # skip bands themselves
+            if "text" in style:
+                continue  # skip text/legend cells
+            geom = get_geometry(cell)
+            if not geom or geom["h"] == 0:
+                continue
+            # Check if this item overlaps any band's header
+            for band_id, band_y, hdr_bot, band_x, band_right in band_headers:
+                if band_x <= geom["x"] <= band_right and geom["y"] < hdr_bot:
+                    if geom["y"] >= band_y:  # item starts inside this band's header
+                        issues.append(
+                            f"[{page_name}] INSIDE HEADER: '{cell.get('id', '')}' at y={int(geom['y'])} "
+                            f"is inside '{band_id}' header (ends at y={int(hdr_bot)}). "
+                            f"Move to y≥{int(hdr_bot) + 26}"
+                        )
+                        break
+
         # ─── Step overlap detection ───────────────────────────────────────
         # Check if any children of the same parent overlap vertically
         parent_children = defaultdict(list)

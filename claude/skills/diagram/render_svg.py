@@ -403,8 +403,8 @@ def render_edge(points, style, label, cell_id, all_vertices):
                 rect_y = ly - text_h + 2
                 text_y = ly - 2
 
-            # For dashed edges, use lower opacity so dashes stay visible
-            pill_opacity = "0.6" if dashed else "0.9"
+            # Lower opacity for ALL pills to keep lines visible through them
+            pill_opacity = "0.5" if dashed else "0.7"
 
             # Pill x position depends on anchor
             if text_anchor == "start":
@@ -743,9 +743,10 @@ def convert_drawio_to_svg(drawio_path):
         max_x = max((v["x"] + v["w"] for v in vertices.values()), default=page_w)
         max_y = max((v["y"] + v["h"] for v in vertices.values()), default=page_h)
 
-        # Include edge waypoints in bounds (they may route outside vertex area)
+        # Include edge waypoints AND label positions in bounds
         import re as _re_bounds
         for edge_svg, _, _ in svg_edges:
+            # Polyline points
             for match in _re_bounds.finditer(r'points="([^"]+)"', edge_svg):
                 for pt in match.group(1).split():
                     coords = pt.split(",")
@@ -758,6 +759,20 @@ def convert_drawio_to_svg(drawio_path):
                             max_y = max(max_y, py)
                         except ValueError:
                             pass
+            # Label text and pill rects (x + width can extend beyond edges)
+            for match in _re_bounds.finditer(r'<rect x="([^"]+)" y="([^"]+)" width="([^"]+)"', edge_svg):
+                try:
+                    rx = float(match.group(1))
+                    rw = float(match.group(3))
+                    max_x = max(max_x, rx + rw)
+                except ValueError:
+                    pass
+            for match in _re_bounds.finditer(r'<text x="([^"]+)"', edge_svg):
+                try:
+                    tx = float(match.group(1))
+                    max_x = max(max_x, tx + 80)  # approx text width
+                except ValueError:
+                    pass
 
         # Add margin
         margin = 20
