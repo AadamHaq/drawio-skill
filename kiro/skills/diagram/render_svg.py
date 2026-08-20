@@ -743,6 +743,22 @@ def convert_drawio_to_svg(drawio_path):
         max_x = max((v["x"] + v["w"] for v in vertices.values()), default=page_w)
         max_y = max((v["y"] + v["h"] for v in vertices.values()), default=page_h)
 
+        # Include edge waypoints in bounds (they may route outside vertex area)
+        import re as _re_bounds
+        for edge_svg, _, _ in svg_edges:
+            for match in _re_bounds.finditer(r'points="([^"]+)"', edge_svg):
+                for pt in match.group(1).split():
+                    coords = pt.split(",")
+                    if len(coords) == 2 and coords[0] and coords[1]:
+                        try:
+                            px, py = float(coords[0]), float(coords[1])
+                            min_x = min(min_x, px)
+                            min_y = min(min_y, py)
+                            max_x = max(max_x, px)
+                            max_y = max(max_y, py)
+                        except ValueError:
+                            pass
+
         # Add margin
         margin = 20
         vb_x = min_x - margin
@@ -757,30 +773,16 @@ def convert_drawio_to_svg(drawio_path):
         page_svg.append(f'  <!-- Page: {escape_xml(page_name)} -->')
         page_svg.append('  <style>text { font-family: Inter, Arial, sans-serif; }</style>')
 
-        # Z-order: bodies → crossing edges → headers → entry edges → text
-        # "Entry edges" target a swimlane directly — they should be visible
-        # entering the swimlane, not hidden behind its header.
-        # "Crossing edges" pass through headers of swimlanes they don't target.
-
-        # Determine which cell IDs are swimlanes (have headers)
-        swimlane_ids = set()
-        for cell_id, v in vertices.items():
-            if "swimlane" in v.get("style", {}):
-                swimlane_ids.add(cell_id)
-
-        crossing_edges = []
-        entry_edges = []
-        for edge_svg, _, tgt_id in svg_edges:
-            if tgt_id in swimlane_ids:
-                # This edge enters a swimlane — render after its header
-                entry_edges.append(edge_svg)
-            else:
-                crossing_edges.append(edge_svg)
-
+        # Z-order: bodies → headers → ALL edges → text
+        # Headers render before edges so they provide the coloured band fill.
+        # ALL edges render on top (visible, with labels uncovered).
+        # The skill rules (waypoints, 26px clearance) prevent edges from
+        # crossing through headers at authoring time — we don't need z-order
+        # tricks to hide them anymore.
         page_svg.extend(svg_bodies)
-        page_svg.extend(crossing_edges)
         page_svg.extend(svg_headers)
-        page_svg.extend(entry_edges)
+        for edge_svg, _, _ in svg_edges:
+            page_svg.append(edge_svg)
         page_svg.extend(svg_texts)
 
         page_svg.append('</svg>')

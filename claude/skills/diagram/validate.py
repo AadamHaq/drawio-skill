@@ -398,6 +398,41 @@ def validate_file(filepath):
                             )
                         break
 
+        # ─── Header clearance check ─────────────────────────────────────
+        # First child inside a swimlane must be at y >= startSize + 20
+        # Only applies to swimlanes that ARE targets of edges (arrows enter them)
+        edge_targets = set()
+        for cell in cells:
+            if cell.get("edge") == "1":
+                tgt = cell.get("target", "")
+                if tgt:
+                    edge_targets.add(tgt)
+
+        for cell in cells:
+            if cell.get("vertex") != "1":
+                continue
+            style = parse_style(cell.get("style", ""))
+            if "swimlane" not in style:
+                continue
+            parent_id = cell.get("id", "")
+            # Only check if this swimlane receives incoming edges
+            if parent_id not in edge_targets:
+                continue
+            start_size = int(style.get("startSize", "30"))
+            # Find first child by y-position
+            first_child_y = None
+            for child in cells:
+                if child.get("parent") == parent_id and child.get("vertex") == "1":
+                    child_geom = get_geometry(child)
+                    if child_geom and child_geom["h"] > 0:
+                        if first_child_y is None or child_geom["y"] < first_child_y:
+                            first_child_y = child_geom["y"]
+            if first_child_y is not None and first_child_y < start_size + 20:
+                issues.append(
+                    f"[{page_name}] HEADER CLEARANCE: '{parent_id}' first child at y={int(first_child_y)} "
+                    f"but startSize={start_size} — need y≥{start_size + 26} for arrow visibility"
+                )
+
         # ─── Step overlap detection ───────────────────────────────────────
         # Check if any children of the same parent overlap vertically
         parent_children = defaultdict(list)
