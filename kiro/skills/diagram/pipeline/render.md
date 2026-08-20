@@ -71,6 +71,17 @@ Use DETAILED (5 lines max) on drill-down pages.
 
 **Richness principle**: every box should tell the reader something they couldn't guess from the title. Include model names, temperatures, file paths, output locations.
 
+**Content-richness rules (MANDATORY):**
+- Line 1: Step name (what it does, not just the filename)
+- Line 2: Key detail (model name, threshold, or key parameter)
+- Line 3: Secondary detail (output location, batch size, or protocol)
+- **BAD**: "sweep.py / matrix driver" — tells reader nothing useful
+- **GOOD**: "sweep.py / iterates model×arm×dataset / launches per-cell eval"
+- **BAD**: "Validator" — could be anything
+- **GOOD**: "LLM Scorer / rubric judge (minimax-m3) / mean≥8 gate"
+
+If a box has only a filename with no explanation of what it does, the diagram has failed.
+
 ## Loop Annotations
 
 For stages with iteration (for-loops, retries):
@@ -81,11 +92,17 @@ For stages with iteration (for-loops, retries):
 
 ## XML Structure
 
+After placing all nodes, compute page dimensions:
+```bash
+python3 ~/.kiro/skills/diagram/layout.py page-size <lowest_element_bottom_y> [rightmost_x]
+```
+Use the output `page_w` and `page_h` in the `<mxGraphModel>` tag. Never use default A4 dimensions.
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="ac.draw.io">
   <diagram id="overview" name="Pipeline Overview">
-    <mxGraphModel pageWidth="827" pageHeight="1169" ...>
+    <mxGraphModel pageWidth="{from page-size}" pageHeight="{from page-size}" ...>
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />

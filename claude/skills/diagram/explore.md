@@ -86,3 +86,14 @@ Write out:
 3. List of modules with their relationships (peer, sequential, or depends-on)
 4. The layers if LAYERED/HYBRID: what sits above, what's in the middle, what's below
 5. Key config values extracted
+
+### Required detail for each module (MUST capture all of these):
+
+- **Script/entrypoint path** — the actual filename that runs this module (e.g., `generator/run_generation.py`)
+- **Model names** — specific LLM/ML model identifiers used (e.g., `minimax/minimax-m3`, `Triton (Nemotron-4B)`, `gpt-4o`)
+- **Key parameters** — thresholds, batch sizes, temperatures, retry counts (e.g., `mean≥8`, `batch_size=20`, `temp=0.7`)
+- **Input source** — what file/API/service feeds this module (e.g., `config/generation_plan_*.yaml`, `output/blocks/`)
+- **Output destination** — where results go (e.g., `output/run_X/scored.jsonl`, `PostgreSQL via API`)
+- **Orchestrator** — if there's a shell script or runner that calls modules in order, note its name and step numbering (e.g., `scripts/run_pipeline.sh STEP 1–4`)
+
+If you can't find a specific detail after reading the code, note it as "unknown" rather than omitting it. Missing details result in thin diagram labels that tell the reader nothing useful.

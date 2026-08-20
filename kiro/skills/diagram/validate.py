@@ -28,6 +28,8 @@ def parse_style(style_str):
         if "=" in part:
             k, v = part.split("=", 1)
             result[k] = v
+        elif part.strip():
+            result[part.strip()] = "1"
     return result
 
 
@@ -290,10 +292,20 @@ def validate_file(filepath):
                     if segment_crosses_box(x1, y1, x2, y2,
                                            node["abs_x"], node["abs_y"],
                                            node["w"], node["h"]):
-                        issues.append(
-                            f"[{page_name}] BOX CROSSING: edge '{cell_id}' "
-                            f"passes through '{node_id}'"
+                        # Suppress for layered background bands: full-width swimlanes
+                        # that are NOT the source or target are likely background bands.
+                        node_style = parse_style(
+                            next((c.get("style", "") for c in cells if c.get("id") == node_id), "")
                         )
+                        is_background_band = (
+                            "swimlane" in node_style
+                            and node["w"] > 500  # full-width (>500px = likely a band)
+                        )
+                        if not is_background_band:
+                            issues.append(
+                                f"[{page_name}] BOX CROSSING: edge '{cell_id}' "
+                                f"passes through '{node_id}'"
+                            )
                         break  # One violation per edge is enough
 
         # Check for overlapping segments between different edges
@@ -385,6 +397,86 @@ def validate_file(filepath):
                                 f"distance={int(distance)}px — nodes too close, label will be unreadable"
                             )
                         break
+
+        # ─── Step overlap detection ───────────────────────────────────────
+        # Check if any children of the same parent overlap vertically
+        parent_children = defaultdict(list)
+        for cell in cells:
+            if cell.get("vertex") != "1":
+                continue
+            parent_id = cell.get("parent", "1")
+            if parent_id == "0" or parent_id == "1":
+                continue
+            geom = get_geometry(cell)
+            if geom and geom["h"] > 0:
+                parent_children[parent_id].append((cell.get("id", ""), geom["y"], geom["h"]))
+
+        for parent_id, children in parent_children.items():
+            # Sort by y position
+            sorted_children = sorted(children, key=lambda c: c[1])
+            for i in range(len(sorted_children) - 1):
+                cid_a, y_a, h_a = sorted_children[i]
+                cid_b, y_b, h_b = sorted_children[i + 1]
+                if y_a + h_a > y_b:
+                    overlap = y_a + h_a - y_b
+                    issues.append(
+                        f"[{page_name}] STEP OVERLAP: '{cid_a}' (bottom={int(y_a + h_a)}) "
+                        f"overlaps '{cid_b}' (top={int(y_b)}) by {int(overlap)}px "
+                        f"inside parent '{parent_id}'"
+                    )
+
+        # ─── Duplicate edge labels ────────────────────────────────────────
+        edge_labels = defaultdict(list)
+        for cell in cells:
+            if cell.get("edge") != "1":
+                continue
+            value = cell.get("value", "").strip()
+            if value and len(value) > 2:
+                edge_labels[value].append(cell.get("id", ""))
+        for label_text, edge_ids in edge_labels.items():
+            if len(edge_ids) > 1:
+                ids_str = ", ".join(edge_ids[:3])
+                issues.append(
+                    f"[{page_name}] DUPLICATE LABEL: '{label_text}' used on {len(edge_ids)} "
+                    f"edges ({ids_str}) — differentiate them"
+                )
+
+        # ─── Content quality checks ──────────────────────────────────────
+        # Thin labels: vertex boxes with only a short value (no <br/> = single line)
+        for cell in cells:
+            if cell.get("vertex") != "1":
+                continue
+            value = cell.get("value", "")
+            style = parse_style(cell.get("style", ""))
+            geom = get_geometry(cell)
+            if not geom or geom["w"] == 0:
+                continue
+            # Skip legend, title, and text-only cells
+            if "text" in style and style.get("fillColor", "none") == "none":
+                continue
+            # Skip swimlane band headers (they're just layer titles)
+            if "swimlane" in style and geom["w"] > 500:
+                continue
+            # Check if content is too thin (no line breaks = probably just a filename)
+            if value and "<br" not in value.lower() and len(value) > 3 and geom["h"] > 30:
+                issues.append(
+                    f"[{page_name}] THIN CONTENT: '{cell.get('id', '')}' has only "
+                    f"'{value[:30]}' — add detail line with model/params/purpose"
+                )
+
+        # Oversized page check
+        page_w_val = int(model.get("pageWidth", "827"))
+        page_h_val = int(model.get("pageHeight", "1169"))
+        if nodes:
+            content_bottom = max(
+                n["abs_y"] + n["h"] for n in nodes.values() if n["h"] > 0
+            )
+            if page_h_val > content_bottom + 200:
+                issues.append(
+                    f"[{page_name}] OVERSIZED PAGE: pageHeight={page_h_val} but "
+                    f"content ends at y={int(content_bottom)}. "
+                    f"Use layout.py page-size to fit."
+                )
 
     return issues
 

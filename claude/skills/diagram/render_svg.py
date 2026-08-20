@@ -772,14 +772,19 @@ def convert_drawio_to_svg(drawio_path):
         all_pages_svg.append("\n".join(page_svg))
 
     # If multiple pages, wrap in a container SVG or return first page
+    # For multiple pages, return a list of (page_name, svg_content) tuples
     if len(all_pages_svg) == 1:
         return all_pages_svg[0]
     else:
-        # Return each page as a separate SVG separated by a comment
-        return "\n\n".join(
-            f"<!-- Page {i+1} -->\n{svg}"
-            for i, svg in enumerate(all_pages_svg)
-        )
+        return all_pages_svg
+
+
+def _page_filename(base_path, page_index, total_pages):
+    """Generate filename for a specific page: base_p1.svg, base_p2.svg, etc."""
+    if total_pages == 1:
+        return base_path
+    stem = base_path.rsplit(".", 1)[0] if "." in base_path else base_path
+    return f"{stem}_p{page_index + 1}.svg"
 
 
 def main():
@@ -790,14 +795,30 @@ def main():
     input_path = sys.argv[1]
     output_path = sys.argv[2] if len(sys.argv) > 2 else None
 
-    svg_content = convert_drawio_to_svg(input_path)
+    result = convert_drawio_to_svg(input_path)
 
-    if output_path:
-        with open(output_path, "w") as f:
-            f.write(svg_content)
-        print(f"Wrote SVG to {output_path}")
+    if isinstance(result, str):
+        # Single page
+        if output_path:
+            with open(output_path, "w") as f:
+                f.write(result)
+            print(f"Wrote SVG to {output_path}")
+        else:
+            print(result)
     else:
-        print(svg_content)
+        # Multiple pages — write separate files
+        if output_path:
+            for i, page_svg in enumerate(result):
+                page_file = _page_filename(output_path, i, len(result))
+                with open(page_file, "w") as f:
+                    f.write(page_svg)
+                print(f"Wrote page {i+1} to {page_file}")
+        else:
+            # To stdout: separate with comments (for piping)
+            for i, page_svg in enumerate(result):
+                print(f"<!-- Page {i+1} -->")
+                print(page_svg)
+                print()
 
 
 if __name__ == "__main__":

@@ -13,9 +13,12 @@ Use this for LAYERED topology repos — systems with horizontal bands of concern
 
 ## Page Structure
 
-Generate 1–2 pages:
-1. **Architecture Overview** (portrait 827×1169) — all layers with items inside, edges between layers
-2. **Tool Behavior Dispatch** (optional, portrait) — detail page showing how config drives tool selection
+Generate 1–3 pages:
+1. **Architecture Overview** — all layers with items inside, edges between layers. Use custom page dimensions (see `layout.py page-size`).
+2. **Drill-down page** (one per module with ≥3 sub-steps) — shows internal flow with specific models, parameters per step. Same rules as pipeline drill-down pages: swimlane with sequential steps, external dependencies as standalone boxes.
+3. **Tool Behavior Dispatch** (optional) — detail page showing how config drives tool selection
+
+**Rule:** If any module in the middle layer has 3+ internal sub-steps (e.g., Generator with 5 steps), it MUST get its own drill-down page. The overview shows it as a single box; the drill-down page expands it.
 
 ## Layout Approach
 
@@ -39,6 +42,24 @@ Items are rounded boxes positioned inside their band area:
 rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor={layer_stroke};
 verticalAlign=middle;fontSize=11;
 ```
+
+### Content-richness rules (MANDATORY)
+
+Every item box MUST have at least 2 lines:
+- Line 1: Component name / filename (bold via style)
+- Line 2: What it DOES in specific terms (in `<font style="font-size:9px">`)
+
+**BAD examples** (tell reader nothing):
+- "sweep.py / matrix driver"
+- "registry.py / resolve + load"
+- "Validator"
+
+**GOOD examples** (reader learns something):
+- "sweep.py<br/><font style='font-size:9px'>iterates model×arm×dataset matrix, launches per-cell eval</font>"
+- "registry.py<br/><font style='font-size:9px'>resolves environment by name → loads frozen ToolSpec+prompts+db-seed</font>"
+- "LLM Scorer<br/><font style='font-size:9px'>rubric-driven judge (minimax-m3), mean≥8 pass gate</font>"
+
+Include: model names, specific functions called, key thresholds, output formats. If a box only has a filename and a generic 2-word description, the diagram has failed.
 
 ## Colour Palette (by layer role)
 
@@ -165,12 +186,22 @@ If you want separate arrows per module:
   </mxGeometry>
 </mxCell>
 
-<!-- Middle arrow: straight down (no waypoints needed if aligned) -->
+<!-- Middle arrow: even when aligned, MUST have a waypoint in the gap -->
 <mxCell id="e-cfg-val" edge="1" source="cfg" target="val"
   style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;
          exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
-  <mxGeometry relative="1" as="geometry" />
+  <mxGeometry relative="1" as="geometry">
+    <Array as="points">
+      <mxPoint x="413" y="130" />
+    </Array>
+  </mxGeometry>
 </mxCell>
+```
+
+**CRITICAL: ALL cross-band edges MUST include at least one waypoint** at y = gap_midpoint between the source band bottom and the target band top. Even when source and target are X-aligned, include a waypoint at that y to force the edge router to break the segment there. Without it, the edge draws a straight line that crosses through the intermediate band's header text.
+
+```
+gap_midpoint = source_band_bottom + (target_band_top - source_band_bottom) / 3
 ```
 
 **NEVER** draw an edge that passes through a band header with visible text. The arrow will appear clipped or crossing through the title.

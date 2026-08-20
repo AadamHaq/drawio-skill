@@ -437,7 +437,7 @@ def cmd_layers(n_layers, *items_per_layer):
     margin_x = 30
     margin_y = 30
     layer_gap = 20
-    item_gap = 26
+    item_gap = 50  # minimum 50px for edge labels between items
     item_padding = 18  # padding inside layer band around items
 
     # Layer band width is full page minus margins
@@ -879,6 +879,33 @@ def _scaffold_layered(n):
     print('</mxfile>')
 
 
+# ─── Page size helper ─────────────────────────────────────────────────────────
+
+def cmd_page_size(lowest_y, rightmost_x=None):
+    """Compute custom pageWidth and pageHeight from content bounds.
+
+    Args:
+        lowest_y: y coordinate of the bottom of the lowest element (element_y + element_h)
+        rightmost_x: x coordinate of the right edge of the rightmost element (optional)
+    """
+    lowest_y = int(lowest_y)
+    rightmost_x = int(rightmost_x) if rightmost_x else 797  # default = 767 band + 30 margin
+
+    margin = 40
+    legend_h = 80  # room for legend below content
+
+    page_h = lowest_y + legend_h + margin
+    page_w = max(rightmost_x + margin, 600)  # minimum 600px wide
+
+    # Round up to nearest 10 for clean numbers
+    page_h = ((page_h + 9) // 10) * 10
+    page_w = ((page_w + 9) // 10) * 10
+
+    print(f"page_w={page_w}")
+    print(f"page_h={page_h}")
+    print(f"# Set in <mxGraphModel pageWidth=\"{page_w}\" pageHeight=\"{page_h}\" ...>")
+
+
 def cmd_bidirectional_edge(src_x, src_y, src_w, src_h, tgt_x, tgt_y, tgt_w, tgt_h, offset=8):
     """Compute forward and reverse edge exit/entry points for bidirectional edges.
 
@@ -1016,6 +1043,7 @@ def main():
         "step-height":      lambda: cmd_step_height(*args),
         "shared-layer":     lambda: cmd_shared_layer(*args),
         "scaffold":         lambda: cmd_scaffold(*args),
+        "page-size":        lambda: cmd_page_size(*args),
     }
     fn = dispatch.get(cmd)
     if fn is None:

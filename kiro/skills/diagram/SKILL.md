@@ -47,11 +47,16 @@ python3 ~/.kiro/skills/diagram/layout.py palette [role]
 python3 ~/.kiro/skills/diagram/layout.py step-height "Label<br/>Line 2"
 python3 ~/.kiro/skills/diagram/layout.py legend <lowest_y> [topology]
 python3 ~/.kiro/skills/diagram/layout.py shared-layer <n_items> [y] [page_w]
+python3 ~/.kiro/skills/diagram/layout.py page-size <lowest_y> <rightmost_x>
 
 # Scaffolding
 python3 ~/.kiro/skills/diagram/layout.py boilerplate <page_name> [page_name...]
 python3 ~/.kiro/skills/diagram/layout.py scaffold <pipeline|microservice|layered> [n_stages]
 ```
+
+**CRITICAL RULES:**
+- **NEVER manually compute step y-positions inside swimlanes.** ALWAYS run `layout.py steps` and use its output directly. Manual placement causes overlap and invisible arrows.
+- **ALWAYS run `layout.py page-size` after placing all content** to get custom pageWidth/pageHeight. Never use default A4 dimensions (827×1169).
 
 ### Step 4: Plan Edges
 For cross-row/cross-service edges, write a JSON file with all node positions and edges, then run:

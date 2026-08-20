@@ -35,6 +35,15 @@ verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize=30;
 - First child box: port/model (e.g., "FastAPI :8000")
 - Subsequent child boxes: features/components (11px)
 
+**Content-richness rules (MANDATORY):**
+- Every service container must have at least 2 child boxes (port + primary feature)
+- Child boxes should name specific tech, not generic descriptions
+- **BAD**: "API" with child "Server" — tells reader nothing
+- **GOOD**: "API" with children "FastAPI :8000", "Auth / Sessions", "Banking (BoA)"
+- **BAD**: "LLM" with child "model"
+- **GOOD**: "LLM" with children "vLLM (OpenAI API)", "LMCache"
+- Include model names, frameworks, ports for every service
+
 ### Infrastructure style
 ```
 shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;
@@ -65,13 +74,19 @@ The #1 failure mode for service maps is too many edges. Rules:
 
 ## Data Flow Page
 
-- Portrait (827×1169) — plenty of vertical space
+- Portrait — use custom page dimensions from `layout.py page-size`
 - Show ONE processing path through the system
 - Main processor as a swimlane with sequential internal steps
 - External dependencies as standalone boxes around the swimlane
 - Few edges (5-8 max)
 - Sequential internal edges: exitX=0.5 exitY=1 → entryX=0.5 entryY=0
 - **Swimlane height MUST match content** — compute from last step position + 20px padding. Never leave 100+ px of empty space at the bottom.
+
+**CRITICAL: ALWAYS compute step positions with `layout.py steps`:**
+```bash
+python3 ~/.kiro/skills/diagram/layout.py steps <swimlane_w> <startSize> <lines_per_step...>
+```
+Copy the output y-positions directly into your mxCell geometries. NEVER manually compute step y-positions — this causes overlapping steps that make the page unreadable.
 
 ## Conditional Mode Groups
 
@@ -98,6 +113,14 @@ Use `layout.py conditional-group <positions...>` for coordinates.
 
 Every cross-service edge MUST have a short label (5-15 chars):
 "REST /api", "gRPC audio", "WebSocket", "queries", "sessions", "completions"
+
+**Duplicate label rule:** If two edges would carry the same label (e.g., both labeled "completions" because RT-Text and RT-Voice both call LLM), differentiate them: "text comp" and "voice comp". The reader must know which arrow is which without tracing the line.
+
+**Page dimensions:** After placing all nodes, compute custom page size:
+```bash
+python3 ~/.kiro/skills/diagram/layout.py page-size <lowest_element_bottom_y> [rightmost_x]
+```
+Use the output in `<mxGraphModel pageWidth="..." pageHeight="...">`. Never default to 1169×827.
 
 ## XML Structure
 
