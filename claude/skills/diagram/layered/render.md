@@ -213,10 +213,19 @@ If you want separate arrows per module:
 </mxCell>
 ```
 
-**CRITICAL: ALL cross-band edges MUST include at least one waypoint** at y = gap_midpoint between the source band bottom and the target band top. Even when source and target are X-aligned, include a waypoint at that y to force the edge router to break the segment there. Without it, the edge draws a straight line that crosses through the intermediate band's header text.
+**CRITICAL: ALL cross-band edges MUST include TWO waypoints:**
+1. One in the **gap** between bands: `y = source_band_bottom + (target_band_top - source_band_bottom) / 3`
+2. One **below the target band's header**: `y = target_band_y + startSize + 5`
 
-```
-gap_midpoint = source_band_bottom + (target_band_top - source_band_bottom) / 3
+This ensures the edge enters the target band below its header text — never crossing through it.
+
+```xml
+<!-- Example: edge from L1 item to L2 item -->
+<!-- L1 bottom = 328, L2 top = 378, L2 header bottom = 406 -->
+<Array as="points">
+  <mxPoint x="168" y="345" />  <!-- gap waypoint -->
+  <mxPoint x="420" y="410" />  <!-- below L2 header -->
+</Array>
 ```
 
 **NEVER** draw an edge that passes through a band header with visible text. The arrow will appear clipped or crossing through the title.

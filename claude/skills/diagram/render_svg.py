@@ -767,10 +767,12 @@ def convert_drawio_to_svg(drawio_path):
                     max_x = max(max_x, rx + rw)
                 except ValueError:
                     pass
-            for match in _re_bounds.finditer(r'<text x="([^"]+)"', edge_svg):
+            for match in _re_bounds.finditer(r'<text x="([^"]+)" y="([^"]+)"', edge_svg):
                 try:
                     tx = float(match.group(1))
+                    ty = float(match.group(2))
                     max_x = max(max_x, tx + 80)  # approx text width
+                    max_y = max(max_y, ty + 14)   # text height (~14px per line)
                 except ValueError:
                     pass
 

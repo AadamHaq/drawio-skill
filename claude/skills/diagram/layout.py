@@ -450,15 +450,12 @@ def cmd_layers(n_layers, *items_per_layer):
 
     # Layer band width is full page minus margins
     band_w = page_w - 2 * margin_x
-    # Layer heights: scale with item count (more items = taller to fit labels)
-    base_layer_h = 80
-    per_item_extra = 20  # extra height if layer has many items (rows)
+    # Layer heights: computed from content (startSize + clearance + item + padding)
+    base_item_h = 60
+    computed_layer_h = 28 + 26 + base_item_h + 20  # = 134 per layer
 
     # Compute total height to see if we need landscape
-    total_h = 2 * margin_y + sum(
-        base_layer_h + (max(0, items[i] - 3) * per_item_extra)
-        for i in range(n_layers)
-    ) + (n_layers - 1) * layer_gap
+    total_h = 2 * margin_y + n_layers * computed_layer_h + (n_layers - 1) * layer_gap
 
     orientation = "portrait"
     page_h = 1169
@@ -475,17 +472,27 @@ def cmd_layers(n_layers, *items_per_layer):
     print()
 
     y = margin_y
+    start_size = 28  # standard band startSize
+    header_clearance = 26  # space below header for arrow visibility
+    bottom_pad = 20  # space between item bottom and band border
+
     for i in range(n_layers):
         n_items = items[i]
-        layer_h = base_layer_h + max(0, n_items - 3) * per_item_extra
+        # Compute item height first (drives band height)
+        base_item_h = 60  # minimum item height (fits 2 lines comfortably)
+        item_h = base_item_h + max(0, n_items - 3) * 10  # taller if many items
+
+        # Band height = header + clearance + item + bottom padding
+        layer_h = start_size + header_clearance + item_h + bottom_pad
         print(f"layer[{i}]: x={margin_x} y={y} w={band_w} h={layer_h}")
 
-        # Compute item positions within this layer
-        # Target width: 240px (fits ~40 chars). Auto-computed from available space.
+        # Item y-position: below header + clearance (relative to band)
+        item_y = start_size + header_clearance
+
+        # Compute item widths
         max_item_w = 240
         needed_w = n_items * max_item_w + (n_items - 1) * item_gap + 2 * item_padding
         if needed_w > band_w:
-            # Items don't fit at 240px — shrink to fit but warn
             item_w = (band_w - 2 * item_padding - (n_items - 1) * item_gap) // max(1, n_items)
             if item_w < 200:
                 print(f"  # WARNING: items at {item_w}px (< 200). Consider wider page or fewer items.")
@@ -493,8 +500,6 @@ def cmd_layers(n_layers, *items_per_layer):
             item_w = max_item_w
         items_total_w = n_items * item_w + (n_items - 1) * item_gap
         first_item_x = (band_w - items_total_w) // 2  # centred within band
-        item_y = 30  # relative to layer (below header)
-        item_h = layer_h - 30 - 10  # fill available height minus header and bottom pad
 
         for j in range(n_items):
             ix = first_item_x + j * (item_w + item_gap)

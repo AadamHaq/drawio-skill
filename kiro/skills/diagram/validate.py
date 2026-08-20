@@ -481,6 +481,40 @@ def validate_file(filepath):
                         )
                         break
 
+        # ─── Horizontal sibling overlap check ─────────────────────────────
+        # Root-level items at similar y that overlap on x-axis
+        root_items = []
+        for cell in cells:
+            if cell.get("vertex") != "1":
+                continue
+            if cell.get("parent", "1") != "1":
+                continue
+            style = parse_style(cell.get("style", ""))
+            if "swimlane" in style and get_geometry(cell) and get_geometry(cell)["w"] > 500:
+                continue
+            if "text" in style:
+                continue
+            geom = get_geometry(cell)
+            if not geom or geom["w"] == 0:
+                continue
+            root_items.append((cell.get("id", ""), geom["x"], geom["y"], geom["w"], geom["h"]))
+
+        for i in range(len(root_items)):
+            for j in range(i + 1, len(root_items)):
+                id_a, xa, ya, wa, ha = root_items[i]
+                id_b, xb, yb, wb, hb = root_items[j]
+                # Check if they're in the same row (similar y)
+                if abs(ya - yb) > max(ha, hb):
+                    continue
+                # Check x overlap
+                overlap_x = min(xa + wa, xb + wb) - max(xa, xb)
+                overlap_y = min(ya + ha, yb + hb) - max(ya, yb)
+                if overlap_x > 5 and overlap_y > 5:
+                    issues.append(
+                        f"[{page_name}] HORIZONTAL OVERLAP: '{id_a}' and '{id_b}' "
+                        f"overlap by {int(overlap_x)}×{int(overlap_y)}px"
+                    )
+
         # ─── Step overlap detection ───────────────────────────────────────
         # Check if any children of the same parent overlap vertically
         parent_children = defaultdict(list)
