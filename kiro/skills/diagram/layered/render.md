@@ -61,6 +61,19 @@ Every item box MUST have at least 2 lines:
 
 Include: model names, specific functions called, key thresholds, output formats. If a box only has a filename and a generic 2-word description, the diagram has failed.
 
+### Text-fit rule (MANDATORY)
+
+Before writing any box, check that your text fits:
+- **Max chars per line = (box_width - 16) / 5.5**
+- 200px box → max 33 chars per line
+- 240px box → max 40 chars per line
+- 280px box → max 48 chars per line
+
+Use `layout.py text-width "your label<br/>second line"` to verify. If the text is too long:
+1. First try abbreviating (remove filler words, use shorter model names)
+2. If still too long, widen the box (and adjust sibling positions)
+3. NEVER leave text that overflows — it clips in both draw.io and SVG
+
 ## Colour Palette (by layer role)
 
 Use `layout.py palette` for exact values. Typical mapping:
@@ -101,9 +114,11 @@ When edges arrive at items from a layer above, items MUST be positioned with eno
 item_y_absolute = band_y + startSize + 24px (minimum)
 ```
 
-24px clearance = 10px arrowhead + 14px breathing room.
+24px clearance = 10px arrowhead + 16px breathing room.
 
-**Example:** Band at y=150 with startSize=28 → header bottom at y=178 → items start at y=202 minimum.
+**HARD RULE: first child y = startSize + 26. The `layout.py steps` command enforces this automatically (it outputs first_step_y = startSize + 26). NEVER place a child closer to the header.**
+
+**Example:** Band at y=150 with startSize=28 → header bottom at y=178 → items start at y=204 minimum (150+28+26=204).
 
 If you violate this, arrowheads will be clipped by the header rendering on top, or arrows will appear to start/end in mid-air behind the header. This looks broken in both draw.io proper AND the SVG renderer.
 

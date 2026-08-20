@@ -82,6 +82,14 @@ Use DETAILED (5 lines max) on drill-down pages.
 
 If a box has only a filename with no explanation of what it does, the diagram has failed.
 
+### Text-fit rule (MANDATORY)
+
+Before writing any box, check that your text fits:
+- **Max chars per line = (box_width - 16) / 5.5**
+- 200px box → max 33 chars. 240px → max 40. 280px → max 48.
+- Use `layout.py text-width "label<br/>detail"` to verify.
+- If too long: abbreviate first, widen box second. NEVER leave overflowing text.
+
 ## Loop Annotations
 
 For stages with iteration (for-loops, retries):

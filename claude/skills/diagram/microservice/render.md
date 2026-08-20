@@ -44,6 +44,14 @@ verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize=30;
 - **GOOD**: "LLM" with children "vLLM (OpenAI API)", "LMCache"
 - Include model names, frameworks, ports for every service
 
+### Text-fit rule (MANDATORY)
+
+Service containers are 200px wide. Child box labels must fit:
+- Max ~33 chars per child box line (at 200px width)
+- Header sub-title (in `<font>` tag): max 38 chars (header is full container width)
+- Use `layout.py text-width "label"` to verify before writing XML
+- If a service has a long name+description, widen the container to 240px
+
 ### Infrastructure style
 ```
 shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;

@@ -734,7 +734,7 @@ def convert_drawio_to_svg(drawio_path):
                 ((points[i+1][0] - points[i][0])**2 + (points[i+1][1] - points[i][1])**2) ** 0.5
                 for i in range(len(points) - 1)
             )
-            svg_edges.append((edge_svg, total_len))
+            svg_edges.append((edge_svg, total_len, target_id))
 
         # Assemble page SVG
         # Compute actual bounds from content
@@ -757,15 +757,30 @@ def convert_drawio_to_svg(drawio_path):
         page_svg.append(f'  <!-- Page: {escape_xml(page_name)} -->')
         page_svg.append('  <style>text { font-family: Inter, Arial, sans-serif; }</style>')
 
-        # Z-order: bodies → edges → headers → text
-        # Band bodies (light backgrounds) render first.
-        # Edges render on top of bodies (visible over grey backgrounds).
-        # Headers render on top of edges (cover edge segments crossing through headers).
-        # Text renders on top of everything.
+        # Z-order: bodies → crossing edges → headers → entry edges → text
+        # "Entry edges" target a swimlane directly — they should be visible
+        # entering the swimlane, not hidden behind its header.
+        # "Crossing edges" pass through headers of swimlanes they don't target.
+
+        # Determine which cell IDs are swimlanes (have headers)
+        swimlane_ids = set()
+        for cell_id, v in vertices.items():
+            if "swimlane" in v.get("style", {}):
+                swimlane_ids.add(cell_id)
+
+        crossing_edges = []
+        entry_edges = []
+        for edge_svg, _, tgt_id in svg_edges:
+            if tgt_id in swimlane_ids:
+                # This edge enters a swimlane — render after its header
+                entry_edges.append(edge_svg)
+            else:
+                crossing_edges.append(edge_svg)
+
         page_svg.extend(svg_bodies)
-        for edge_svg, _ in svg_edges:
-            page_svg.append(edge_svg)
+        page_svg.extend(crossing_edges)
         page_svg.extend(svg_headers)
+        page_svg.extend(entry_edges)
         page_svg.extend(svg_texts)
 
         page_svg.append('</svg>')

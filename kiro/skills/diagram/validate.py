@@ -464,6 +464,25 @@ def validate_file(filepath):
                     f"'{value[:30]}' — add detail line with model/params/purpose"
                 )
 
+            # Text overflow check: estimate if text is wider than box
+            if value and geom["w"] > 50:
+                import re as _re
+                text = _re.sub(r"<br\s*/?>", "\n", value, flags=_re.IGNORECASE)
+                text = _re.sub(r"<[^>]+>", "", text)
+                text = text.replace("&lt;", "<").replace("&gt;", ">")
+                text = text.replace("&amp;", "&").replace("&quot;", '"')
+                for line in text.split("\n"):
+                    line = line.strip()
+                    if not line:
+                        continue
+                    est_w = len(line) * 5.5 + 16
+                    if est_w > geom["w"]:
+                        issues.append(
+                            f"[{page_name}] TEXT OVERFLOW: '{cell.get('id', '')}' "
+                            f"line '{line[:40]}' (~{int(est_w)}px) in {int(geom['w'])}px box"
+                        )
+                        break  # one overflow per cell is enough
+
         # Oversized page check
         page_w_val = int(model.get("pageWidth", "827"))
         page_h_val = int(model.get("pageHeight", "1169"))

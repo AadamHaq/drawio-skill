@@ -64,7 +64,7 @@ def cmd_steps(sw_w, start_size, *line_counts):
     sw_w = int(sw_w)
     start_size = int(start_size)
     step_w = sw_w - 36
-    first_y = start_size + 15
+    first_y = start_size + 26
     print(f"step_w={step_w}")
     print(f"first_step_y={first_y}  (startSize={start_size})")
     y = first_y
@@ -440,6 +440,14 @@ def cmd_layers(n_layers, *items_per_layer):
     item_gap = 50  # minimum 50px for edge labels between items
     item_padding = 18  # padding inside layer band around items
 
+    # Check if we need a wider page to fit items at 240px with 50px gaps
+    max_items_in_layer = max(items)
+    target_item_w = 240
+    needed_page_w = 2 * margin_x + 2 * item_padding + max_items_in_layer * target_item_w + (max_items_in_layer - 1) * item_gap
+    if needed_page_w > page_w:
+        page_w = ((needed_page_w + 9) // 10) * 10  # round up to nearest 10
+        print(f"# Page auto-widened to {page_w}px to fit {max_items_in_layer} items at 240px + 50px gaps")
+
     # Layer band width is full page minus margins
     band_w = page_w - 2 * margin_x
     # Layer heights: scale with item count (more items = taller to fit labels)
@@ -473,7 +481,16 @@ def cmd_layers(n_layers, *items_per_layer):
         print(f"layer[{i}]: x={margin_x} y={y} w={band_w} h={layer_h}")
 
         # Compute item positions within this layer
-        item_w = min(200, (band_w - 2 * item_padding - (n_items - 1) * item_gap) // max(1, n_items))
+        # Target width: 240px (fits ~40 chars). Auto-computed from available space.
+        max_item_w = 240
+        needed_w = n_items * max_item_w + (n_items - 1) * item_gap + 2 * item_padding
+        if needed_w > band_w:
+            # Items don't fit at 240px — shrink to fit but warn
+            item_w = (band_w - 2 * item_padding - (n_items - 1) * item_gap) // max(1, n_items)
+            if item_w < 200:
+                print(f"  # WARNING: items at {item_w}px (< 200). Consider wider page or fewer items.")
+        else:
+            item_w = max_item_w
         items_total_w = n_items * item_w + (n_items - 1) * item_gap
         first_item_x = (band_w - items_total_w) // 2  # centred within band
         item_y = 30  # relative to layer (below header)
@@ -593,6 +610,41 @@ def cmd_step_height(*label_parts):
     print(f"# Formula: max(36, 22 + {n_lines} × 18) = {h}")
 
 
+# ─── Text width helper ───────────────────────────────────────────────────────
+
+def cmd_text_width(*label_parts):
+    """Compute minimum box width to fit a label without overflow.
+
+    Parses <br/> to find the longest line, then computes:
+      min_width = longest_line_chars * 5.5 + 16 (padding)
+
+    Also outputs the max chars allowed for common box widths.
+    """
+    label = " ".join(label_parts)
+    if not label:
+        print("usage: layout.py text-width \"Line 1<br/>Second longer line\"", file=sys.stderr)
+        sys.exit(1)
+
+    # Split on <br/> and <br>
+    import re
+    text = re.sub(r"<br\s*/?>", "\n", label, flags=re.IGNORECASE)
+    text = re.sub(r"<[^>]+>", "", text)  # strip HTML tags
+    lines = [l.strip() for l in text.split("\n") if l.strip()]
+
+    if not lines:
+        print("min_width=50")
+        return
+
+    longest = max(len(l) for l in lines)
+    min_width = int(longest * 5.5 + 16)
+
+    print(f"longest_line={longest} chars")
+    print(f"min_width={min_width}px")
+    print(f"# Common widths: 200px=max 33 chars, 240px=max 40 chars, 280px=max 48 chars")
+    if longest > 40:
+        print(f"# WARNING: {longest} chars needs {min_width}px — consider abbreviating to ≤40 chars")
+
+
 # ─── Shared layer helper ─────────────────────────────────────────────────────
 
 def cmd_shared_layer(n_items, container_y=None, page_w=None):
@@ -689,7 +741,7 @@ def _scaffold_pipeline(n):
     # Each swimlane gets 3 stub steps (2 lines each)
     step_h = 58  # max(36, 22 + 2*18)
     n_steps = 3
-    sl_h = sl_start_size + 15 + n_steps * (step_h + _STEP_GAP) - _STEP_GAP + 20
+    sl_h = sl_start_size + 26 + n_steps * (step_h + _STEP_GAP) - _STEP_GAP + 20
 
     print('<?xml version="1.0" encoding="UTF-8"?>')
     print('<mxfile host="ac.draw.io">')
@@ -721,7 +773,7 @@ def _scaffold_pipeline(n):
         print(f'        </mxCell>')
 
         # Steps inside
-        step_y = sl_start_size + 15
+        step_y = sl_start_size + 26
         for j in range(n_steps):
             step_id = f"step-{i}-{j}"
             print(f'        <mxCell id="{step_id}" value="Step {j+1}&lt;br/&gt;detail" '
@@ -1041,6 +1093,7 @@ def main():
         "boilerplate":      lambda: cmd_boilerplate(*args),
         "legend":           lambda: cmd_legend(*args),
         "step-height":      lambda: cmd_step_height(*args),
+        "text-width":       lambda: cmd_text_width(*args),
         "shared-layer":     lambda: cmd_shared_layer(*args),
         "scaffold":         lambda: cmd_scaffold(*args),
         "page-size":        lambda: cmd_page_size(*args),
