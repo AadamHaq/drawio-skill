@@ -357,20 +357,21 @@ def render_edge(points, style, label, cell_id, all_vertices):
 
     # Determine arrowhead size relative to stroke width
     # Use userSpaceOnUse for consistent sizing regardless of stroke width
-    parts = []
-    parts.append(
+    # Polyline (orthogonal segments)
+    line_parts = []
+    line_parts.append(
         f'  <defs><marker id="{marker_id}" markerWidth="10" markerHeight="8" '
         f'refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse">'
         f'<polygon points="0 0, 10 4, 0 8" fill="{stroke}" /></marker></defs>'
     )
-    # Polyline (orthogonal segments)
-    parts.append(
+    line_parts.append(
         f'  <polyline id="{cell_id}" points="{pts_str}" fill="none" '
         f'stroke="{stroke}" stroke-width="{stroke_w}"{dash_attr} '
         f'stroke-linejoin="round" marker-end="url(#{marker_id})" />'
     )
 
-    # Label positioning
+    # Label positioning (separate from line for z-ordering)
+    label_parts = []
     if label:
         # Compute the edge's total path length
         edge_total_len = sum(
@@ -387,7 +388,7 @@ def render_edge(points, style, label, cell_id, all_vertices):
         # For labels that fit: place with capped pill
         if text_w > edge_total_len - 10:
             # Label is wider than edge — render as offset text, no pill background
-            parts.append(
+            label_parts.append(
                 f'  <text x="{lx:.1f}" y="{ly - 8:.1f}" font-family="Inter, Arial, sans-serif" '
                 f'font-size="9" text-anchor="{text_anchor}" fill="{stroke}" '
                 f'font-style="italic">{escaped}</text>'
@@ -412,17 +413,17 @@ def render_edge(points, style, label, cell_id, all_vertices):
             else:
                 pill_x = lx - pill_w / 2
 
-            parts.append(
+            label_parts.append(
                 f'  <rect x="{pill_x:.1f}" y="{rect_y:.1f}" '
                 f'width="{pill_w:.1f}" height="{text_h}" rx="2" ry="2" '
                 f'fill="white" stroke="none" opacity="{pill_opacity}" />'
             )
-            parts.append(
+            label_parts.append(
                 f'  <text x="{lx:.1f}" y="{text_y:.1f}" font-family="Inter, Arial, sans-serif" '
                 f'font-size="10" text-anchor="{text_anchor}" fill="{stroke}">{escaped}</text>'
             )
 
-    return "\n".join(parts)
+    return ("\n".join(line_parts), "\n".join(label_parts))
 
 
 def _find_label_position(points, all_vertices, label=""):
@@ -728,13 +729,13 @@ def convert_drawio_to_svg(drawio_path):
             # Get label
             label_text = html_to_plain(value)
 
-            edge_svg = render_edge(points, style, label_text, cell_id, vertices)
+            edge_line, edge_label = render_edge(points, style, label_text, cell_id, vertices)
             # Compute total path length for z-ordering
             total_len = sum(
                 ((points[i+1][0] - points[i][0])**2 + (points[i+1][1] - points[i][1])**2) ** 0.5
                 for i in range(len(points) - 1)
             )
-            svg_edges.append((edge_svg, total_len, target_id))
+            svg_edges.append((edge_line, edge_label, total_len, target_id))
 
         # Assemble page SVG
         # Compute actual bounds from content
@@ -745,36 +746,37 @@ def convert_drawio_to_svg(drawio_path):
 
         # Include edge waypoints AND label positions in bounds
         import re as _re_bounds
-        for edge_svg, _, _ in svg_edges:
-            # Polyline points
-            for match in _re_bounds.finditer(r'points="([^"]+)"', edge_svg):
-                for pt in match.group(1).split():
-                    coords = pt.split(",")
-                    if len(coords) == 2 and coords[0] and coords[1]:
-                        try:
-                            px, py = float(coords[0]), float(coords[1])
-                            min_x = min(min_x, px)
-                            min_y = min(min_y, py)
-                            max_x = max(max_x, px)
-                            max_y = max(max_y, py)
-                        except ValueError:
-                            pass
-            # Label text and pill rects (x + width can extend beyond edges)
-            for match in _re_bounds.finditer(r'<rect x="([^"]+)" y="([^"]+)" width="([^"]+)"', edge_svg):
-                try:
-                    rx = float(match.group(1))
-                    rw = float(match.group(3))
-                    max_x = max(max_x, rx + rw)
-                except ValueError:
-                    pass
-            for match in _re_bounds.finditer(r'<text x="([^"]+)" y="([^"]+)"', edge_svg):
-                try:
-                    tx = float(match.group(1))
-                    ty = float(match.group(2))
-                    max_x = max(max_x, tx + 80)  # approx text width
-                    max_y = max(max_y, ty + 14)   # text height (~14px per line)
-                except ValueError:
-                    pass
+        for edge_line, edge_label, _, _ in svg_edges:
+            for svg_chunk in (edge_line, edge_label):
+                # Polyline points
+                for match in _re_bounds.finditer(r'points="([^"]+)"', svg_chunk):
+                    for pt in match.group(1).split():
+                        coords = pt.split(",")
+                        if len(coords) == 2 and coords[0] and coords[1]:
+                            try:
+                                px, py = float(coords[0]), float(coords[1])
+                                min_x = min(min_x, px)
+                                min_y = min(min_y, py)
+                                max_x = max(max_x, px)
+                                max_y = max(max_y, py)
+                            except ValueError:
+                                pass
+                # Label rects and text
+                for match in _re_bounds.finditer(r'<rect x="([^"]+)" y="([^"]+)" width="([^"]+)"', svg_chunk):
+                    try:
+                        rx = float(match.group(1))
+                        rw = float(match.group(3))
+                        max_x = max(max_x, rx + rw)
+                    except ValueError:
+                        pass
+                for match in _re_bounds.finditer(r'<text x="([^"]+)" y="([^"]+)"', svg_chunk):
+                    try:
+                        tx = float(match.group(1))
+                        ty = float(match.group(2))
+                        max_x = max(max_x, tx + 80)
+                        max_y = max(max_y, ty + 14)
+                    except ValueError:
+                        pass
 
         # Add margin
         margin = 20
@@ -790,16 +792,19 @@ def convert_drawio_to_svg(drawio_path):
         page_svg.append(f'  <!-- Page: {escape_xml(page_name)} -->')
         page_svg.append('  <style>text { font-family: Inter, Arial, sans-serif; }</style>')
 
-        # Z-order: bodies → headers → ALL edges → text
-        # Headers render before edges so they provide the coloured band fill.
-        # ALL edges render on top (visible, with labels uncovered).
-        # The skill rules (waypoints, 26px clearance) prevent edges from
-        # crossing through headers at authoring time — we don't need z-order
-        # tricks to hide them anymore.
+        # Z-order: bodies → edge LINES → headers → edge LABELS → vertex text
+        # Edge lines go behind headers (hidden where they cross through).
+        # Edge labels go on top of headers (always visible).
+        # The 26px clearance below headers ensures arrows entering are visible
+        # between the header bar and the first child box.
         page_svg.extend(svg_bodies)
+        for edge_line, _, _, _ in svg_edges:
+            if edge_line:
+                page_svg.append(edge_line)
         page_svg.extend(svg_headers)
-        for edge_svg, _, _ in svg_edges:
-            page_svg.append(edge_svg)
+        for _, edge_label, _, _ in svg_edges:
+            if edge_label:
+                page_svg.append(edge_label)
         page_svg.extend(svg_texts)
 
         page_svg.append('</svg>')
