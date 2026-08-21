@@ -308,6 +308,32 @@ def validate_file(filepath):
                             )
                             break  # One real violation per edge is enough
 
+        # ─── Edge-through-target check ─────────────────────────────────
+        # Detect when an edge's last waypoint before the target is on the
+        # WRONG side (forcing the edge to pass through the target's body)
+        for cell_id, path, colour, source_id, target_id in edge_paths:
+            if target_id not in nodes or len(path) < 2:
+                continue
+            t = nodes[target_id]
+            # Last waypoint before the target entry point
+            last_wp = path[-2]  # second-to-last point
+            entry_pt = path[-1]  # final point (on target boundary)
+            # Determine which side the entry point is on
+            tx, ty, tw, th = t["abs_x"], t["abs_y"], t["w"], t["h"]
+            # If entry is at top (entryY=0): last waypoint should be ABOVE (y < ty)
+            # If entry is at bottom (entryY=1): last waypoint should be BELOW (y > ty+th)
+            # If entry is at left (entryX=0): last waypoint should be LEFT (x < tx)
+            # If entry is at right (entryX=1): last waypoint should be RIGHT (x > tx+tw)
+            eps = 5  # tolerance
+            wp_inside = (tx + eps < last_wp[0] < tx + tw - eps and
+                         ty + eps < last_wp[1] < ty + th - eps)
+            if wp_inside:
+                issues.append(
+                    f"[{page_name}] BOX CROSSING: edge '{cell_id}' last waypoint "
+                    f"({int(last_wp[0])},{int(last_wp[1])}) is inside target '{target_id}' "
+                    f"— approach must be from outside"
+                )
+
         # Check for overlapping segments between different edges
         for i in range(len(edge_paths)):
             for j in range(i + 1, len(edge_paths)):
