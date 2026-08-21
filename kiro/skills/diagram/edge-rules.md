@@ -76,6 +76,16 @@ If two edges would route along the same segment (even in opposite directions):
 - **Or route one above and one below**: use waypoints to offset by 15-20px
 - **NEVER let two edges share the exact same segment** — they become invisible/indistinguishable in the SVG
 
+**CRITICAL: Multiple edges entering the same target box:**
+- Each edge MUST use a DIFFERENT entry point (entryX/entryY combination)
+- Example: if two edges arrive at the TOP of a box, use entryX=0.3 and entryX=0.7 — NEVER both at entryX=0.5
+- If edges share the same entry point, they become a single visual line and the viewer cannot distinguish them
+
+**CRITICAL: Edge waypoints MUST NOT pass through the target box body:**
+- When routing to a box's entry point, the last waypoint before entry must be OUTSIDE the box's bounding rectangle
+- If a horizontal segment at y=Y passes through a box at (x, y, w, h) where y ≤ Y ≤ y+h and x ≤ segment_x ≤ x+w, the edge is INSIDE that box
+- Route the segment above or below the box, then approach from outside
+
 ## Maximum Edges Per Page
 
 - If a page has more than 12-15 edges, it's too dense
@@ -91,6 +101,15 @@ Edge waypoints MUST maintain at least 15px clearance from any box that is NOT th
 **The edge planner enforces this automatically.** If you hand-write waypoints, check that no segment runs along (<15px from) the edge of an unrelated box. This makes lines look like they "belong to" or "clip" the wrong box.
 
 When using `edge_planner.py`, pass ALL nodes as obstacles — this guarantees clearance from all boxes in the diagram.
+
+## Drill-Down Page Edges (swimlane → external boxes)
+
+When a swimlane has steps that connect to external dependency boxes on the right:
+- External boxes should be STACKED at different y-positions aligned with their source step
+- Each edge should go STRAIGHT horizontally (no waypoints needed if boxes align)
+- If edges must share a vertical corridor, space them at least 20px apart (x=540, x=560, x=580 etc.)
+- NEVER route one edge through another external box — this is the most common failure mode
+- If an edge must reach a box that is NOT horizontally aligned with its source, route the vertical segment OUTSIDE all other external boxes (use x > rightmost_box_right + 15)
 
 ## Return Edges (target above source)
 
