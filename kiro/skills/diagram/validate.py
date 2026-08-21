@@ -365,6 +365,20 @@ def validate_file(filepath):
                         f"height={int(actual_h)} but content ends at y={int(max_child_bottom)} "
                         f"(expected ~{int(expected_h)})"
                     )
+                # Check if children overflow the bottom
+                if max_child_bottom > actual_h - 5:
+                    issues.append(
+                        f"[{page_name}] BOTTOM OVERFLOW: '{cell_id}' "
+                        f"children extend to y={int(max_child_bottom)} but parent height={int(actual_h)}. "
+                        f"Increase parent height to {int(max_child_bottom + 15)}"
+                    )
+                # Check bottom padding (items too close to border)
+                bottom_padding = actual_h - max_child_bottom
+                if 0 < bottom_padding < 12:
+                    issues.append(
+                        f"[{page_name}] TIGHT BOTTOM: '{cell_id}' only {int(bottom_padding)}px "
+                        f"between last child and border. Need ≥15px."
+                    )
 
         if is_landscape:
             # Service map: strict limit

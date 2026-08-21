@@ -118,6 +118,8 @@ item_y_absolute = band_y + startSize + 24px (minimum)
 
 **HARD RULE: first child y = startSize + 26. The `layout.py steps` command enforces this automatically (it outputs first_step_y = startSize + 26). NEVER place a child closer to the header.**
 
+**HARD RULE: last child bottom must be ≥15px above parent bottom.** Set parent height = last_child_y + last_child_h + 15. Children must NEVER overflow below or touch the parent border.
+
 **Example:** Band at y=150 with startSize=28 → header bottom at y=178 → items start at y=204 minimum (150+28+26=204).
 
 If you violate this, arrowheads will be clipped by the header rendering on top, or arrows will appear to start/end in mid-air behind the header. This looks broken in both draw.io proper AND the SVG renderer.

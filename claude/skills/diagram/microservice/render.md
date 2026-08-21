@@ -96,6 +96,20 @@ python3 ~/.kiro/skills/diagram/layout.py steps <swimlane_w> <startSize> <lines_p
 ```
 Copy the output y-positions directly into your mxCell geometries. NEVER manually compute step y-positions — this causes overlapping steps that make the page unreadable.
 
+### Return edges (output → input, going backwards)
+
+For edges that go "backwards" (e.g., audio out → LiveKit, or TTS output → client):
+- **Do NOT wrap around the entire diagram.** Route alongside the swimlane on the left or right.
+- Pattern: exit left side → go up alongside the swimlane → enter target from below or left.
+- Keep the route within 50px of the swimlane edge — don't go to x=0 or x=page_width.
+- If the return edge crosses through another box, use edge_planner.py with that box as an obstacle.
+
+### Swimlane child padding
+
+- **Top**: first child at startSize + 26 (enforced by `layout.py steps`)
+- **Bottom**: last child must be at least 15px above parent bottom. Set swimlane height = last_child_bottom + 15.
+- Children must NEVER overflow below the parent border.
+
 ## Conditional Mode Groups
 
 Dashed boundary around services active only in certain configs:
