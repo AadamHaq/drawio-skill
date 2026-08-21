@@ -69,6 +69,13 @@ Two separate edges with offset exit/entry points:
 - Reverse: exitY=0.65, entryY=0.65 (lower path)
 - Or for horizontal: exitX=0.35/0.65 similarly
 
+## Edges That Share a Path
+
+If two edges would route along the same segment (even in opposite directions):
+- **Spread them vertically**: one at exitY=0.3, the other at exitY=0.7
+- **Or route one above and one below**: use waypoints to offset by 15-20px
+- **NEVER let two edges share the exact same segment** — they become invisible/indistinguishable in the SVG
+
 ## Maximum Edges Per Page
 
 - If a page has more than 12-15 edges, it's too dense

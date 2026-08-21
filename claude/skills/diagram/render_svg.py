@@ -631,6 +631,14 @@ def convert_drawio_to_svg(drawio_path):
                     svg_bodies.append(
                         render_rect(v["x"], v["y"], v["w"], v["h"], style, cell_id)
                     )
+            else:
+                # Text-only cells: add a subtle background box for legends
+                if v["w"] > 80 and v["h"] > 30:  # likely a legend or annotation block
+                    svg_bodies.append(
+                        f'  <rect x="{v["x"]:.1f}" y="{v["y"]:.1f}" '
+                        f'width="{v["w"]:.1f}" height="{v["h"]:.1f}" '
+                        f'rx="4" ry="4" fill="#f9f9f9" stroke="#e0e0e0" stroke-width="1" />'
+                    )
 
             # Render text
             lines = html_to_text_lines(v["value"])
