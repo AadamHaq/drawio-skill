@@ -80,3 +80,31 @@ If two edges would route along the same segment (even in opposite directions):
 
 - If a page has more than 12-15 edges, it's too dense
 - Split into multiple pages: one overview with major flows, separate data-flow pages for detail
+
+
+## Edge Clearance from Boxes
+
+Edge waypoints MUST maintain at least 15px clearance from any box that is NOT the source or target of that edge:
+- Horizontal segments: must be at least 15px above or below any non-related box
+- Vertical segments: must be at least 15px left or right of any non-related box edge
+
+**The edge planner enforces this automatically.** If you hand-write waypoints, check that no segment runs along (<15px from) the edge of an unrelated box. This makes lines look like they "belong to" or "clip" the wrong box.
+
+When using `edge_planner.py`, pass ALL nodes as obstacles — this guarantees clearance from all boxes in the diagram.
+
+## Return Edges (target above source)
+
+When an edge returns to a box that is ABOVE the source (e.g., a retry loop, or data flowing back up):
+- Route the edge **alongside** the diagram (left or right margin), going UP
+- NEVER route DOWN first then back UP — this creates a confusing visual where the line appears to go the wrong direction before doubling back
+- The edge should exit sideways (exitX=0 or exitX=1), route vertically UP in the margin, then enter the target from the side or top
+
+**Pattern:**
+```
+Source below → exitX=0;exitY=0.5 (left side)
+  waypoint: x = diagram_left_margin - 30, y = source_midY
+  waypoint: x = diagram_left_margin - 30, y = target_midY
+Target above → entryX=0;entryY=0.5 (left side) or entryX=0.5;entryY=1 (bottom)
+```
+
+The arrowhead direction must make physical sense: if the edge arrives at the bottom of the target, use `entryY=1` (arrow points up). If it arrives from the left, use `entryX=0` (arrow points right).

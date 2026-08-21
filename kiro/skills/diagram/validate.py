@@ -432,7 +432,7 @@ def validate_file(filepath):
             # Only check if this swimlane receives incoming edges
             if parent_id not in edge_targets:
                 continue
-            start_size = int(style.get("startSize", "32"))
+            start_size = int(style.get("startSize", "30"))
             # Find first child by y-position
             first_child_y = None
             for child in cells:
@@ -462,7 +462,7 @@ def validate_file(filepath):
             geom = get_geometry(cell)
             if not geom or geom["w"] < 500:
                 continue  # only full-width bands
-            ss = int(style.get("startSize", "32"))
+            ss = int(style.get("startSize", "30"))
             band_headers.append((
                 cell.get("id", ""),
                 geom["y"],
@@ -494,6 +494,35 @@ def validate_file(filepath):
                             f"Move to y≥{int(hdr_bot) + 26}"
                         )
                         break
+
+        # ─── Root-sibling clearance from band headers ─────────────────────
+        # Root-level items visually inside a band must be at y >= band_y + startSize + 26
+        for cell in cells:
+            if cell.get("vertex") != "1":
+                continue
+            if cell.get("parent", "1") != "1":
+                continue
+            style = parse_style(cell.get("style", ""))
+            if "swimlane" in style and get_geometry(cell) and get_geometry(cell).get("w", 0) > 500:
+                continue  # skip bands themselves
+            if "text" in style:
+                continue
+            geom = get_geometry(cell)
+            if not geom or geom["h"] == 0:
+                continue
+            for band_id, band_y, hdr_bot, band_x, band_right in band_headers:
+                # Check if item is visually inside this band (x within band, y within band area)
+                if not (band_x <= geom["x"] <= band_right):
+                    continue
+                if geom["y"] < hdr_bot:
+                    continue  # already caught by INSIDE HEADER
+                min_y = band_y + int(hdr_bot - band_y) + 26  # = band_y + startSize + 26
+                if geom["y"] < min_y:
+                    issues.append(
+                        f"[{page_name}] HEADER CLEARANCE: '{cell.get('id', '')}' at y={int(geom['y'])} "
+                        f"but needs y≥{int(min_y)} (band '{band_id}' header bottom={int(hdr_bot)} + 26px clearance)"
+                    )
+                    break
 
         # ─── Horizontal sibling overlap check ─────────────────────────────
         # Root-level items at similar y that overlap on x-axis

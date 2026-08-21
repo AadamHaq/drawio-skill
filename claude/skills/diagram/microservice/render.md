@@ -29,7 +29,7 @@ Optional:
 ### Service container style
 ```
 rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;
-verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize={see formula};
+verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize=30;
 ```
 - Header: service name ONLY (bold, 12px)
 - First child box: port/model (e.g., "FastAPI :8000")
@@ -39,13 +39,13 @@ verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize={see formula};
 
 Count the lines in your header value (`<br/>` splits):
 ```
-startSize = 20 + (n_lines × 16)
+startSize = max(30, 14 + n_lines × 16)
 
-1 line  (e.g. "API"):                           startSize = 36
-2 lines (e.g. "API<br/><font ...>REST svc"):    startSize = 52
+1 line  (e.g. "API"):                           startSize = 30
+2 lines (e.g. "API<br/><font ...>REST svc"):    startSize = 46
 ```
 
-Minimum for single-word service names: `startSize=32`. If you add ANY subtitle line via `<br/>`, use at least 46.
+Use `layout.py header-size "your header"` to compute. If you add ANY subtitle via `<br/>`, use at least 46.
 
 **Content-richness rules (MANDATORY):**
 - Every service container must have at least 2 child boxes (port + primary feature)

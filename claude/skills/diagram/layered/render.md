@@ -33,20 +33,20 @@ python3 ~/.kiro/skills/diagram/layout.py boilerplate "Architecture Overview" "To
 ### Layer Band Style (the outer rectangle for each band)
 ```
 rounded=1;whiteSpace=wrap;html=1;fillColor={from palette};strokeColor={from palette};
-verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize={see formula};
+verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize=30;
 ```
 
 ### Header startSize formula (MANDATORY)
 
 Count the lines in your header value (`<br/>` splits):
 ```
-startSize = 20 + (n_lines × 16)
+startSize = max(30, 14 + n_lines × 16)
 
-1 line  (e.g. "Pipeline"):                      startSize = 36
-2 lines (e.g. "Name<br/><font ...>subtitle"):   startSize = 52
+1 line  (e.g. "Pipeline"):                      startSize = 30
+2 lines (e.g. "Name<br/><font ...>subtitle"):   startSize = 46
 ```
 
-Minimum for single-word band names: `startSize=32`. If you add ANY subtitle line via `<br/>`, use at least 46.
+Use `layout.py header-size "your header"` to compute. Single-word band names use startSize=30. If you add ANY subtitle via `<br/>`, use at least 46.
 
 ### Items Inside Layers
 Items are rounded boxes positioned inside their band area:
@@ -132,7 +132,7 @@ item_y_absolute = band_y + startSize + 24px (minimum)
 
 **HARD RULE: last child bottom must be ≥15px above parent bottom.** Set parent height = last_child_y + last_child_h + 15. Children must NEVER overflow below or touch the parent border.
 
-**Example:** Band at y=150 with startSize=32 → header bottom at y=182 → items start at y=208 minimum (150+32+26=208).
+**Example:** Band at y=150 with startSize=30 → header bottom at y=180 → items start at y=206 minimum (150+30+26=206).
 
 If you violate this, arrowheads will be clipped by the header rendering on top, or arrows will appear to start/end in mid-air behind the header. This looks broken in both draw.io proper AND the SVG renderer.
 
@@ -148,7 +148,7 @@ The band becomes a pure visual background rectangle. Items use absolute coordina
 
 ```xml
 <!-- Band is visual background only — no children with incoming edges -->
-<mxCell id="L1" value="Pipeline" style="swimlane;startSize=32;fillColor=#f0f0f0;..." parent="1">
+<mxCell id="L1" value="Pipeline" style="swimlane;startSize=30;fillColor=#f0f0f0;..." parent="1">
   <mxGeometry x="30" y="150" width="767" height="320" />
 </mxCell>
 
