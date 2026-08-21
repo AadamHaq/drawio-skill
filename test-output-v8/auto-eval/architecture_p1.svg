@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 10 910 1031" width="910" height="1031">
+  <!-- Page: Architecture Overview -->
+  <style>text { font-family: Inter, Arial, sans-serif; }</style>
+  <rect id="L0-body" x="30.0" y="30.0" width="860.0" height="116.0" rx="4" ry="4" fill="#fafafa" stroke="#6c8ebf" stroke-width="1" />
+  <rect id="cfg" x="340.0" y="74.0" width="240.0" height="56.0" rx="8" ry="8" fill="#ffffff" stroke="#6c8ebf" stroke-width="1" />
+  <rect id="L1-body" x="30.0" y="190.0" width="860.0" height="546.0" rx="4" ry="4" fill="#fafafa" stroke="#999999" stroke-width="1" />
+  <rect id="gen-body" x="50.0" y="244.0" width="240.0" height="482.0" rx="4" ry="4" fill="#fafafa" stroke="#d6b656" stroke-width="1" />
+  <rect id="gen.s1" x="68.0" y="296.0" width="204.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#d6b656" stroke-width="1" />
+  <rect id="gen.s2" x="68.0" y="384.0" width="204.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#d6b656" stroke-width="1" />
+  <rect id="gen.s3" x="68.0" y="472.0" width="204.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#d6b656" stroke-width="1" />
+  <rect id="gen.s4" x="68.0" y="560.0" width="204.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#d6b656" stroke-width="1" />
+  <rect id="gen.s5" x="68.0" y="648.0" width="204.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#d6b656" stroke-width="1" />
+  <rect id="val-body" x="340.0" y="244.0" width="240.0" height="306.0" rx="4" ry="4" fill="#fafafa" stroke="#82b366" stroke-width="1" />
+  <rect id="val.s1" x="358.0" y="296.0" width="204.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#82b366" stroke-width="1" />
+  <rect id="val.s2" x="358.0" y="384.0" width="204.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#82b366" stroke-width="1" />
+  <rect id="val.s3" x="358.0" y="472.0" width="204.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#82b366" stroke-width="1" />
+  <rect id="post-body" x="630.0" y="244.0" width="240.0" height="394.0" rx="4" ry="4" fill="#fafafa" stroke="#9673a6" stroke-width="1" />
+  <rect id="post.s1" x="648.0" y="296.0" width="204.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#9673a6" stroke-width="1" />
+  <rect id="post.s2" x="648.0" y="384.0" width="204.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#9673a6" stroke-width="1" />
+  <rect id="post.s3" x="648.0" y="472.0" width="204.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#9673a6" stroke-width="1" />
+  <rect id="post.s4" x="648.0" y="560.0" width="204.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#9673a6" stroke-width="1" />
+  <rect id="L2-body" x="30.0" y="811.0" width="860.0" height="120.0" rx="4" ry="4" fill="#fef5f5" stroke="#b85450" stroke-width="1" stroke-dasharray="8 4" />
+  <rect id="envbase" x="165.0" y="855.0" width="240.0" height="56.0" rx="8" ry="8" fill="#f8cecc" stroke="#b85450" stroke-width="1" />
+  <rect id="envimpl" x="505.0" y="855.0" width="240.0" height="56.0" rx="8" ry="8" fill="#f8cecc" stroke="#b85450" stroke-width="1" />
+  <defs><marker id="arrow-eg1" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#000000" /></marker></defs>
+  <polyline id="eg1" points="170.0,354.0 170.0,384.0" fill="none" stroke="#000000" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-eg1)" />
+  <defs><marker id="arrow-eg2" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#000000" /></marker></defs>
+  <polyline id="eg2" points="170.0,442.0 170.0,472.0" fill="none" stroke="#000000" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-eg2)" />
+  <defs><marker id="arrow-eg3" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#000000" /></marker></defs>
+  <polyline id="eg3" points="170.0,530.0 170.0,560.0" fill="none" stroke="#000000" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-eg3)" />
+  <defs><marker id="arrow-eg4" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#000000" /></marker></defs>
+  <polyline id="eg4" points="170.0,618.0 170.0,648.0" fill="none" stroke="#000000" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-eg4)" />
+  <defs><marker id="arrow-ev1" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#000000" /></marker></defs>
+  <polyline id="ev1" points="460.0,354.0 460.0,384.0" fill="none" stroke="#000000" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-ev1)" />
+  <defs><marker id="arrow-ev2" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#000000" /></marker></defs>
+  <polyline id="ev2" points="460.0,442.0 460.0,472.0" fill="none" stroke="#000000" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-ev2)" />
+  <defs><marker id="arrow-ep1" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#000000" /></marker></defs>
+  <polyline id="ep1" points="750.0,354.0 750.0,384.0" fill="none" stroke="#000000" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-ep1)" />
+  <defs><marker id="arrow-ep2" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#000000" /></marker></defs>
+  <polyline id="ep2" points="750.0,442.0 750.0,472.0" fill="none" stroke="#000000" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-ep2)" />
+  <defs><marker id="arrow-ep3" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#000000" /></marker></defs>
+  <polyline id="ep3" points="750.0,530.0 750.0,560.0" fill="none" stroke="#000000" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-ep3)" />
+  <defs><marker id="arrow-e-cfg-gen" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#6c8ebf" /></marker></defs>
+  <polyline id="e-cfg-gen" points="388.0,130.0 388.0,160.0 170.0,160.0 170.0,244.0" fill="none" stroke="#6c8ebf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-cfg-gen)" />
+  <defs><marker id="arrow-e-cfg-val" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#6c8ebf" /></marker></defs>
+  <polyline id="e-cfg-val" points="460.0,130.0 460.0,160.0 490.0,160.0 460.0,160.0 460.0,244.0" fill="none" stroke="#6c8ebf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-cfg-val)" />
+  <defs><marker id="arrow-e-cfg-post" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#6c8ebf" /></marker></defs>
+  <polyline id="e-cfg-post" points="532.0,130.0 532.0,160.0 562.0,160.0 750.0,160.0 750.0,244.0" fill="none" stroke="#6c8ebf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-cfg-post)" />
+  <defs><marker id="arrow-e-gen-val" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#82b366" /></marker></defs>
+  <polyline id="e-gen-val" points="290.0,398.2 315.0,398.2 315.0,397.0 340.0,397.0" fill="none" stroke="#82b366" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-gen-val)" />
+  <defs><marker id="arrow-e-val-post" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#82b366" /></marker></defs>
+  <polyline id="e-val-post" points="580.0,397.0 630.0,397.7" fill="none" stroke="#82b366" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-val-post)" />
+  <defs><marker id="arrow-e-gen-env" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#b85450" /></marker></defs>
+  <polyline id="e-gen-env" points="170.0,726.0 170.0,775.0 285.0,775.0 285.0,855.0" fill="none" stroke="#b85450" stroke-width="2" stroke-dasharray="8 4" stroke-linejoin="round" marker-end="url(#arrow-e-gen-env)" />
+  <defs><marker id="arrow-e-val-env" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#b85450" /></marker></defs>
+  <polyline id="e-val-env" points="460.0,550.0 460.0,775.0 625.0,775.0 625.0,855.0" fill="none" stroke="#b85450" stroke-width="2" stroke-dasharray="8 4" stroke-linejoin="round" marker-end="url(#arrow-e-val-env)" />
+  <rect id="L0-header" x="30.0" y="30.0" width="860.0" height="28.0" rx="4" ry="4" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1" />
+  <rect x="30.0" y="54.0" width="860.0" height="4.0" fill="#dae8fc" stroke="none" />
+  <rect id="L1-header" x="30.0" y="190.0" width="860.0" height="28.0" rx="4" ry="4" fill="#f0f0f0" stroke="#999999" stroke-width="1" />
+  <rect x="30.0" y="214.0" width="860.0" height="4.0" fill="#f0f0f0" stroke="none" />
+  <rect id="gen-header" x="50.0" y="244.0" width="240.0" height="26.0" rx="4" ry="4" fill="#fff2cc" stroke="#d6b656" stroke-width="1" />
+  <rect x="50.0" y="266.0" width="240.0" height="4.0" fill="#fff2cc" stroke="none" />
+  <rect id="val-header" x="340.0" y="244.0" width="240.0" height="26.0" rx="4" ry="4" fill="#d5e8d4" stroke="#82b366" stroke-width="1" />
+  <rect x="340.0" y="266.0" width="240.0" height="4.0" fill="#d5e8d4" stroke="none" />
+  <rect id="post-header" x="630.0" y="244.0" width="240.0" height="26.0" rx="4" ry="4" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect x="630.0" y="266.0" width="240.0" height="4.0" fill="#e1d5e7" stroke="none" />
+  <rect id="L2-header" x="30.0" y="811.0" width="860.0" height="28.0" rx="4" ry="4" fill="#fef5f5" stroke="#b85450" stroke-width="1" stroke-dasharray="8 4" />
+  <rect x="30.0" y="835.0" width="860.0" height="4.0" fill="#fef5f5" stroke="none" />
+  <rect x="178.0" y="763.0" width="99.0" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.5" />
+  <text x="227.5" y="773.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#b85450">execute_tool()</text>
+  <rect x="470.0" y="650.5" width="73.0" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.5" />
+  <text x="472.0" y="660.5" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="start" fill="#b85450">validate()</text>
+  <text x="460.0" y="48.5" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Config</text>
+  <text x="460.0" y="98.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">generation_plan_*.yaml</text>
+  <text x="460.0" y="113.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">env + models + taxonomy + thresholds</text>
+  <text x="460.0" y="208.5" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Pipeline</text>
+  <text x="170.0" y="253.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Generator</text>
+  <text x="170.0" y="269.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">block generation harness</text>
+  <text x="170.0" y="321.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Combo Grid</text>
+  <text x="170.0" y="336.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">dialect×type×topic×emotion</text>
+  <text x="170.0" y="409.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Query Generation</text>
+  <text x="170.0" y="424.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">deepseek-v4-flash, temp 0.7</text>
+  <text x="170.0" y="497.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Answer Decision</text>
+  <text x="170.0" y="512.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">tool_choice=auto dispatch</text>
+  <text x="170.0" y="585.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Tool Result + Response</text>
+  <text x="170.0" y="600.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">ToolBehavior-based dispatch</text>
+  <text x="170.0" y="673.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Fix + Correction</text>
+  <text x="170.0" y="688.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">LLM rewrite, temp 0.3</text>
+  <text x="460.0" y="253.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Validator</text>
+  <text x="460.0" y="269.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">LLM judge scoring pipeline</text>
+  <text x="460.0" y="321.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">LLM Scorer</text>
+  <text x="460.0" y="336.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">rubric judge, mean≥8 gate</text>
+  <text x="460.0" y="409.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Dedup + Filter</text>
+  <text x="460.0" y="424.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">remove duplicates, schema val</text>
+  <text x="460.0" y="497.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Merge Scores</text>
+  <text x="460.0" y="512.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">ensemble min-per-turn</text>
+  <text x="750.0" y="253.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Post-Processing</text>
+  <text x="750.0" y="269.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">assembly + splitting</text>
+  <text x="750.0" y="321.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Assemble Blocks</text>
+  <text x="750.0" y="336.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">stitch blocks→conversations</text>
+  <text x="750.0" y="409.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Train/Val/Eval Split</text>
+  <text x="750.0" y="424.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">ratios from config</text>
+  <text x="750.0" y="497.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Rebalance</text>
+  <text x="750.0" y="512.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">tool:text ratio adjust</text>
+  <text x="750.0" y="585.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Analysis</text>
+  <text x="750.0" y="600.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">dataset quality report</text>
+  <text x="460.0" y="833.5" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Environment</text>
+  <text x="285.0" y="879.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">base.py (ABC)</text>
+  <text x="285.0" y="894.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">ToolSpec + ToolBehavior protocol</text>
+  <text x="625.0" y="879.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">convai_spending_insights</text>
+  <text x="625.0" y="894.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">tools + DB executor + rubrics</text>
+  <text x="315.0" y="374.0" font-family="Inter, Arial, sans-serif" font-size="8" font-weight="normal" font-style="italic" text-anchor="middle" fill="#333">scored blocks</text>
+  <text x="605.0" y="374.0" font-family="Inter, Arial, sans-serif" font-size="8" font-weight="normal" font-style="italic" text-anchor="middle" fill="#333">passing turns</text>
+  <text x="26.0" y="975.0" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="normal" font-style="normal" text-anchor="start" fill="#333">━━ config flow</text>
+  <text x="26.0" y="989.0" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="normal" font-style="normal" text-anchor="start" fill="#333">━━ data flow</text>
+  <text x="26.0" y="1003.0" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="normal" font-style="normal" text-anchor="start" fill="#333">┄┄ env call (dashed)</text>
+</svg>

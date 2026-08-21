@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="ac.draw.io">
+  <diagram id="overview" name="Pipeline Overview">
+    <mxGraphModel pageWidth="940" pageHeight="1700" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ═══ INPUT NODES (y=30) ═══ -->
+        <mxCell id="in-product" value="convai/ submodule&lt;br/&gt;&lt;font size='1'&gt;pinned product SHA&lt;/font&gt;" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;html=1;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="140" y="30" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="in-datasets" value="datasets/&lt;br/&gt;&lt;font size='1'&gt;corpora + scenarios&lt;/font&gt;" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;html=1;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="390" y="30" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="in-eval" value="convai-eval&lt;br/&gt;&lt;font size='1'&gt;sibling checkout&lt;/font&gt;" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;html=1;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="640" y="30" width="160" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- ═══ ROW 1: AUTHOR (y=150, parallel) ═══ -->
+        <mxCell id="sl-env" value="Author: Environments&lt;br/&gt;&lt;font size='1'&gt;environments/e0–e16&lt;/font&gt;" style="swimlane;startSize=46;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=12;html=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="150" width="316" height="238" as="geometry" />
+        </mxCell>
+        <mxCell id="env-step1" value="Freeze tool snapshot&lt;br/&gt;tools.py + logic.py + manifest.py" style="rounded=1;fillColor=#ffffff;strokeColor=#d79b00;html=1;whiteSpace=wrap;" vertex="1" parent="sl-env">
+          <mxGeometry x="18" y="72" width="280" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="env-step2" value="Register lineage&lt;br/&gt;tree.py renders parent→child" style="rounded=1;fillColor=#ffffff;strokeColor=#d79b00;html=1;whiteSpace=wrap;" vertex="1" parent="sl-env">
+          <mxGeometry x="18" y="160" width="280" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="e-env-int1" edge="1" source="env-step1" target="env-step2" parent="sl-env" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="sl-prompt" value="Author: Prompt Arms&lt;br/&gt;&lt;font size='1'&gt;prompt_arms/p0–p12&lt;/font&gt;" style="swimlane;startSize=46;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=12;html=1;" vertex="1" parent="1">
+          <mxGeometry x="450" y="150" width="316" height="238" as="geometry" />
+        </mxCell>
+        <mxCell id="prompt-step1" value="Compose sections&lt;br/&gt;prompt_arms/sections/pN/" style="rounded=1;fillColor=#ffffff;strokeColor=#d79b00;html=1;whiteSpace=wrap;" vertex="1" parent="sl-prompt">
+          <mxGeometry x="18" y="72" width="280" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="prompt-step2" value="Record in pN.json&lt;br/&gt;parent + changes metadata" style="rounded=1;fillColor=#ffffff;strokeColor=#d79b00;html=1;whiteSpace=wrap;" vertex="1" parent="sl-prompt">
+          <mxGeometry x="18" y="160" width="280" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="e-prompt-int1" edge="1" source="prompt-step1" target="prompt-step2" parent="sl-prompt" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ═══ ROW 2: CONFIGURE (y=448) ═══ -->
+        <mxCell id="sl-config" value="Configure&lt;br/&gt;&lt;font size='1'&gt;runners/setups/ + eval_params.py&lt;/font&gt;" style="swimlane;startSize=46;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=12;html=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="448" width="316" height="238" as="geometry" />
+        </mxCell>
+        <mxCell id="config-step1" value="Define cell setup JSON&lt;br/&gt;prompt_pN_env_eM[_think].json" style="rounded=1;fillColor=#ffffff;strokeColor=#d79b00;html=1;whiteSpace=wrap;" vertex="1" parent="sl-config">
+          <mxGeometry x="18" y="72" width="280" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="config-step2" value="Name eval params&lt;br/&gt;battery + depth + persona store" style="rounded=1;fillColor=#ffffff;strokeColor=#d79b00;html=1;whiteSpace=wrap;" vertex="1" parent="sl-config">
+          <mxGeometry x="18" y="160" width="280" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="e-config-int1" edge="1" source="config-step1" target="config-step2" parent="sl-config" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ═══ ROW 3: RUN (y=746) ═══ -->
+        <mxCell id="sl-run" value="Run&lt;br/&gt;&lt;font size='1'&gt;runners/sweep.py&lt;/font&gt;" style="swimlane;startSize=46;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=12;html=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="746" width="316" height="380" as="geometry" />
+        </mxCell>
+        <mxCell id="run-step1" value="sweep.py&lt;br/&gt;eval_params × cells matrix&lt;br/&gt;sequential, one cell at a time" style="rounded=1;fillColor=#ffffff;strokeColor=#d79b00;html=1;whiteSpace=wrap;" vertex="1" parent="sl-run">
+          <mxGeometry x="18" y="72" width="280" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="run-step2" value="run_ceval.py&lt;br/&gt;boot realtime → invoke ceval&lt;br/&gt;provenance + manifest" style="rounded=1;fillColor=#ffffff;strokeColor=#d79b00;html=1;whiteSpace=wrap;" vertex="1" parent="sl-run">
+          <mxGeometry x="18" y="178" width="280" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="run-step3" value="adapt for viewer&lt;br/&gt;ceval_to_responses.py&lt;br/&gt;turns.jsonl → responses.json" style="rounded=1;fillColor=#ffffff;strokeColor=#d79b00;html=1;whiteSpace=wrap;" vertex="1" parent="sl-run">
+          <mxGeometry x="18" y="284" width="280" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="e-run-int1" edge="1" source="run-step1" target="run-step2" parent="sl-run" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-run-int2" edge="1" source="run-step2" target="run-step3" parent="sl-run" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ═══ ROW 4: READ (y=1186) ═══ -->
+        <mxCell id="sl-read" value="Read&lt;br/&gt;&lt;font size='1'&gt;view/&lt;/font&gt;" style="swimlane;startSize=46;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=12;html=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="1186" width="316" height="380" as="geometry" />
+        </mxCell>
+        <mxCell id="read-step1" value="ceval_table.py&lt;br/&gt;metric vector per cell&lt;br/&gt;cross-run comparison" style="rounded=1;fillColor=#ffffff;strokeColor=#d79b00;html=1;whiteSpace=wrap;" vertex="1" parent="sl-read">
+          <mxGeometry x="18" y="72" width="280" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="read-step2" value="inspector.py&lt;br/&gt;terminal side-by-side viewer&lt;br/&gt;section-aligned columns" style="rounded=1;fillColor=#ffffff;strokeColor=#d79b00;html=1;whiteSpace=wrap;" vertex="1" parent="sl-read">
+          <mxGeometry x="18" y="178" width="280" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="read-step3" value="view/app/ (React+Vite)&lt;br/&gt;real chart components&lt;br/&gt;pinned product renderer" style="rounded=1;fillColor=#ffffff;strokeColor=#d79b00;html=1;whiteSpace=wrap;" vertex="1" parent="sl-read">
+          <mxGeometry x="18" y="284" width="280" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="e-read-int1" edge="1" source="read-step1" target="read-step2" parent="sl-read" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-read-int2" edge="1" source="read-step2" target="read-step3" parent="sl-read" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ═══ OUTPUT NODE (y=1626) ═══ -->
+        <mxCell id="out-evidence" value="Evidence&lt;br/&gt;&lt;font size='1'&gt;graduate to product&lt;/font&gt;" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;html=1;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="370" y="1626" width="180" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- ═══ CROSS-ROW EDGES ═══ -->
+        <mxCell id="e-product-env" edge="1" source="in-product" target="sl-env" value="pinned SHA" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-datasets-config" edge="1" source="in-datasets" target="sl-config" value="scenarios" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.3;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="470" y="110" />
+              <mxPoint x="415" y="110" />
+              <mxPoint x="415" y="420" />
+              <mxPoint x="375" y="420" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-eval-run" edge="1" source="in-eval" target="sl-run" value="convai-eval" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="720" y="110" />
+              <mxPoint x="860" y="110" />
+              <mxPoint x="860" y="936" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-env-config" edge="1" source="sl-env" target="sl-config" value="EXPERIMENTAL_ENV" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.2;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="218" y="415" />
+              <mxPoint x="343" y="415" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-prompt-config" edge="1" source="sl-prompt" target="sl-config" value="PROMPT_CONFIG" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.8;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="608" y="415" />
+              <mxPoint x="533" y="415" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-config-run" edge="1" source="sl-config" target="sl-run" value="setup JSON" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-run-read" edge="1" source="sl-run" target="sl-read" value="results/ceval/" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-read-out" edge="1" source="sl-read" target="out-evidence" value="evidence" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#82b366;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ═══ LEGEND ═══ -->
+        <mxCell id="legend" value="━━ sequential&lt;br/&gt;━━ &lt;font color=&quot;#82b366&quot;&gt;pass / output&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=top;fontSize=10;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1690" width="140" height="50" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

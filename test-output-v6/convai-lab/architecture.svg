@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="10 10 900 750" width="900" height="750">
+  <!-- Page: Architecture Overview -->
+  <style>text { font-family: Inter, Arial, sans-serif; }</style>
+  <rect id="L0-body" x="30.0" y="30.0" width="860.0" height="134.0" rx="4" ry="4" fill="#fafafa" stroke="#6c8ebf" stroke-width="1" />
+  <rect id="L1-body" x="30.0" y="184.0" width="860.0" height="134.0" rx="4" ry="4" fill="#fafafa" stroke="#d6b656" stroke-width="1" />
+  <rect id="L2-body" x="30.0" y="338.0" width="860.0" height="134.0" rx="4" ry="4" fill="#fafafa" stroke="#82b366" stroke-width="1" />
+  <rect id="L3-body" x="30.0" y="492.0" width="860.0" height="134.0" rx="4" ry="4" fill="#fafafa" stroke="#9673a6" stroke-width="1" />
+  <rect id="arms" x="195.0" y="84.0" width="240.0" height="60.0" rx="8" ry="8" fill="#ffffff" stroke="#6c8ebf" stroke-width="1" />
+  <rect id="setups" x="485.0" y="84.0" width="240.0" height="60.0" rx="8" ry="8" fill="#ffffff" stroke="#6c8ebf" stroke-width="1" />
+  <rect id="sweep" x="50.0" y="238.0" width="240.0" height="60.0" rx="8" ry="8" fill="#ffffff" stroke="#d6b656" stroke-width="1" />
+  <rect id="run_ceval" x="340.0" y="238.0" width="240.0" height="60.0" rx="8" ry="8" fill="#ffffff" stroke="#d6b656" stroke-width="1" />
+  <rect id="eval_params" x="630.0" y="238.0" width="240.0" height="60.0" rx="8" ry="8" fill="#ffffff" stroke="#d6b656" stroke-width="1" />
+  <rect id="envs" x="195.0" y="392.0" width="240.0" height="60.0" rx="8" ry="8" fill="#ffffff" stroke="#82b366" stroke-width="1" />
+  <rect id="datasets" x="485.0" y="392.0" width="240.0" height="60.0" rx="8" ry="8" fill="#ffffff" stroke="#82b366" stroke-width="1" />
+  <rect id="inspector" x="50.0" y="546.0" width="240.0" height="60.0" rx="8" ry="8" fill="#ffffff" stroke="#9673a6" stroke-width="1" />
+  <rect id="ceval_table" x="340.0" y="546.0" width="240.0" height="60.0" rx="8" ry="8" fill="#ffffff" stroke="#9673a6" stroke-width="1" />
+  <rect id="webapp" x="630.0" y="546.0" width="240.0" height="60.0" rx="8" ry="8" fill="#ffffff" stroke="#9673a6" stroke-width="1" />
+  <rect id="legend" x="30.0" y="650.0" width="200.0" height="90.0" rx="8" ry="8" fill="#f5f5f5" stroke="#666666" stroke-width="1" />
+  <rect id="L0-header" x="30.0" y="30.0" width="860.0" height="28.0" rx="4" ry="4" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1" />
+  <rect x="30.0" y="54.0" width="860.0" height="4.0" fill="#dae8fc" stroke="none" />
+  <rect id="L1-header" x="30.0" y="184.0" width="860.0" height="28.0" rx="4" ry="4" fill="#fff2cc" stroke="#d6b656" stroke-width="1" />
+  <rect x="30.0" y="208.0" width="860.0" height="4.0" fill="#fff2cc" stroke="none" />
+  <rect id="L2-header" x="30.0" y="338.0" width="860.0" height="28.0" rx="4" ry="4" fill="#d5e8d4" stroke="#82b366" stroke-width="1" />
+  <rect x="30.0" y="362.0" width="860.0" height="4.0" fill="#d5e8d4" stroke="none" />
+  <rect id="L3-header" x="30.0" y="492.0" width="860.0" height="28.0" rx="4" ry="4" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect x="30.0" y="516.0" width="860.0" height="4.0" fill="#e1d5e7" stroke="none" />
+  <defs><marker id="arrow-e1" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#6c8ebf" /></marker></defs>
+  <polyline id="e1" points="533.0,144.0 533.0,174.0 218.0,174.0 218.0,217.0 218.0,238.0" fill="none" stroke="#6c8ebf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e1)" />
+  <rect x="355.2" y="162.0" width="40.5" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.7" />
+  <text x="375.5" y="172.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#6c8ebf">cells</text>
+  <defs><marker id="arrow-e2" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#6c8ebf" /></marker></defs>
+  <polyline id="e2" points="605.0,144.0 605.0,174.0 460.0,174.0 460.0,217.0 460.0,238.0" fill="none" stroke="#6c8ebf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e2)" />
+  <rect x="505.8" y="162.0" width="53.5" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.7" />
+  <text x="532.5" y="172.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#6c8ebf">arm+env</text>
+  <defs><marker id="arrow-e3" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#6c8ebf" /></marker></defs>
+  <polyline id="e3" points="315.0,144.0 315.0,174.0 412.0,174.0 412.0,217.0 412.0,238.0" fill="none" stroke="#6c8ebf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e3)" />
+  <rect x="340.0" y="162.0" width="47.0" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.7" />
+  <text x="363.5" y="172.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#6c8ebf">prompt</text>
+  <defs><marker id="arrow-e4" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#d6b656" /></marker></defs>
+  <polyline id="e4" points="630.0,268.0 290.0,268.0" fill="none" stroke="#d6b656" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e4)" />
+  <rect x="426.8" y="256.0" width="66.5" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.7" />
+  <text x="460.0" y="266.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#d6b656">batteries</text>
+  <defs><marker id="arrow-e5" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#82b366" /></marker></defs>
+  <polyline id="e5" points="412.0,298.0 412.0,328.0 315.0,328.0 315.0,371.0 315.0,392.0" fill="none" stroke="#82b366" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e5)" />
+  <rect x="320.5" y="316.0" width="86.0" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.7" />
+  <text x="363.5" y="326.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#82b366">load_tools()</text>
+  <defs><marker id="arrow-e6" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#82b366" /></marker></defs>
+  <polyline id="e6" points="508.0,298.0 508.0,328.0 605.0,328.0 605.0,371.0 605.0,392.0" fill="none" stroke="#82b366" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e6)" />
+  <rect x="523.2" y="316.0" width="66.5" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.7" />
+  <text x="556.5" y="326.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#82b366">scenarios</text>
+  <defs><marker id="arrow-e7" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#9673a6" /></marker></defs>
+  <polyline id="e7" points="170.0,298.0 170.0,482.0 460.0,482.0 460.0,525.0 460.0,546.0" fill="none" stroke="#9673a6" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e7)" />
+  <rect x="285.0" y="470.0" width="60.0" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.7" />
+  <text x="315.0" y="480.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#9673a6">results/</text>
+  <defs><marker id="arrow-e8" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#9673a6" /></marker></defs>
+  <polyline id="e8" points="388.0,298.0 388.0,482.0 170.0,482.0 170.0,525.0 170.0,546.0" fill="none" stroke="#9673a6" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e8)" />
+  <rect x="239.2" y="470.0" width="79.5" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.7" />
+  <text x="279.0" y="480.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#9673a6">turns.jsonl</text>
+  <defs><marker id="arrow-e9" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#9673a6" /></marker></defs>
+  <polyline id="e9" points="363.0,452.0 363.0,482.0 702.0,482.0 702.0,525.0 702.0,546.0" fill="none" stroke="#9673a6" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e9)" />
+  <rect x="502.5" y="470.0" width="60.0" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.7" />
+  <text x="532.5" y="480.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#9673a6">ToolSpec</text>
+  <text x="460.0" y="46.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Config &amp; Frozen Arms</text>
+  <text x="460.0" y="200.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Runners (Experiment Drivers)</text>
+  <text x="460.0" y="354.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Frozen Environments &amp; Data</text>
+  <text x="460.0" y="508.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">View &amp; Results</text>
+  <text x="315.0" y="110.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">prompt_arms/ p0-p11</text>
+  <text x="315.0" y="125.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">frozen system prompts from sections/</text>
+  <text x="605.0" y="110.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">runners/setups/</text>
+  <text x="605.0" y="125.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">one JSON per cell, selects arm+env</text>
+  <text x="170.0" y="264.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">sweep.py</text>
+  <text x="170.0" y="279.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">eval-params x cells matrix driver</text>
+  <text x="460.0" y="264.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">run_ceval.py</text>
+  <text x="460.0" y="279.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">boot realtime, invoke ceval, teardown</text>
+  <text x="750.0" y="264.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">eval_params.py</text>
+  <text x="750.0" y="279.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">named evaluations + ceval flags</text>
+  <text x="315.0" y="418.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">environments/ e0-e15</text>
+  <text x="315.0" y="433.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">frozen tool snapshots (ToolSpec)</text>
+  <text x="605.0" y="418.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">datasets/</text>
+  <text x="605.0" y="433.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">prompts + generated scenarios</text>
+  <text x="170.0" y="572.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">inspector.py</text>
+  <text x="170.0" y="587.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">terminal side-by-side viewer</text>
+  <text x="460.0" y="572.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">ceval_table.py</text>
+  <text x="460.0" y="587.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">metric vector per cell comparison</text>
+  <text x="750.0" y="572.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">view/app/</text>
+  <text x="750.0" y="587.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">React/Vite web viewer (dist/)</text>
+  <text x="70.0" y="666.0" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Legend</text>
+  <text x="130.0" y="682.5" font-family="Inter, Arial, sans-serif" font-size="9" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">— Config flow (blue)</text>
+  <text x="130.0" y="698.5" font-family="Inter, Arial, sans-serif" font-size="9" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">— Data/env flow (green)</text>
+  <text x="130.0" y="714.5" font-family="Inter, Arial, sans-serif" font-size="9" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">— Intra-band (yellow)</text>
+  <text x="130.0" y="730.5" font-family="Inter, Arial, sans-serif" font-size="9" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">— Results flow (purple)</text>
+</svg>

@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 940 816" width="940" height="816">
+  <!-- Page: Architecture Overview -->
+  <style>text { font-family: Inter, Arial, sans-serif; }</style>
+  <rect id="L0-body" x="30.0" y="30.0" width="860.0" height="134.0" rx="4" ry="4" fill="#fafafa" stroke="#6c8ebf" stroke-width="1" />
+  <rect id="env" x="50.0" y="84.0" width="240.0" height="60.0" rx="8" ry="8" fill="#ffffff" stroke="#6c8ebf" stroke-width="1" />
+  <rect id="prompts" x="340.0" y="84.0" width="240.0" height="60.0" rx="8" ry="8" fill="#ffffff" stroke="#6c8ebf" stroke-width="1" />
+  <rect id="datasets" x="630.0" y="84.0" width="240.0" height="60.0" rx="8" ry="8" fill="#ffffff" stroke="#6c8ebf" stroke-width="1" />
+  <rect id="L1-body" x="30.0" y="214.0" width="860.0" height="134.0" rx="4" ry="4" fill="#fafafa" stroke="#d6b656" stroke-width="1" />
+  <rect id="sweep" x="50.0" y="268.0" width="240.0" height="60.0" rx="8" ry="8" fill="#ffffff" stroke="#d6b656" stroke-width="1" />
+  <rect id="evalp" x="340.0" y="268.0" width="240.0" height="60.0" rx="8" ry="8" fill="#ffffff" stroke="#d6b656" stroke-width="1" />
+  <rect id="runceval" x="630.0" y="268.0" width="240.0" height="60.0" rx="8" ry="8" fill="#ffffff" stroke="#d6b656" stroke-width="1" />
+  <rect id="L2-body" x="30.0" y="398.0" width="860.0" height="134.0" rx="4" ry="4" fill="#fafafa" stroke="#82b366" stroke-width="1" />
+  <rect id="inspector" x="50.0" y="452.0" width="240.0" height="60.0" rx="8" ry="8" fill="#ffffff" stroke="#82b366" stroke-width="1" />
+  <rect id="table" x="340.0" y="452.0" width="240.0" height="60.0" rx="8" ry="8" fill="#ffffff" stroke="#82b366" stroke-width="1" />
+  <rect id="webapp" x="630.0" y="452.0" width="240.0" height="60.0" rx="8" ry="8" fill="#ffffff" stroke="#82b366" stroke-width="1" />
+  <rect id="L3-body" x="30.0" y="582.0" width="860.0" height="129.0" rx="4" ry="4" fill="#fef5f5" stroke="#b85450" stroke-width="1" stroke-dasharray="8 4" />
+  <rect id="convai" x="340.0" y="636.0" width="240.0" height="60.0" rx="8" ry="8" fill="#f8cecc" stroke="#b85450" stroke-width="1" />
+  <defs><marker id="arrow-e-env-sweep" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#6c8ebf" /></marker></defs>
+  <polyline id="e-env-sweep" points="170.0,144.0 170.0,175.0 170.0,250.0 170.0,268.0" fill="none" stroke="#6c8ebf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-env-sweep)" />
+  <defs><marker id="arrow-e-prompts-sweep" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#6c8ebf" /></marker></defs>
+  <polyline id="e-prompts-sweep" points="400.0,144.0 400.0,185.0 230.0,185.0 230.0,250.0 230.0,268.0" fill="none" stroke="#6c8ebf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-prompts-sweep)" />
+  <defs><marker id="arrow-e-datasets-evalp" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#6c8ebf" /></marker></defs>
+  <polyline id="e-datasets-evalp" points="750.0,144.0 750.0,175.0 460.0,175.0 460.0,250.0 460.0,268.0" fill="none" stroke="#6c8ebf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-datasets-evalp)" />
+  <defs><marker id="arrow-e-sweep-runceval" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#82b366" /></marker></defs>
+  <polyline id="e-sweep-runceval" points="170.0,268.0 170.0,252.0 750.0,252.0 750.0,268.0" fill="none" stroke="#82b366" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-sweep-runceval)" />
+  <defs><marker id="arrow-e-evalp-runceval" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#82b366" /></marker></defs>
+  <polyline id="e-evalp-runceval" points="580.0,298.0 630.0,298.0" fill="none" stroke="#82b366" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-evalp-runceval)" />
+  <defs><marker id="arrow-e-runceval-inspector" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#82b366" /></marker></defs>
+  <polyline id="e-runceval-inspector" points="678.0,328.0 678.0,365.0 170.0,365.0 170.0,435.0 170.0,452.0" fill="none" stroke="#82b366" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-runceval-inspector)" />
+  <defs><marker id="arrow-e-runceval-table" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#82b366" /></marker></defs>
+  <polyline id="e-runceval-table" points="750.0,328.0 750.0,375.0 460.0,375.0 460.0,435.0 460.0,452.0" fill="none" stroke="#82b366" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-runceval-table)" />
+  <defs><marker id="arrow-e-table-webapp" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#82b366" /></marker></defs>
+  <polyline id="e-table-webapp" points="580.0,482.0 630.0,482.0" fill="none" stroke="#82b366" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-table-webapp)" />
+  <defs><marker id="arrow-e-runceval-convai" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#b85450" /></marker></defs>
+  <polyline id="e-runceval-convai" points="834.0,328.0 834.0,380.0 900.0,380.0 900.0,560.0 544.0,560.0 544.0,636.0" fill="none" stroke="#b85450" stroke-width="2" stroke-dasharray="8 4" stroke-linejoin="round" marker-end="url(#arrow-e-runceval-convai)" />
+  <defs><marker id="arrow-e-webapp-convai" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#b85450" /></marker></defs>
+  <polyline id="e-webapp-convai" points="702.0,512.0 702.0,545.0 508.0,545.0 508.0,636.0" fill="none" stroke="#b85450" stroke-width="2" stroke-dasharray="8 4" stroke-linejoin="round" marker-end="url(#arrow-e-webapp-convai)" />
+  <rect id="L0-header" x="30.0" y="30.0" width="860.0" height="28.0" rx="4" ry="4" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1" />
+  <rect x="30.0" y="54.0" width="860.0" height="4.0" fill="#dae8fc" stroke="none" />
+  <rect id="L1-header" x="30.0" y="214.0" width="860.0" height="28.0" rx="4" ry="4" fill="#fff2cc" stroke="#d6b656" stroke-width="1" />
+  <rect x="30.0" y="238.0" width="860.0" height="4.0" fill="#fff2cc" stroke="none" />
+  <rect id="L2-header" x="30.0" y="398.0" width="860.0" height="28.0" rx="4" ry="4" fill="#d5e8d4" stroke="#82b366" stroke-width="1" />
+  <rect x="30.0" y="422.0" width="860.0" height="4.0" fill="#d5e8d4" stroke="none" />
+  <rect id="L3-header" x="30.0" y="582.0" width="860.0" height="28.0" rx="4" ry="4" fill="#fef5f5" stroke="#b85450" stroke-width="1" stroke-dasharray="8 4" />
+  <rect x="30.0" y="606.0" width="860.0" height="4.0" fill="#fef5f5" stroke="none" />
+  <rect x="430.0" y="240.0" width="60.0" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.7" />
+  <text x="460.0" y="250.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#82b366">per cell</text>
+  <text x="605.0" y="290.0" font-family="Inter, Arial, sans-serif" font-size="9" text-anchor="middle" fill="#82b366" font-style="italic">params</text>
+  <text x="605.0" y="474.0" font-family="Inter, Arial, sans-serif" font-size="9" text-anchor="middle" fill="#82b366" font-style="italic">metrics</text>
+  <rect x="675.8" y="548.0" width="92.5" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.5" />
+  <text x="722.0" y="558.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#b85450">boot/teardown</text>
+  <rect x="562.0" y="533.0" width="86.0" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.5" />
+  <text x="605.0" y="543.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#b85450">chart render</text>
+  <text x="460.0" y="46.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Config / Input</text>
+  <text x="170.0" y="110.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">environments/</text>
+  <text x="170.0" y="125.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">frozen tool arms e0-e16, registry.py</text>
+  <text x="460.0" y="110.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">prompt_arms/</text>
+  <text x="460.0" y="125.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">system prompts p0-p12, sections/</text>
+  <text x="750.0" y="110.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">datasets/</text>
+  <text x="750.0" y="125.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">corpora + scenarios, eval batteries</text>
+  <text x="460.0" y="230.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Runners</text>
+  <text x="170.0" y="294.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">sweep.py</text>
+  <text x="170.0" y="309.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">eval-params x cells matrix, keep-going</text>
+  <text x="460.0" y="294.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">eval_params.py</text>
+  <text x="460.0" y="309.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">named batteries: depth, persona, suite</text>
+  <text x="750.0" y="294.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">run_ceval.py</text>
+  <text x="750.0" y="309.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">boot realtime, invoke ceval, teardown</text>
+  <text x="460.0" y="414.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">View / Results</text>
+  <text x="170.0" y="478.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">inspector.py</text>
+  <text x="170.0" y="493.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">terminal viewer, side-by-side compare</text>
+  <text x="460.0" y="478.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">ceval_table.py</text>
+  <text x="460.0" y="493.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">metric vector per cell, score compare</text>
+  <text x="750.0" y="478.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">view/app/</text>
+  <text x="750.0" y="493.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">React/Vite viewer, real chart render</text>
+  <text x="460.0" y="602.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Product (Submodule)</text>
+  <text x="460.0" y="662.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">convai/ submodule</text>
+  <text x="460.0" y="677.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">pinned product SHA, never imports lab</text>
+  <text x="26.0" y="730.0" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="normal" font-style="normal" text-anchor="start" fill="#333">━━ config flow</text>
+  <text x="26.0" y="744.0" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="normal" font-style="normal" text-anchor="start" fill="#333">━━ data flow</text>
+  <text x="26.0" y="758.0" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="normal" font-style="normal" text-anchor="start" fill="#333">┄┄ product dep</text>
+</svg>

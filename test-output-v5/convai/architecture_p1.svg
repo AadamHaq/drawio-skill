@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 40 1100 1120" width="1100" height="1120">
+  <!-- Page: Service Map -->
+  <style>text { font-family: Inter, Arial, sans-serif; }</style>
+  <rect id="web-body" x="460.0" y="60.0" width="200.0" height="146.0" rx="4" ry="4" fill="#fafafa" stroke="#d6b656" stroke-width="1" />
+  <rect id="web.c1" x="470.0" y="116.0" width="180.0" height="24.0" rx="8" ry="8" fill="#fff2cc" stroke="#d6b656" stroke-width="1" />
+  <rect id="web.c2" x="470.0" y="144.0" width="180.0" height="24.0" rx="8" ry="8" fill="#fff2cc" stroke="#d6b656" stroke-width="1" />
+  <rect id="web.c3" x="470.0" y="172.0" width="180.0" height="24.0" rx="8" ry="8" fill="#fff2cc" stroke="#d6b656" stroke-width="1" />
+  <rect id="api-body" x="160.0" y="290.0" width="200.0" height="146.0" rx="4" ry="4" fill="#fafafa" stroke="#9673a6" stroke-width="1" />
+  <rect id="api.c1" x="170.0" y="346.0" width="180.0" height="24.0" rx="8" ry="8" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect id="api.c2" x="170.0" y="374.0" width="180.0" height="24.0" rx="8" ry="8" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect id="api.c3" x="170.0" y="402.0" width="180.0" height="24.0" rx="8" ry="8" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect id="livekit-body" x="760.0" y="290.0" width="200.0" height="118.0" rx="4" ry="4" fill="#fafafa" stroke="#9673a6" stroke-width="1" />
+  <rect id="livekit.c1" x="770.0" y="346.0" width="180.0" height="24.0" rx="8" ry="8" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect id="livekit.c2" x="770.0" y="374.0" width="180.0" height="24.0" rx="8" ry="8" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect id="rt-text-body" x="160.0" y="530.0" width="200.0" height="118.0" rx="4" ry="4" fill="#fafafa" stroke="#9673a6" stroke-width="1" />
+  <rect id="rt-text.c1" x="170.0" y="586.0" width="180.0" height="24.0" rx="8" ry="8" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect id="rt-text.c2" x="170.0" y="614.0" width="180.0" height="24.0" rx="8" ry="8" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect id="rt-voice-body" x="600.0" y="530.0" width="200.0" height="118.0" rx="4" ry="4" fill="#fafafa" stroke="#9673a6" stroke-width="1" />
+  <rect id="rt-voice.c1" x="610.0" y="586.0" width="180.0" height="24.0" rx="8" ry="8" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect id="rt-voice.c2" x="610.0" y="614.0" width="180.0" height="24.0" rx="8" ry="8" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect id="llm-body" x="60.0" y="750.0" width="200.0" height="118.0" rx="4" ry="4" fill="#fafafa" stroke="#9673a6" stroke-width="1" />
+  <rect id="llm.c1" x="70.0" y="806.0" width="180.0" height="24.0" rx="8" ry="8" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect id="llm.c2" x="70.0" y="834.0" width="180.0" height="24.0" rx="8" ry="8" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect id="guardrails-body" x="320.0" y="750.0" width="200.0" height="146.0" rx="4" ry="4" fill="#fafafa" stroke="#9673a6" stroke-width="1" />
+  <rect id="guardrails.c1" x="330.0" y="806.0" width="180.0" height="24.0" rx="8" ry="8" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect id="guardrails.c2" x="330.0" y="834.0" width="180.0" height="24.0" rx="8" ry="8" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect id="guardrails.c3" x="330.0" y="862.0" width="180.0" height="24.0" rx="8" ry="8" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect id="stt-body" x="580.0" y="750.0" width="200.0" height="118.0" rx="4" ry="4" fill="#fafafa" stroke="#9673a6" stroke-width="1" />
+  <rect id="stt.c1" x="590.0" y="806.0" width="180.0" height="24.0" rx="8" ry="8" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect id="stt.c2" x="590.0" y="834.0" width="180.0" height="24.0" rx="8" ry="8" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect id="tts-body" x="880.0" y="750.0" width="200.0" height="118.0" rx="4" ry="4" fill="#fafafa" stroke="#9673a6" stroke-width="1" />
+  <rect id="tts.c1" x="890.0" y="806.0" width="180.0" height="24.0" rx="8" ry="8" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect id="tts.c2" x="890.0" y="834.0" width="180.0" height="24.0" rx="8" ry="8" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect id="postgres" x="60.0" y="970.0" width="150.0" height="70.0" rx="0" ry="0" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1" />
+  <rect id="redis" x="350.0" y="970.0" width="160.0" height="70.0" rx="0" ry="0" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1" />
+  <rect id="redis-kv" x="660.0" y="970.0" width="160.0" height="70.0" rx="0" ry="0" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1" />
+  <rect id="web-header" x="460.0" y="60.0" width="200.0" height="30.0" rx="4" ry="4" fill="#fff2cc" stroke="#d6b656" stroke-width="1" />
+  <rect x="460.0" y="86.0" width="200.0" height="4.0" fill="#fff2cc" stroke="none" />
+  <rect id="api-header" x="160.0" y="290.0" width="200.0" height="30.0" rx="4" ry="4" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect x="160.0" y="316.0" width="200.0" height="4.0" fill="#e1d5e7" stroke="none" />
+  <rect id="livekit-header" x="760.0" y="290.0" width="200.0" height="30.0" rx="4" ry="4" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect x="760.0" y="316.0" width="200.0" height="4.0" fill="#e1d5e7" stroke="none" />
+  <rect id="rt-text-header" x="160.0" y="530.0" width="200.0" height="30.0" rx="4" ry="4" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect x="160.0" y="556.0" width="200.0" height="4.0" fill="#e1d5e7" stroke="none" />
+  <rect id="rt-voice-header" x="600.0" y="530.0" width="200.0" height="30.0" rx="4" ry="4" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect x="600.0" y="556.0" width="200.0" height="4.0" fill="#e1d5e7" stroke="none" />
+  <rect id="llm-header" x="60.0" y="750.0" width="200.0" height="30.0" rx="4" ry="4" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect x="60.0" y="776.0" width="200.0" height="4.0" fill="#e1d5e7" stroke="none" />
+  <rect id="guardrails-header" x="320.0" y="750.0" width="200.0" height="30.0" rx="4" ry="4" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect x="320.0" y="776.0" width="200.0" height="4.0" fill="#e1d5e7" stroke="none" />
+  <rect id="stt-header" x="580.0" y="750.0" width="200.0" height="30.0" rx="4" ry="4" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect x="580.0" y="776.0" width="200.0" height="4.0" fill="#e1d5e7" stroke="none" />
+  <rect id="tts-header" x="880.0" y="750.0" width="200.0" height="30.0" rx="4" ry="4" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect x="880.0" y="776.0" width="200.0" height="4.0" fill="#e1d5e7" stroke="none" />
+  <defs><marker id="arrow-e1" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#6c8ebf" /></marker></defs>
+  <polyline id="e1" points="500.0,206.0 500.0,250.0 300.0,250.0 300.0,290.0" fill="none" stroke="#6c8ebf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e1)" />
+  <rect x="366.8" y="238.0" width="66.5" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.7" />
+  <text x="400.0" y="248.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#6c8ebf">REST /api</text>
+  <defs><marker id="arrow-e2" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#d79b00" /></marker></defs>
+  <polyline id="e2" points="460.0,206.0 460.0,490.0 300.0,490.0 300.0,530.0" fill="none" stroke="#d79b00" stroke-width="2" stroke-dasharray="12 4" stroke-linejoin="round" marker-end="url(#arrow-e2)" />
+  <rect x="470.0" y="336.0" width="66.5" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.5" />
+  <text x="472.0" y="346.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="start" fill="#d79b00">WebSocket</text>
+  <defs><marker id="arrow-e3" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#d79b00" /></marker></defs>
+  <polyline id="e3" points="660.0,133.0 710.0,133.0 710.0,349.0 760.0,349.0" fill="none" stroke="#d79b00" stroke-width="2" stroke-dasharray="12 4" stroke-linejoin="round" marker-end="url(#arrow-e3)" />
+  <rect x="720.0" y="229.0" width="47.0" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.5" />
+  <text x="722.0" y="239.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="start" fill="#d79b00">WebRTC</text>
+  <defs><marker id="arrow-e4" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#6c8ebf" /></marker></defs>
+  <polyline id="e4" points="160.0,392.2 40.0,392.0 40.0,1005.0 60.0,1005.0" fill="none" stroke="#6c8ebf" stroke-width="2" stroke-dasharray="8 4" stroke-linejoin="round" marker-end="url(#arrow-e4)" />
+  <rect x="50.0" y="686.5" width="53.5" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.5" />
+  <text x="52.0" y="696.5" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="start" fill="#6c8ebf">queries</text>
+  <defs><marker id="arrow-e5" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#6c8ebf" /></marker></defs>
+  <polyline id="e5" points="360.0,392.2 550.0,392.2 550.0,472.0 550.0,920.0 430.0,920.0 430.0,970.0" fill="none" stroke="#6c8ebf" stroke-width="2" stroke-dasharray="8 4" stroke-linejoin="round" marker-end="url(#arrow-e5)" />
+  <rect x="560.0" y="684.0" width="60.0" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.5" />
+  <text x="562.0" y="694.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="start" fill="#6c8ebf">sessions</text>
+  <defs><marker id="arrow-e6" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#6c8ebf" /></marker></defs>
+  <polyline id="e6" points="260.0,530.0 260.0,436.0" fill="none" stroke="#6c8ebf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e6)" />
+  <text x="272.0" y="475.0" font-family="Inter, Arial, sans-serif" font-size="9" text-anchor="start" fill="#6c8ebf" font-style="italic">internal API</text>
+  <defs><marker id="arrow-e7" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#6c8ebf" /></marker></defs>
+  <polyline id="e7" points="220.0,648.0 220.0,700.0 160.0,700.0 160.0,750.0" fill="none" stroke="#6c8ebf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e7)" />
+  <rect x="150.2" y="678.0" width="79.5" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.7" />
+  <text x="190.0" y="690.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#6c8ebf">completions</text>
+  <defs><marker id="arrow-e8" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#9673a6" /></marker></defs>
+  <polyline id="e8" points="300.0,648.0 300.0,700.0 420.0,700.0 420.0,750.0" fill="none" stroke="#9673a6" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow-e8)" />
+  <rect x="323.5" y="688.0" width="73.0" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.7" />
+  <text x="360.0" y="698.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#9673a6">text guard</text>
+  <defs><marker id="arrow-e9" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#6c8ebf" /></marker></defs>
+  <polyline id="e9" points="600.0,648.0 600.0,690.0 560.0,690.0 560.0,910.0 260.0,910.0 260.0,832.6" fill="none" stroke="#6c8ebf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e9)" />
+  <rect x="373.5" y="898.0" width="73.0" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.7" />
+  <text x="410.0" y="908.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#6c8ebf">voice comp</text>
+  <defs><marker id="arrow-e10" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#9673a6" /></marker></defs>
+  <polyline id="e10" points="700.0,648.0 700.0,681.7 680.0,681.7 680.0,750.0" fill="none" stroke="#9673a6" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow-e10)" />
+  <rect x="690.0" y="703.8" width="73.0" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.7" />
+  <text x="692.0" y="713.8" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="start" fill="#9673a6">gRPC audio</text>
+  <defs><marker id="arrow-e11" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#9673a6" /></marker></defs>
+  <polyline id="e11" points="800.0,612.6 980.0,613.0 980.0,750.0" fill="none" stroke="#9673a6" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow-e11)" />
+  <rect x="853.5" y="600.8" width="73.0" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.7" />
+  <text x="890.0" y="610.8" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#9673a6">gRPC synth</text>
+  <defs><marker id="arrow-e12" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#d79b00" /></marker></defs>
+  <polyline id="e12" points="860.0,408.0 860.0,470.0 740.0,470.0 740.0,530.0" fill="none" stroke="#d79b00" stroke-width="2" stroke-dasharray="12 4" stroke-linejoin="round" marker-end="url(#arrow-e12)" />
+  <rect x="760.2" y="458.0" width="79.5" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.5" />
+  <text x="800.0" y="468.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#d79b00">audio relay</text>
+  <text x="560.0" y="76.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Web</text>
+  <text x="560.0" y="92.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Browser SPA</text>
+  <text x="560.0" y="131.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">React + Vite :3000</text>
+  <text x="560.0" y="159.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">TypeScript SPA</text>
+  <text x="560.0" y="187.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">LiveKit JS SDK (WebRTC)</text>
+  <text x="260.0" y="306.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">API</text>
+  <text x="260.0" y="322.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">REST + internal RPC</text>
+  <text x="260.0" y="361.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">FastAPI :8000</text>
+  <text x="260.0" y="389.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Auth / Sessions / BoA</text>
+  <text x="260.0" y="417.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Conversations / Tools</text>
+  <text x="860.0" y="306.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">LiveKit</text>
+  <text x="860.0" y="322.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Media server</text>
+  <text x="860.0" y="361.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">WebRTC SFU :7880</text>
+  <text x="860.0" y="389.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Room Mgmt / Media Relay</text>
+  <text x="260.0" y="546.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Realtime-Text</text>
+  <text x="260.0" y="562.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Text chat tier</text>
+  <text x="260.0" y="601.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">FastAPI WS :8001</text>
+  <text x="260.0" y="629.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Chat / Guard Orchestr.</text>
+  <text x="700.0" y="546.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Realtime-Voice</text>
+  <text x="700.0" y="562.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Voice cascade tier</text>
+  <text x="700.0" y="601.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Pipecat Pipeline</text>
+  <text x="700.0" y="629.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Cascade: STT→LLM→TTS</text>
+  <text x="160.0" y="766.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">LLM</text>
+  <text x="160.0" y="782.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Inference engine</text>
+  <text x="160.0" y="821.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">vLLM (OpenAI-compat)</text>
+  <text x="160.0" y="849.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">LMCache (KV prefix)</text>
+  <text x="420.0" y="766.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Guardrails</text>
+  <text x="420.0" y="782.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Safety screening</text>
+  <text x="420.0" y="821.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Triton Inference :9021</text>
+  <text x="420.0" y="849.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">DeBERTa / GLiNER / ST</text>
+  <text x="420.0" y="877.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Inject / Toxic / PII guard</text>
+  <text x="680.0" y="766.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">STT</text>
+  <text x="680.0" y="782.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Speech-to-text</text>
+  <text x="680.0" y="821.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Triton (NeMo ASR)</text>
+  <text x="680.0" y="849.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Nemotron / Parakeet</text>
+  <text x="980.0" y="766.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">TTS</text>
+  <text x="980.0" y="782.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Text-to-speech</text>
+  <text x="980.0" y="821.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Triton (Chatterbox)</text>
+  <text x="980.0" y="849.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Kokoro alt voice</text>
+  <text x="135.0" y="1001.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">PostgreSQL</text>
+  <text x="135.0" y="1016.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">:5432 conversations</text>
+  <text x="430.0" y="1001.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Redis</text>
+  <text x="430.0" y="1016.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">:6379 sessions/rate-limit</text>
+  <text x="740.0" y="1001.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Redis KVCache</text>
+  <text x="740.0" y="1016.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">LMCache prefix store</text>
+  <text x="26.0" y="1084.0" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="normal" font-style="normal" text-anchor="start" fill="#333">━━ HTTP</text>
+  <text x="26.0" y="1098.0" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="normal" font-style="normal" text-anchor="start" fill="#333">━━━ gRPC</text>
+  <text x="26.0" y="1112.0" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="normal" font-style="normal" text-anchor="start" fill="#333">┄┄ WebSocket / WebRTC</text>
+  <text x="26.0" y="1126.0" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="normal" font-style="normal" text-anchor="start" fill="#333">- - database</text>
+</svg>

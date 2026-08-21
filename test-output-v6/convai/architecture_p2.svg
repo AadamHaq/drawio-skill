@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 10 680 610" width="680" height="610">
+  <!-- Page: Voice Pipeline -->
+  <style>text { font-family: Inter, Arial, sans-serif; }</style>
+  <rect id="pipeline-body" x="220.0" y="30.0" width="240.0" height="476.0" rx="4" ry="4" fill="#fafafa" stroke="#9673a6" stroke-width="1" />
+  <rect id="p-receive" x="238.0" y="86.0" width="204.0" height="50.0" rx="8" ry="8" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect id="p-vad" x="238.0" y="156.0" width="204.0" height="50.0" rx="8" ry="8" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect id="p-stt" x="238.0" y="226.0" width="204.0" height="50.0" rx="8" ry="8" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect id="p-llm" x="238.0" y="296.0" width="204.0" height="50.0" rx="8" ry="8" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect id="p-tts" x="238.0" y="366.0" width="204.0" height="50.0" rx="8" ry="8" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect id="p-send" x="238.0" y="436.0" width="204.0" height="50.0" rx="8" ry="8" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect id="lk-ext" x="30.0" y="60.0" width="140.0" height="50.0" rx="8" ry="8" fill="#fff2cc" stroke="#d6b656" stroke-width="1" />
+  <rect id="stt-ext" x="510.0" y="210.0" width="140.0" height="50.0" rx="8" ry="8" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1" />
+  <rect id="llm-ext" x="510.0" y="300.0" width="140.0" height="50.0" rx="8" ry="8" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1" />
+  <rect id="tts-ext" x="510.0" y="390.0" width="140.0" height="50.0" rx="8" ry="8" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1" />
+  <rect id="guard-ext" x="30.0" y="290.0" width="140.0" height="50.0" rx="8" ry="8" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1" />
+  <rect id="pipeline-header" x="220.0" y="30.0" width="240.0" height="40.0" rx="4" ry="4" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect x="220.0" y="66.0" width="240.0" height="4.0" fill="#e1d5e7" stroke="none" />
+  <defs><marker id="arrow-seq1" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#9673a6" /></marker></defs>
+  <polyline id="seq1" points="340.0,136.0 340.0,156.0" fill="none" stroke="#9673a6" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-seq1)" />
+  <defs><marker id="arrow-seq2" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#9673a6" /></marker></defs>
+  <polyline id="seq2" points="340.0,206.0 340.0,226.0" fill="none" stroke="#9673a6" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-seq2)" />
+  <defs><marker id="arrow-seq3" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#9673a6" /></marker></defs>
+  <polyline id="seq3" points="340.0,276.0 340.0,296.0" fill="none" stroke="#9673a6" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-seq3)" />
+  <defs><marker id="arrow-seq4" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#9673a6" /></marker></defs>
+  <polyline id="seq4" points="340.0,346.0 340.0,366.0" fill="none" stroke="#9673a6" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-seq4)" />
+  <defs><marker id="arrow-seq5" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#9673a6" /></marker></defs>
+  <polyline id="seq5" points="340.0,416.0 340.0,436.0" fill="none" stroke="#9673a6" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-seq5)" />
+  <defs><marker id="arrow-f1" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#d79b00" /></marker></defs>
+  <polyline id="f1" points="170.0,85.0 204.0,85.0 204.0,111.0 238.0,111.0" fill="none" stroke="#d79b00" stroke-width="2" stroke-dasharray="12 4" stroke-linejoin="round" marker-end="url(#arrow-f1)" />
+  <rect x="157.0" y="73.0" width="60.0" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.5" />
+  <text x="187.0" y="83.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#d79b00">audio in</text>
+  <defs><marker id="arrow-f2" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#9673a6" /></marker></defs>
+  <polyline id="f2" points="442.0,251.0 476.0,251.0 476.0,235.0 510.0,235.0" fill="none" stroke="#9673a6" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow-f2)" />
+  <rect x="456.5" y="223.0" width="73.0" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.7" />
+  <text x="493.0" y="233.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#9673a6">ASR stream</text>
+  <defs><marker id="arrow-f3" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#6c8ebf" /></marker></defs>
+  <polyline id="f3" points="442.0,321.0 476.0,321.0 476.0,325.0 510.0,325.0" fill="none" stroke="#6c8ebf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-f3)" />
+  <rect x="463.0" y="313.0" width="60.0" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.7" />
+  <text x="493.0" y="323.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#6c8ebf">HTTP /v1</text>
+  <defs><marker id="arrow-f4" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#9673a6" /></marker></defs>
+  <polyline id="f4" points="442.0,391.0 476.0,391.0 476.0,415.0 510.0,415.0" fill="none" stroke="#9673a6" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow-f4)" />
+  <text x="493.0" y="407.0" font-family="Inter, Arial, sans-serif" font-size="9" text-anchor="middle" fill="#9673a6" font-style="italic">synth stream</text>
+  <defs><marker id="arrow-f5" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#d79b00" /></marker></defs>
+  <polyline id="f5" points="238.0,461.0 195.0,461.0 195.0,510.0 10.0,510.0 10.0,85.0 100.0,85.0 100.0,110.0" fill="none" stroke="#d79b00" stroke-width="2" stroke-dasharray="12 4" stroke-linejoin="round" marker-end="url(#arrow-f5)" />
+  <rect x="20.0" y="285.5" width="66.5" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.5" />
+  <text x="22.0" y="295.5" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="start" fill="#d79b00">audio out</text>
+  <defs><marker id="arrow-f6" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#9673a6" /></marker></defs>
+  <polyline id="f6" points="238.0,321.0 204.0,321.0 204.0,315.0 170.0,315.0" fill="none" stroke="#9673a6" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow-f6)" />
+  <text x="187.0" y="307.0" font-family="Inter, Arial, sans-serif" font-size="9" text-anchor="middle" fill="#9673a6" font-style="italic">guard check</text>
+  <text x="340.0" y="46.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Cascade Voice Pipeline</text>
+  <text x="340.0" y="62.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Realtime-Voice worker</text>
+  <text x="340.0" y="107.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Receive audio</text>
+  <text x="340.0" y="122.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">LiveKit track subscribe</text>
+  <text x="340.0" y="177.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">VAD (MarbleNet)</text>
+  <text x="340.0" y="192.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">ONNX local inference</text>
+  <text x="340.0" y="247.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Speech-to-Text</text>
+  <text x="340.0" y="262.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Triton streaming gRPC</text>
+  <text x="340.0" y="317.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">LLM completion</text>
+  <text x="340.0" y="332.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">vLLM OpenAI API + tools</text>
+  <text x="340.0" y="387.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Text-to-Speech</text>
+  <text x="340.0" y="402.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Triton streaming gRPC</text>
+  <text x="340.0" y="457.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Send audio</text>
+  <text x="340.0" y="472.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">LiveKit track publish</text>
+  <text x="100.0" y="81.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">LiveKit SFU</text>
+  <text x="100.0" y="96.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">WebRTC :7880</text>
+  <text x="580.0" y="231.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">STT (Triton)</text>
+  <text x="580.0" y="246.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Nemotron ASR</text>
+  <text x="580.0" y="321.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">LLM (vLLM)</text>
+  <text x="580.0" y="336.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Qwen3-8B / Gemma-4</text>
+  <text x="580.0" y="411.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">TTS (Triton)</text>
+  <text x="580.0" y="426.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Chatterbox / Kokoro</text>
+  <text x="100.0" y="311.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Guardrails</text>
+  <text x="100.0" y="326.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Input / Output Rails</text>
+  <text x="36.0" y="554.0" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="normal" font-style="normal" text-anchor="start" fill="#333">━━ HTTP</text>
+  <text x="36.0" y="568.0" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="normal" font-style="normal" text-anchor="start" fill="#333">━━━ gRPC</text>
+  <text x="36.0" y="582.0" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="normal" font-style="normal" text-anchor="start" fill="#333">┄┄ WebSocket</text>
+</svg>

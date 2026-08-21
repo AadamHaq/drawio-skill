@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="ac.draw.io">
+  <diagram id="overview" name="Architecture Overview">
+    <mxGraphModel pageWidth="960" pageHeight="1140" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ═══ Layer 0: Config ═══ -->
+        <mxCell id="L0" value="Config" style="swimlane;startSize=28;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;html=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="30" width="860" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- Config item (root-level sibling) -->
+        <mxCell id="cfg" value="generation_plan_*.yaml&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;env + models + taxonomy&lt;br/&gt;drives all pipeline stages&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="370" y="84" width="240" height="52" as="geometry" />
+        </mxCell>
+
+        <!-- ═══ Layer 1: Pipeline ═══ -->
+        <mxCell id="L1" value="Pipeline (domain-agnostic)" style="swimlane;startSize=28;fillColor=#f0f0f0;strokeColor=#999999;fontStyle=1;fontSize=13;html=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="190" width="860" height="548" as="geometry" />
+        </mxCell>
+
+        <!-- ─── Generator sub-swimlane (root-level) ─── -->
+        <mxCell id="gen" value="Generator&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;block pool via deepseek-v4-flash&lt;/font&gt;" style="swimlane;startSize=34;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=11;html=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="244" width="240" height="474" as="geometry" />
+        </mxCell>
+        <mxCell id="gen-s1" value="Combo Grid Builder&lt;br/&gt;dialect × type × topic&lt;br/&gt;× emotion × typing_style" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="gen">
+          <mxGeometry x="18" y="60" width="204" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="gen-s2" value="Block Gen (deepseek-v4)&lt;br/&gt;query→answer→tool_result&lt;br/&gt;2-3 followups per block" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="gen">
+          <mxGeometry x="18" y="166" width="204" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="gen-s3" value="Tool Call Correction&lt;br/&gt;LLM rewrite (temp 0.1)&lt;br/&gt;schema-valid tool calls" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="gen">
+          <mxGeometry x="18" y="272" width="204" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="gen-s4" value="Fixer (deepseek-v4)&lt;br/&gt;rewrite failed turns&lt;br/&gt;preserves conversation ctx" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="gen">
+          <mxGeometry x="18" y="378" width="204" height="76" as="geometry" />
+        </mxCell>
+
+        <!-- Generator internal sequential edges -->
+        <mxCell id="gen-e1" edge="1" source="gen-s1" target="gen-s2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#d6b656;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="gen">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gen-e2" edge="1" source="gen-s2" target="gen-s3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#d6b656;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="gen">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gen-e3" edge="1" source="gen-s3" target="gen-s4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#d6b656;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="gen">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ─── Validator sub-swimlane (root-level) ─── -->
+        <mxCell id="val" value="Validator&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;rubric scoring, mean≥8 pass gate&lt;/font&gt;" style="swimlane;startSize=34;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;html=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="340" y="244" width="240" height="368" as="geometry" />
+        </mxCell>
+        <mxCell id="val-s1" value="Dedup + Schema Check&lt;br/&gt;normalise, remove truncated&lt;br/&gt;structural validation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;" vertex="1" parent="val">
+          <mxGeometry x="18" y="60" width="204" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="val-s2" value="LLM Scorer (deepseek-v4)&lt;br/&gt;rubric judge, mean≥8 gate&lt;br/&gt;per-turn metric scoring" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;" vertex="1" parent="val">
+          <mxGeometry x="18" y="166" width="204" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="val-s3" value="Re-score Fixed Turns&lt;br/&gt;same rubric + thresholds&lt;br/&gt;pass/fail final gate" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;" vertex="1" parent="val">
+          <mxGeometry x="18" y="272" width="204" height="76" as="geometry" />
+        </mxCell>
+
+        <!-- Validator internal sequential edges -->
+        <mxCell id="val-e1" edge="1" source="val-s1" target="val-s2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#82b366;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="val">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="val-e2" edge="1" source="val-s2" target="val-s3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#82b366;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="val">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ─── Post-Processing sub-swimlane (root-level) ─── -->
+        <mxCell id="post" value="Post-Processing&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;assemble + split + analysis&lt;/font&gt;" style="swimlane;startSize=34;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=11;html=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="630" y="244" width="240" height="474" as="geometry" />
+        </mxCell>
+        <mxCell id="post-s1" value="Assemble Blocks&lt;br/&gt;stitch blocks→convos&lt;br/&gt;transition-weighted" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="post">
+          <mxGeometry x="18" y="60" width="204" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="post-s2" value="Split + Rebalance&lt;br/&gt;train/val/eval ratios&lt;br/&gt;tool:text ratio balance" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="post">
+          <mxGeometry x="18" y="166" width="204" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="post-s3" value="Validate Structures&lt;br/&gt;flow check per convo&lt;br/&gt;drop invalid stitches" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="post">
+          <mxGeometry x="18" y="272" width="204" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="post-s4" value="Analysis Report&lt;br/&gt;dataset quality stats&lt;br/&gt;category distribution" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="post">
+          <mxGeometry x="18" y="378" width="204" height="76" as="geometry" />
+        </mxCell>
+
+        <!-- Post-Processing internal sequential edges -->
+        <mxCell id="post-e1" edge="1" source="post-s1" target="post-s2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#9673a6;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="post">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="post-e2" edge="1" source="post-s2" target="post-s3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#9673a6;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="post">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="post-e3" edge="1" source="post-s3" target="post-s4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#9673a6;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="post">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ═══ Layer 2: Environment ═══ -->
+        <mxCell id="L2" value="Environment (pluggable domain)" style="swimlane;startSize=28;fillColor=#fef5f5;strokeColor=#b85450;fontStyle=1;fontSize=13;html=1;rounded=1;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="813" width="860" height="105" as="geometry" />
+        </mxCell>
+
+        <!-- Environment items (root-level siblings) -->
+        <mxCell id="env-base" value="Environment ABC&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;ToolSpec + ToolBehavior&lt;br/&gt;execute / synthesize / determ&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;verticalAlign=middle;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="140" y="867" width="240" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="env-impl" value="convai_spending_insights&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;PostgreSQL executor&lt;br/&gt;guardrail tags + rubrics&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;verticalAlign=middle;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="440" y="867" width="240" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="env-registry" value="registry.py&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;load by name&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;verticalAlign=middle;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="720" y="867" width="130" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- ═══ Cross-layer Edges ═══ -->
+
+        <!-- Config → Generator -->
+        <mxCell id="e-cfg-gen" edge="1" source="cfg" target="gen" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;exitX=0.2;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="418" y="165" />
+              <mxPoint x="170" y="165" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Config → Validator -->
+        <mxCell id="e-cfg-val" edge="1" source="cfg" target="val" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="490" y="165" />
+              <mxPoint x="460" y="165" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Config → Post-Processing -->
+        <mxCell id="e-cfg-post" edge="1" source="cfg" target="post" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;exitX=0.8;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="562" y="165" />
+              <mxPoint x="750" y="165" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Generator → Validator (horizontal data flow) -->
+        <mxCell id="e-gen-val" edge="1" source="gen" target="val" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#82b366;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- Label annotation for gen→val (gap is 50px, too narrow for inline label) -->
+        <mxCell id="lbl-gen-val" value="scored blocks" style="text;html=1;fontSize=8;fillColor=none;strokeColor=none;fontColor=#82b366;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="267" y="466" width="75" height="14" as="geometry" />
+        </mxCell>
+
+        <!-- Validator → Post-Processing (horizontal data flow) -->
+        <mxCell id="e-val-post" edge="1" source="val" target="post" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#82b366;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- Label annotation for val→post -->
+        <mxCell id="lbl-val-post" value="pass blocks" style="text;html=1;fontSize=8;fillColor=none;strokeColor=none;fontColor=#82b366;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="558" y="466" width="70" height="14" as="geometry" />
+        </mxCell>
+
+        <!-- Generator → Environment (dashed env call) -->
+        <mxCell id="e-gen-env" edge="1" source="gen" target="env-base" value="execute_tool()" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#b85450;strokeWidth=2;dashed=1;dashPattern=8 4;labelPosition=right;align=left;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="170" y="775" />
+              <mxPoint x="260" y="775" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Validator → Environment (dashed env call) -->
+        <mxCell id="e-val-env" edge="1" source="val" target="env-impl" value="validate_call()" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#b85450;strokeWidth=2;dashed=1;dashPattern=8 4;labelPosition=right;align=left;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="460" y="775" />
+              <mxPoint x="560" y="775" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ═══ Legend ═══ -->
+        <mxCell id="legend" value="━━ &lt;font color=&quot;#6c8ebf&quot;&gt;config flow&lt;/font&gt;&lt;br/&gt;━━ &lt;font color=&quot;#82b366&quot;&gt;data flow&lt;/font&gt;&lt;br/&gt;┄┄ &lt;font color=&quot;#b85450&quot;&gt;env calls (dashed)&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=top;fontSize=10;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="20" y="958" width="160" height="60" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

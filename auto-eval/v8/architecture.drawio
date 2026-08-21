@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="ac.draw.io">
+  <diagram id="overview" name="Pipeline Overview">
+    <mxGraphModel dx="0" dy="0" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ═══════════ ROW 0: INPUTS (y=25) ═══════════ -->
+        <mxCell id="in-config" value="generation_plan_ric_v9.yaml&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;domain · models · taxonomy · pipeline&lt;/font&gt;" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;html=1;fontSize=11;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="53" y="25" width="190" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="in-rubric" value="annotator_rubric_blocks.yaml&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;metrics per turn type · hard-fail rules&lt;/font&gt;" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;html=1;fontSize=11;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="318" y="25" width="190" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="in-personas" value="persona_banking.jsonl&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;UK banking customer personas&lt;/font&gt;" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;html=1;fontSize=11;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="583" y="25" width="190" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════ ROW 1: GENERATION (y=115) ═══════════ -->
+        <mxCell id="sl-gen" value="1. Block Generation" style="swimlane;startSize=30;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="255" y="115" width="316" height="260" as="geometry" />
+        </mxCell>
+        <mxCell id="gen-query" value="Query Generation&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;deepseek-v4-flash · temp 0.7&lt;br/&gt;Cartesian: topic×emotion×typing×dialect&lt;/font&gt;" style="rounded=1;fillColor=#fff4e6;strokeColor=#d79b00;html=1;fontSize=11;whiteSpace=wrap;" vertex="1" parent="sl-gen">
+          <mxGeometry x="18" y="40" width="280" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="gen-answer" value="Answer Generation&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;deepseek-v4-flash · temp 0.3&lt;br/&gt;tool_choice=auto · capture_response&lt;/font&gt;" style="rounded=1;fillColor=#fff4e6;strokeColor=#d79b00;html=1;fontSize=11;whiteSpace=wrap;" vertex="1" parent="sl-gen">
+          <mxGeometry x="18" y="114" width="280" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="gen-tool" value="Tool Result + Response&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;deepseek-v4-flash · temp 0.3&lt;br/&gt;synthesise tool result → assistant reply&lt;/font&gt;" style="rounded=1;fillColor=#fff4e6;strokeColor=#d79b00;html=1;fontSize=11;whiteSpace=wrap;" vertex="1" parent="sl-gen">
+          <mxGeometry x="18" y="188" width="280" height="58" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════ ROW 2: ANNOTATION (y=455) ═══════════ -->
+        <mxCell id="sl-ann" value="2. Annotation" style="swimlane;startSize=30;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="255" y="455" width="316" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="ann-dedup" value="Dedup + Schema Validate&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;normalise speakable · remove truncated&lt;/font&gt;" style="rounded=1;fillColor=#fff4e6;strokeColor=#d79b00;html=1;fontSize=11;whiteSpace=wrap;" vertex="1" parent="sl-ann">
+          <mxGeometry x="18" y="40" width="280" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="ann-score" value="Score Each Turn&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;deepseek-v4-flash · threshold ≥ 8&lt;br/&gt;hard_fail ≤ 5 · insight_threshold ≥ 5&lt;/font&gt;" style="rounded=1;fillColor=#fff4e6;strokeColor=#d79b00;html=1;fontSize=11;whiteSpace=wrap;" vertex="1" parent="sl-ann">
+          <mxGeometry x="18" y="102" width="280" height="58" as="geometry" />
+        </mxCell>
+        <!-- Pass/Fail split -->
+        <mxCell id="ann-pass" value="Pass" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;html=1;fontSize=11;" vertex="1" parent="sl-ann">
+          <mxGeometry x="18" y="176" width="130" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="ann-fail" value="Fail" style="rounded=1;fillColor=#f8cecc;strokeColor=#b85450;html=1;fontSize=11;" vertex="1" parent="sl-ann">
+          <mxGeometry x="168" y="176" width="130" height="24" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════ ROW 3: FIX (y=775) ═══════════ -->
+        <mxCell id="sl-fix" value="3. Fix Failed Samples" style="swimlane;startSize=30;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="255" y="775" width="316" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="fix-rewrite" value="Rewrite Failing Turns&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;deepseek-v4-flash · reground tool calls&lt;/font&gt;" style="rounded=1;fillColor=#fff4e6;strokeColor=#d79b00;html=1;fontSize=11;whiteSpace=wrap;" vertex="1" parent="sl-fix">
+          <mxGeometry x="18" y="40" width="280" height="46" as="geometry" />
+        </mxCell>
+
+        <mxCell id="sl-reann" value="4. Re-Annotate" style="swimlane;startSize=30;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="255" y="935" width="316" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="reann-score" value="Re-score Fixed Samples&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;same rubric · merge with passing&lt;/font&gt;" style="rounded=1;fillColor=#fff4e6;strokeColor=#d79b00;html=1;fontSize=11;whiteSpace=wrap;" vertex="1" parent="sl-reann">
+          <mxGeometry x="18" y="40" width="280" height="46" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════ ROW 5: POST-PROCESSING (y=1135) ═══════════ -->
+        <mxCell id="sl-post" value="5. Post-Processing" style="swimlane;startSize=30;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="175" y="1135" width="476" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="post-assemble" value="Assemble Blocks&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;2-3 blocks/conv · transition weights&lt;/font&gt;" style="rounded=1;fillColor=#fff4e6;strokeColor=#d79b00;html=1;fontSize=11;whiteSpace=wrap;" vertex="1" parent="sl-post">
+          <mxGeometry x="18" y="40" width="200" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="post-split" value="Split&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;train / eval / val&lt;/font&gt;" style="rounded=1;fillColor=#fff4e6;strokeColor=#d79b00;html=1;fontSize=11;whiteSpace=wrap;" vertex="1" parent="sl-post">
+          <mxGeometry x="258" y="40" width="200" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="post-rebalance" value="Rebalance&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;tool:text ratio · category balance&lt;/font&gt;" style="rounded=1;fillColor=#fff4e6;strokeColor=#d79b00;html=1;fontSize=11;whiteSpace=wrap;" vertex="1" parent="sl-post">
+          <mxGeometry x="18" y="102" width="200" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="post-analysis" value="Analysis&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;balance · coverage · contamination&lt;/font&gt;" style="rounded=1;fillColor=#fff4e6;strokeColor=#d79b00;html=1;fontSize=11;whiteSpace=wrap;" vertex="1" parent="sl-post">
+          <mxGeometry x="258" y="102" width="200" height="46" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════ ROW 5: OUTPUTS (y=1210) ═══════════ -->
+        <mxCell id="out-train" value="train.json&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;distillation format&lt;/font&gt;" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;html=1;fontSize=11;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="103" y="1210" width="140" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="out-eval" value="eval.json&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;benchmark format&lt;/font&gt;" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;html=1;fontSize=11;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="343" y="1210" width="140" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="out-val" value="val.json&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;distillation format&lt;/font&gt;" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;html=1;fontSize=11;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="583" y="1210" width="140" height="42" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════ EDGES: Inputs → Gen ═══════════ -->
+        <mxCell id="e-config-gen" edge="1" source="in-config" target="sl-gen" value="plan YAML" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.2;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-personas-gen" edge="1" source="in-personas" target="sl-gen" value="personas" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.8;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════ EDGES: Gen → Ann (sequential) ═══════════ -->
+        <mxCell id="e-gen-ann" edge="1" source="sl-gen" target="sl-ann" value="raw blocks" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-rubric-ann" edge="1" source="in-rubric" target="sl-ann" value="rubric" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.2;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="413" y="100" />
+              <mxPoint x="218" y="100" />
+              <mxPoint x="218" y="435" />
+              <mxPoint x="318" y="435" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ═══════════ EDGES: Ann pass/fail ═══════════ -->
+        <mxCell id="e-ann-fix" edge="1" source="sl-ann" target="sl-fix" value="failed" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#b85450;strokeWidth=2;exitX=0.7;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="476" y="690" />
+              <mxPoint x="242" y="690" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-ann-post" edge="1" source="sl-ann" target="sl-post" value="passed" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#82b366;strokeWidth=2;exitX=0.3;exitY=1;exitDx=0;exitDy=0;entryX=0.15;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="350" y="710" />
+              <mxPoint x="50" y="710" />
+              <mxPoint x="50" y="925" />
+              <mxPoint x="246" y="925" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ═══════════ EDGES: Fix → Re-Ann → Post ═══════════ -->
+        <mxCell id="e-fix-reann" edge="1" source="sl-fix" target="sl-reann" value="fixed" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-reann-post" edge="1" source="sl-reann" target="sl-post" value="re-scored" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#82b366;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.85;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="584" y="920" />
+              <mxPoint x="580" y="920" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ═══════════ EDGES: Post → Outputs ═══════════ -->
+        <mxCell id="e-post-train" edge="1" source="sl-post" target="out-train" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.15;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-post-eval" edge="1" source="sl-post" target="out-eval" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-post-val" edge="1" source="sl-post" target="out-val" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.85;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════ INTERNAL EDGES (within swimlanes) ═══════════ -->
+        <mxCell id="e-gen-q-a" edge="1" source="gen-query" target="gen-answer" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="sl-gen">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-gen-a-t" edge="1" source="gen-answer" target="gen-tool" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="sl-gen">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-ann-d-s" edge="1" source="ann-dedup" target="ann-score" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="sl-ann">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-ann-s-p" edge="1" source="ann-score" target="ann-pass" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#82b366;strokeWidth=2;exitX=0.3;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="sl-ann">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-ann-s-f" edge="1" source="ann-score" target="ann-fail" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#b85450;strokeWidth=2;exitX=0.7;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="sl-ann">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-post-a-s" edge="1" source="post-assemble" target="post-split" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="sl-post">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-post-s-r" edge="1" source="post-split" target="post-rebalance" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="sl-post">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="358" y="94" />
+              <mxPoint x="118" y="94" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-post-r-a" edge="1" source="post-rebalance" target="post-analysis" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="sl-post">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════ LEGEND ═══════════ -->
+        <mxCell id="legend" value="━━ sequential&lt;br/&gt;━━ &lt;font color=&quot;#82b366&quot;&gt;pass&lt;/font&gt;&lt;br/&gt;━━ &lt;font color=&quot;#b85450&quot;&gt;fail&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=top;fontSize=10;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1109" width="120" height="50" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="gen-drilldown" name="Block Generation Detail">
+    <mxGraphModel dx="0" dy="0" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ═══════════ INPUTS ═══════════ -->
+        <mxCell id="d-in-config" value="generation_plan YAML&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;taxonomy · tool_topics · nlr_topics&lt;br/&gt;emotions · typing_styles · dialects&lt;/font&gt;" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;html=1;fontSize=11;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="53" y="25" width="200" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="d-in-schema" value="tool_schema.json&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;visualise_data · capture_response&lt;br/&gt;tag_guardrail_topics&lt;/font&gt;" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;html=1;fontSize=11;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="313" y="25" width="200" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="d-in-persona" value="persona_banking.jsonl&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;or persona-DB mode:&lt;br/&gt;persona-*.db → Postgres reseed&lt;/font&gt;" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;html=1;fontSize=11;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="573" y="25" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════ BLOCK GENERATION SWIMLANE ═══════════ -->
+        <mxCell id="d-sl-block" value="Block Generation (per combo in Cartesian grid)" style="swimlane;startSize=30;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="175" y="130" width="476" height="540" as="geometry" />
+        </mxCell>
+        <mxCell id="d-combo" value="Build Combo Grid&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;dialect × block_type × topic × emotion × typing_style&lt;br/&gt;samples_per_combo: 1 · type_ratio: tool 0.5 / nlr 0.5&lt;/font&gt;" style="rounded=1;fillColor=#fff4e6;strokeColor=#d79b00;html=1;fontSize=11;whiteSpace=wrap;" vertex="1" parent="d-sl-block">
+          <mxGeometry x="18" y="40" width="440" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="d-query" value="Stage 1: Query Generation (query model)&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;prompt: generate_queries_block.txt&lt;br/&gt;inputs: context + persona + emotion + typing + dialect + topic&lt;br/&gt;output: realistic user message&lt;/font&gt;" style="rounded=1;fillColor=#fff4e6;strokeColor=#d79b00;html=1;fontSize=11;whiteSpace=wrap;" vertex="1" parent="d-sl-block">
+          <mxGeometry x="18" y="120" width="440" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="d-answer" value="Stage 2: Answer Generation (answer model)&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;tools=schema, tool_choice=auto&lt;br/&gt;model freely decides: tool call / NLR / capture_response&lt;br/&gt;guardrail_in_generation: tag_guardrail_topics available&lt;/font&gt;" style="rounded=1;fillColor=#fff4e6;strokeColor=#d79b00;html=1;fontSize=11;whiteSpace=wrap;" vertex="1" parent="d-sl-block">
+          <mxGeometry x="18" y="212" width="440" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="d-toolresult" value="Stage 3: Tool Result + Response (tool calls only)&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;answer model synthesises tool result&lt;br/&gt;then generates brief professional response&lt;br/&gt;retry on failure within block turn budget&lt;/font&gt;" style="rounded=1;fillColor=#fff4e6;strokeColor=#d79b00;html=1;fontSize=11;whiteSpace=wrap;" vertex="1" parent="d-sl-block">
+          <mxGeometry x="18" y="304" width="440" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="d-followup" value="Follow-ups (2-3 per block, no pivot)&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;repeat Stage 1→2→3 with conversation history&lt;br/&gt;same topic/type · followup_temperature: 0.7&lt;/font&gt;" style="rounded=1;fillColor=#fff4e6;strokeColor=#d79b00;html=1;fontSize=11;whiteSpace=wrap;" vertex="1" parent="d-sl-block">
+          <mxGeometry x="18" y="396" width="440" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="d-output-block" value="Output: block dict&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;{messages: [...], metadata: {block_id, block_type, ...}}&lt;/font&gt;" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;html=1;fontSize=11;whiteSpace=wrap;" vertex="1" parent="d-sl-block">
+          <mxGeometry x="18" y="476" width="440" height="46" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════ LOOP ANNOTATION (non-blocking background) ═══════════ -->
+        <mxCell id="d-loop-label" value="&lt;font style=&quot;font-size:10px;font-style:italic;&quot;&gt;⟳ per block · followups: 2-3×&lt;/font&gt;" style="text;html=1;align=right;verticalAlign=top;fontSize=10;fillColor=none;strokeColor=none;" vertex="1" parent="d-sl-block">
+          <mxGeometry x="290" y="105" width="170" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════ ASSEMBLY STAGE ═══════════ -->
+        <mxCell id="d-sl-assemble" value="Assembly (post_processing/assemble_blocks.py)" style="swimlane;startSize=30;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="175" y="730" width="476" height="290" as="geometry" />
+        </mxCell>
+        <mxCell id="d-asm-group" value="Group by join_keys&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;keys: persona_id + dialect + date&lt;br/&gt;dedup + structural validation&lt;/font&gt;" style="rounded=1;fillColor=#fff4e6;strokeColor=#d79b00;html=1;fontSize=11;whiteSpace=wrap;" vertex="1" parent="d-sl-assemble">
+          <mxGeometry x="18" y="40" width="440" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="d-asm-pick" value="Pick Backbone Sequence&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;transition_weights: start→after_tool→after_nlr&lt;br/&gt;forbid_same_type_run: 2 · blocks_per_conv: 2-3&lt;/font&gt;" style="rounded=1;fillColor=#fff4e6;strokeColor=#d79b00;html=1;fontSize=11;whiteSpace=wrap;" vertex="1" parent="d-sl-assemble">
+          <mxGeometry x="18" y="114" width="440" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="d-asm-stitch" value="Stitch + Guardrailing Interleave&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;least-used-first selection · topic dedup&lt;br/&gt;guardrailing blocks inserted via probability draws&lt;/font&gt;" style="rounded=1;fillColor=#fff4e6;strokeColor=#d79b00;html=1;fontSize=11;whiteSpace=wrap;" vertex="1" parent="d-sl-assemble">
+          <mxGeometry x="18" y="188" width="440" height="58" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════ OUTPUT ═══════════ -->
+        <mxCell id="d-out" value="multi_turn.json&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;full conversations: 2-3 blocks stitched&lt;br/&gt;pivot between topics at seams&lt;/font&gt;" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;html=1;fontSize=11;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="268" y="1080" width="290" height="58" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════ INTERNAL EDGES ═══════════ -->
+        <mxCell id="de-combo-query" edge="1" source="d-combo" target="d-query" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="d-sl-block">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="de-query-answer" edge="1" source="d-query" target="d-answer" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="d-sl-block">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="de-answer-tool" edge="1" source="d-answer" target="d-toolresult" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="d-sl-block">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="de-tool-followup" edge="1" source="d-toolresult" target="d-followup" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="d-sl-block">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="de-followup-out" edge="1" source="d-followup" target="d-output-block" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="d-sl-block">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="de-asm-group-pick" edge="1" source="d-asm-group" target="d-asm-pick" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="d-sl-assemble">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="de-asm-pick-stitch" edge="1" source="d-asm-pick" target="d-asm-stitch" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="d-sl-assemble">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Cross-row edges -->
+        <mxCell id="de-config-block" edge="1" source="d-in-config" target="d-sl-block" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.2;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="de-schema-block" edge="1" source="d-in-schema" target="d-sl-block" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="de-persona-block" edge="1" source="d-in-persona" target="d-sl-block" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.8;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="de-block-assemble" edge="1" source="d-sl-block" target="d-sl-assemble" value="block pool" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="de-assemble-out" edge="1" source="d-sl-assemble" target="d-out" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Legend -->
+        <mxCell id="d-legend" value="━━ sequential&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;┄┄ loop boundary&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=top;fontSize=10;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1109" width="120" height="40" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 10 922 1906" width="922" height="1906">
+  <!-- Page: Pipeline Overview -->
+  <style>text { font-family: Inter, Arial, sans-serif; }</style>
+  <rect id="input-envs" x="113.0" y="30.0" width="180.0" height="58.0" rx="8" ry="8" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1" />
+  <rect id="input-prompts" x="333.0" y="30.0" width="180.0" height="58.0" rx="8" ry="8" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1" />
+  <rect id="input-datasets" x="553.0" y="30.0" width="180.0" height="58.0" rx="8" ry="8" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1" />
+  <rect id="sl-author-body" x="77.0" y="148.0" width="700.0" height="238.0" rx="4" ry="4" fill="#fafafa" stroke="#d79b00" stroke-width="1" />
+  <rect id="author-step1" x="95.0" y="220.0" width="664.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#d79b00" stroke-width="1" />
+  <rect id="author-step2" x="95.0" y="308.0" width="664.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#d79b00" stroke-width="1" />
+  <rect id="sl-choose-body" x="77.0" y="446.0" width="700.0" height="256.0" rx="4" ry="4" fill="#fafafa" stroke="#d79b00" stroke-width="1" />
+  <rect id="choose-step1" x="95.0" y="518.0" width="664.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#d79b00" stroke-width="1" />
+  <rect id="choose-step2" x="95.0" y="606.0" width="664.0" height="76.0" rx="8" ry="8" fill="#ffffff" stroke="#d79b00" stroke-width="1" />
+  <rect id="sl-run-body" x="77.0" y="762.0" width="700.0" height="486.0" rx="4" ry="4" fill="#fafafa" stroke="#d79b00" stroke-width="1" />
+  <rect id="run-step1" x="95.0" y="834.0" width="664.0" height="76.0" rx="8" ry="8" fill="#ffffff" stroke="#d79b00" stroke-width="1" />
+  <rect id="run-step2" x="95.0" y="940.0" width="664.0" height="76.0" rx="8" ry="8" fill="#ffffff" stroke="#d79b00" stroke-width="1" />
+  <rect id="run-step3" x="95.0" y="1046.0" width="664.0" height="76.0" rx="8" ry="8" fill="#ffffff" stroke="#d79b00" stroke-width="1" />
+  <rect id="run-step4" x="95.0" y="1152.0" width="664.0" height="76.0" rx="8" ry="8" fill="#ffffff" stroke="#d79b00" stroke-width="1" />
+  <rect id="sl-read-body" x="77.0" y="1308.0" width="700.0" height="380.0" rx="4" ry="4" fill="#fafafa" stroke="#d79b00" stroke-width="1" />
+  <rect id="read-step1" x="95.0" y="1380.0" width="664.0" height="76.0" rx="8" ry="8" fill="#ffffff" stroke="#d79b00" stroke-width="1" />
+  <rect id="read-step2" x="95.0" y="1486.0" width="664.0" height="76.0" rx="8" ry="8" fill="#ffffff" stroke="#d79b00" stroke-width="1" />
+  <rect id="read-step3" x="95.0" y="1592.0" width="664.0" height="76.0" rx="8" ry="8" fill="#ffffff" stroke="#d79b00" stroke-width="1" />
+  <rect id="output-results" x="253.0" y="1748.0" width="340.0" height="58.0" rx="8" ry="8" fill="#d5e8d4" stroke="#82b366" stroke-width="1" />
+  <rect x="20.0" y="1846.0" width="140.0" height="50.0" rx="4" ry="4" fill="#f9f9f9" stroke="#e0e0e0" stroke-width="1" />
+  <defs><marker id="arrow-e-env-author" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#6c8ebf" /></marker></defs>
+  <polyline id="e-env-author" points="203.0,88.0 203.0,107.8 217.0,107.8 217.0,148.0" fill="none" stroke="#6c8ebf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-env-author)" />
+  <defs><marker id="arrow-e-prompt-author" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#6c8ebf" /></marker></defs>
+  <polyline id="e-prompt-author" points="423.0,88.0 423.0,107.8 427.0,107.8 427.0,148.0" fill="none" stroke="#6c8ebf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-prompt-author)" />
+  <defs><marker id="arrow-e-data-choose" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#6c8ebf" /></marker></defs>
+  <polyline id="e-data-choose" points="733.0,59.0 810.0,59.0 810.0,497.0 777.0,497.2" fill="none" stroke="#6c8ebf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-data-choose)" />
+  <defs><marker id="arrow-e-author-choose" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#6c8ebf" /></marker></defs>
+  <polyline id="e-author-choose" points="427.0,386.0 427.0,405.8 357.0,405.8 357.0,446.0" fill="none" stroke="#6c8ebf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-author-choose)" />
+  <defs><marker id="arrow-e-choose-run" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#6c8ebf" /></marker></defs>
+  <polyline id="e-choose-run" points="427.0,702.0 427.0,762.0" fill="none" stroke="#6c8ebf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-choose-run)" />
+  <defs><marker id="arrow-e-run-read" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#6c8ebf" /></marker></defs>
+  <polyline id="e-run-read" points="427.0,1248.0 427.0,1308.0" fill="none" stroke="#6c8ebf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-run-read)" />
+  <defs><marker id="arrow-e-read-output" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#82b366" /></marker></defs>
+  <polyline id="e-read-output" points="427.0,1688.0 427.0,1707.8 423.0,1707.8 423.0,1748.0" fill="none" stroke="#82b366" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-read-output)" />
+  <defs><marker id="arrow-e-run-1-2" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#000000" /></marker></defs>
+  <polyline id="e-run-1-2" points="427.0,910.0 427.0,940.0" fill="none" stroke="#000000" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-run-1-2)" />
+  <defs><marker id="arrow-e-run-2-3" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#000000" /></marker></defs>
+  <polyline id="e-run-2-3" points="427.0,1016.0 427.0,1046.0" fill="none" stroke="#000000" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-run-2-3)" />
+  <defs><marker id="arrow-e-run-3-4" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#000000" /></marker></defs>
+  <polyline id="e-run-3-4" points="427.0,1122.0 427.0,1152.0" fill="none" stroke="#000000" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-run-3-4)" />
+  <defs><marker id="arrow-e-read-1-2" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#000000" /></marker></defs>
+  <polyline id="e-read-1-2" points="427.0,1456.0 427.0,1486.0" fill="none" stroke="#000000" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-read-1-2)" />
+  <defs><marker id="arrow-e-read-2-3" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#000000" /></marker></defs>
+  <polyline id="e-read-2-3" points="427.0,1562.0 427.0,1592.0" fill="none" stroke="#000000" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-read-2-3)" />
+  <rect id="sl-author-header" x="77.0" y="148.0" width="700.0" height="46.0" rx="4" ry="4" fill="#ffe6cc" stroke="#d79b00" stroke-width="1" />
+  <rect x="77.0" y="190.0" width="700.0" height="4.0" fill="#ffe6cc" stroke="none" />
+  <rect id="sl-choose-header" x="77.0" y="446.0" width="700.0" height="46.0" rx="4" ry="4" fill="#ffe6cc" stroke="#d79b00" stroke-width="1" />
+  <rect x="77.0" y="488.0" width="700.0" height="4.0" fill="#ffe6cc" stroke="none" />
+  <rect id="sl-run-header" x="77.0" y="762.0" width="700.0" height="46.0" rx="4" ry="4" fill="#ffe6cc" stroke="#d79b00" stroke-width="1" />
+  <rect x="77.0" y="804.0" width="700.0" height="4.0" fill="#ffe6cc" stroke="none" />
+  <rect id="sl-read-header" x="77.0" y="1308.0" width="700.0" height="46.0" rx="4" ry="4" fill="#ffe6cc" stroke="#d79b00" stroke-width="1" />
+  <rect x="77.0" y="1350.0" width="700.0" height="4.0" fill="#ffe6cc" stroke="none" />
+  <text x="229.0" y="119.9" font-family="Inter, Arial, sans-serif" font-size="9" text-anchor="start" fill="#6c8ebf" font-style="italic">frozen arms</text>
+  <text x="439.0" y="119.9" font-family="Inter, Arial, sans-serif" font-size="9" text-anchor="start" fill="#6c8ebf" font-style="italic">prompt pN</text>
+  <rect x="820.0" y="266.0" width="53.5" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.7" />
+  <text x="822.0" y="276.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="start" fill="#6c8ebf">corpora</text>
+  <rect x="355.5" y="383.8" width="73.0" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.7" />
+  <text x="392.0" y="395.8" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#6c8ebf">setup JSON</text>
+  <text x="439.0" y="724.0" font-family="Inter, Arial, sans-serif" font-size="9" text-anchor="start" fill="#6c8ebf" font-style="italic">ceval args</text>
+  <text x="439.0" y="1270.0" font-family="Inter, Arial, sans-serif" font-size="9" text-anchor="start" fill="#6c8ebf" font-style="italic">results/ceval/</text>
+  <text x="203.0" y="55.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Environments</text>
+  <text x="203.0" y="71.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">e0–e16, visualise_data_v1/v2</text>
+  <text x="423.0" y="55.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Prompt Arms</text>
+  <text x="423.0" y="71.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">p0–p12 + sections/</text>
+  <text x="643.0" y="55.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Datasets</text>
+  <text x="643.0" y="71.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">corpora/ · scenarios/</text>
+  <text x="427.0" y="167.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">1. Author</text>
+  <text x="427.0" y="183.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">environments/ · prompt_arms/</text>
+  <text x="427.0" y="245.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Copy parent arm → new version</text>
+  <text x="427.0" y="260.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">cp -r environments/parent environments/eN+1</text>
+  <text x="427.0" y="333.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Create setup JSON pairing prompt + env</text>
+  <text x="427.0" y="348.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">runners/setups/experimental_tools/prompt_pN_env_eM.json</text>
+  <text x="427.0" y="465.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">2. Choose</text>
+  <text x="427.0" y="481.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">datasets/ · runners/eval_params.py</text>
+  <text x="427.0" y="543.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Select named eval params</text>
+  <text x="427.0" y="558.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">lab_prompts_hard / chart / guardrail / suite_full</text>
+  <text x="427.0" y="632.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Build scenario battery</text>
+  <text x="427.0" y="647.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">prompts_to_scenarios.py · harvest_scenarios.py</text>
+  <text x="427.0" y="662.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">--max-turns 3 (exchange_limit_controller)</text>
+  <text x="427.0" y="781.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">3. Run</text>
+  <text x="427.0" y="797.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">runners/sweep.py</text>
+  <text x="427.0" y="860.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">sweep.py — iterate eval_params × cells</text>
+  <text x="427.0" y="875.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">sequential cells (shared Postgres + port)</text>
+  <text x="427.0" y="890.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">--smoke marks non-citable · keep-going default</text>
+  <text x="427.0" y="966.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">run_ceval.py — boot realtime-text</text>
+  <text x="427.0" y="981.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">managed_realtime(cell.env) via uvicorn</text>
+  <text x="427.0" y="996.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">EXPERIMENTAL_ENV + SYSTEM_PROMPT_CONFIG</text>
+  <text x="427.0" y="1072.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Invoke convai-eval (ceval simulate + judge)</text>
+  <text x="427.0" y="1087.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">sim model + judge model (Gemma-4-26B default)</text>
+  <text x="427.0" y="1102.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">--batch-size 4 concurrent scenarios</text>
+  <text x="427.0" y="1178.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Record provenance manifest.json</text>
+  <text x="427.0" y="1193.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">lab SHA + product SHA + dirty flags</text>
+  <text x="427.0" y="1208.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">results/ceval/&lt;run_id&gt;/manifest.json</text>
+  <text x="427.0" y="1327.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">4. Read</text>
+  <text x="427.0" y="1343.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">view/</text>
+  <text x="427.0" y="1406.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">ceval_table.py — score vector per cell</text>
+  <text x="427.0" y="1421.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">deterministic auto-fails + LLM rubric + cross-turn</text>
+  <text x="427.0" y="1436.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">printed between cells during sweep</text>
+  <text x="427.0" y="1512.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">ceval_to_responses.py — adapt for viewer</text>
+  <text x="427.0" y="1527.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">transforms ceval artifacts → responses.json</text>
+  <text x="427.0" y="1542.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">auto-run after each cell in sweep</text>
+  <text x="427.0" y="1618.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">inspector.py + React webapp</text>
+  <text x="427.0" y="1633.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">terminal side-by-side viewer · view/app/dist/</text>
+  <text x="427.0" y="1648.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">real chart components from pinned product</text>
+  <text x="423.0" y="1773.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Evidence Outputs</text>
+  <text x="423.0" y="1789.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">score vectors · responses.json · viewer app</text>
+  <text x="26.0" y="1860.0" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="normal" font-style="normal" text-anchor="start" fill="#333">━━ sequential</text>
+  <text x="26.0" y="1874.0" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="normal" font-style="normal" text-anchor="start" fill="#333">━━ pass / output</text>
+</svg>

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="ac.draw.io">
+  <diagram id="overview" name="Architecture Overview">
+    <mxGraphModel pageWidth="1090" pageHeight="1010" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ═══════════════════ CONFIG LAYER ═══════════════════ -->
+        <mxCell id="L0" value="Config" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize=28;" vertex="1" parent="1">
+          <mxGeometry x="30" y="30" width="1020" height="127" as="geometry" />
+        </mxCell>
+
+        <mxCell id="cfg" value="generation_plan_*.yaml&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;selects env, models, taxonomy,&lt;br/&gt;pipeline stages + thresholds&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="420" y="84" width="240" height="58" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════════════ PIPELINE LAYER ═══════════════════ -->
+        <!-- Pipeline band: y=207, startSize=28, items start at y=207+28+26=261 -->
+        <!-- Band height: 28 + 26 + 410 + 15 = 479 -->
+        <mxCell id="L1" value="Pipeline (domain-agnostic)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize=28;" vertex="1" parent="1">
+          <mxGeometry x="30" y="207" width="1020" height="479" as="geometry" />
+        </mxCell>
+
+        <!-- Generator swimlane: startSize=42, steps at 68/156/244, h=322 -->
+        <mxCell id="gen-sl" value="Generator&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;run_generation.py · deepseek-v4-flash&lt;/font&gt;" style="swimlane;startSize=42;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=11;html=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="261" width="240" height="322" as="geometry" />
+        </mxCell>
+        <mxCell id="gen-s1" value="Combo Grid Builder&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;Cartesian: dialect × type ×&lt;br/&gt;topic × emotion × style&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;verticalAlign=middle;fontSize=11;" vertex="1" parent="gen-sl">
+          <mxGeometry x="18" y="68" width="204" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="gen-s2" value="Block Generation Loop&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;opening + 2-3 followups/block&lt;br/&gt;ToolBehavior dispatch per turn&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;verticalAlign=middle;fontSize=11;" vertex="1" parent="gen-sl">
+          <mxGeometry x="18" y="156" width="204" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="gen-s3" value="Tool Call Correction&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;LLM rewrite of malformed&lt;br/&gt;calls (deepseek-v4-flash)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;verticalAlign=middle;fontSize=11;" vertex="1" parent="gen-sl">
+          <mxGeometry x="18" y="244" width="204" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="e-gen-i1" edge="1" source="gen-s1" target="gen-s2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="gen-sl">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-gen-i2" edge="1" source="gen-s2" target="gen-s3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="gen-sl">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Validator swimlane: startSize=42, steps at 68/156, h=234 -->
+        <mxCell id="val-sl" value="Validator&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;run_annotation.py · deepseek-v4-flash&lt;/font&gt;" style="swimlane;startSize=42;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;html=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="370" y="261" width="240" height="234" as="geometry" />
+        </mxCell>
+        <mxCell id="val-s1" value="LLM Scorer&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;rubric-driven judge, mean≥8&lt;br/&gt;gate (hard_fail≤5 veto)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;verticalAlign=middle;fontSize=11;" vertex="1" parent="val-sl">
+          <mxGeometry x="18" y="68" width="204" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="val-s2" value="Fix + Re-annotate&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;LLM rewrite of failed turns,&lt;br/&gt;then re-score to recover&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;verticalAlign=middle;fontSize=11;" vertex="1" parent="val-sl">
+          <mxGeometry x="18" y="156" width="204" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="e-val-i1" edge="1" source="val-s1" target="val-s2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="val-sl">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Post-Processing swimlane: startSize=42, steps at 68/156/244/332, h=410 -->
+        <mxCell id="post-sl" value="Post-Processing&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;assemble_blocks.py · split · rebalance&lt;/font&gt;" style="swimlane;startSize=42;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=11;html=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="680" y="261" width="240" height="410" as="geometry" />
+        </mxCell>
+        <mxCell id="post-s1" value="Assemble Blocks&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;stitch blocks → multi-turn&lt;br/&gt;convos with topic pivots&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;verticalAlign=middle;fontSize=11;" vertex="1" parent="post-sl">
+          <mxGeometry x="18" y="68" width="204" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="post-s2" value="Split&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;train / val / eval partition&lt;br/&gt;(configurable ratios)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;verticalAlign=middle;fontSize=11;" vertex="1" parent="post-sl">
+          <mxGeometry x="18" y="156" width="204" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="post-s3" value="Rebalance&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;adjust tool:text ratio and&lt;br/&gt;category contamination&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;verticalAlign=middle;fontSize=11;" vertex="1" parent="post-sl">
+          <mxGeometry x="18" y="244" width="204" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="post-s4" value="Analysis&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;dataset quality report&lt;br/&gt;(coverage, distribution)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;verticalAlign=middle;fontSize=11;" vertex="1" parent="post-sl">
+          <mxGeometry x="18" y="332" width="204" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="e-post-i1" edge="1" source="post-s1" target="post-s2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="post-sl">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-post-i2" edge="1" source="post-s2" target="post-s3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="post-sl">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-post-i3" edge="1" source="post-s3" target="post-s4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="post-sl">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════════════ ENVIRONMENT LAYER ═══════════════════ -->
+        <!-- Env band: y = 261 + 410 + 75 = 746, h = 28 + 26 + 70 + 15 = 139 -->
+        <mxCell id="L2" value="Environment (pluggable domain)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fef5f5;strokeColor=#b85450;verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize=28;dashed=1;dashPattern=8 4;" vertex="1" parent="1">
+          <mxGeometry x="30" y="746" width="1020" height="139" as="geometry" />
+        </mxCell>
+
+        <!-- Environment items (root-level siblings) -->
+        <mxCell id="env-abc" value="base.py (Environment ABC)&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;ToolSpec + ToolBehavior enum&lt;br/&gt;registry resolves by name&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="800" width="220" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="env-exec" value="ConciergeDBExecutor&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;Postgres visualise_data&lt;br/&gt;real DB → chart summary&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="310" y="800" width="220" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="env-guard" value="Guardrailing&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;tag_guardrail_topics tool&lt;br/&gt;deterministic signposting&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="560" y="800" width="220" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="env-persona" value="Persona + DB Utils&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;sample persona DBs, reseed&lt;br/&gt;Postgres per-persona&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="810" y="800" width="220" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════════════ CROSS-LAYER EDGES ═══════════════════ -->
+
+        <!-- Config → Pipeline modules (fan out from config item) -->
+        <mxCell id="e-cfg-gen" edge="1" source="cfg" target="gen-sl" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="480" y="170" />
+              <mxPoint x="180" y="170" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-cfg-val" edge="1" source="cfg" target="val-sl" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="540" y="190" />
+              <mxPoint x="490" y="190" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-cfg-post" edge="1" source="cfg" target="post-sl" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="600" y="170" />
+              <mxPoint x="800" y="170" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Horizontal data-flow: Generator → Validator -->
+        <mxCell id="e-gen-val" edge="1" source="gen-sl" target="val-sl" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#82b366;strokeWidth=2;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- Text annotation for gen→val (gap=70px < 80px) -->
+        <mxCell id="lbl-gen-val" value="raw blocks" style="text;html=1;fontSize=9;fillColor=none;strokeColor=none;fontColor=#82b366;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="302" y="300" width="65" height="14" as="geometry" />
+        </mxCell>
+
+        <!-- Horizontal data-flow: Validator → Post-Processing -->
+        <mxCell id="e-val-post" edge="1" source="val-sl" target="post-sl" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#82b366;strokeWidth=2;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- Text annotation for val→post -->
+        <mxCell id="lbl-val-post" value="scored data" style="text;html=1;fontSize=9;fillColor=none;strokeColor=none;fontColor=#82b366;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="617" y="300" width="66" height="14" as="geometry" />
+        </mxCell>
+
+        <!-- Dashed env-call: Generator → ConciergeDBExecutor -->
+        <mxCell id="e-gen-exec" edge="1" source="gen-sl" target="env-exec" value="execute_tool()" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#b85450;strokeWidth=2;dashed=1;dashPattern=8 4;labelPosition=right;align=left;exitX=0.3;exitY=1;exitDx=0;exitDy=0;entryX=0.3;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="132" y="700" />
+              <mxPoint x="376" y="700" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Dashed env-call: Generator → Guardrailing -->
+        <mxCell id="e-gen-guard" edge="1" source="gen-sl" target="env-guard" value="signpost()" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#b85450;strokeWidth=2;dashed=1;dashPattern=8 4;labelPosition=right;align=left;exitX=0.7;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="228" y="720" />
+              <mxPoint x="670" y="720" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Dashed env-call: Validator → ABC (rubric) -->
+        <mxCell id="e-val-abc" edge="1" source="val-sl" target="env-abc" value="get_rubric()" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#b85450;strokeWidth=2;dashed=1;dashPattern=8 4;labelPosition=right;align=left;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.8;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="490" y="740" />
+              <mxPoint x="236" y="740" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ═══════════════════ LEGEND ═══════════════════ -->
+        <mxCell id="legend" value="━━ &lt;font color=&quot;#6c8ebf&quot;&gt;config flow&lt;/font&gt;&lt;br/&gt;━━ &lt;font color=&quot;#82b366&quot;&gt;data flow&lt;/font&gt;&lt;br/&gt;┄┄ &lt;font color=&quot;#b85450&quot;&gt;env call&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=top;fontSize=10;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="20" y="926" width="140" height="60" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

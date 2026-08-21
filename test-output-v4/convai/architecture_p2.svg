@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 40 780 640" width="780" height="640">
+  <!-- Page: Voice Pipeline -->
+  <style>text { font-family: Inter, Arial, sans-serif; }</style>
+  <rect id="voice-sl-body" x="290.0" y="60.0" width="240.0" height="510.0" rx="4" ry="4" fill="#fafafa" stroke="#9673a6" stroke-width="1" />
+  <rect id="v-step1" x="308.0" y="116.0" width="204.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#9673a6" stroke-width="1" />
+  <rect id="v-step2" x="308.0" y="204.0" width="204.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#9673a6" stroke-width="1" />
+  <rect id="v-step3" x="308.0" y="292.0" width="204.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#9673a6" stroke-width="1" />
+  <rect id="v-step4" x="308.0" y="380.0" width="204.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#9673a6" stroke-width="1" />
+  <rect id="v-step5" x="308.0" y="468.0" width="204.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#9673a6" stroke-width="1" />
+  <rect id="ext-lk" x="60.0" y="97.0" width="150.0" height="44.0" rx="8" ry="8" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1" />
+  <rect id="ext-stt" x="60.0" y="185.0" width="150.0" height="44.0" rx="8" ry="8" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1" />
+  <rect id="ext-guard" x="60.0" y="273.0" width="150.0" height="44.0" rx="8" ry="8" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1" />
+  <rect id="ext-llm" x="60.0" y="361.0" width="150.0" height="44.0" rx="8" ry="8" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1" />
+  <rect id="ext-tts" x="60.0" y="449.0" width="150.0" height="44.0" rx="8" ry="8" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1" />
+  <rect id="ext-api" x="610.0" y="361.0" width="150.0" height="44.0" rx="8" ry="8" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1" />
+  <rect id="voice-sl-header" x="290.0" y="60.0" width="240.0" height="30.0" rx="4" ry="4" fill="#e1d5e7" stroke="#9673a6" stroke-width="1" />
+  <rect x="290.0" y="86.0" width="240.0" height="4.0" fill="#e1d5e7" stroke="none" />
+  <defs><marker id="arrow-ve1" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#9673a6" /></marker></defs>
+  <polyline id="ve1" points="410.0,174.0 410.0,204.0" fill="none" stroke="#9673a6" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-ve1)" />
+  <defs><marker id="arrow-ve2" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#9673a6" /></marker></defs>
+  <polyline id="ve2" points="410.0,262.0 410.0,292.0" fill="none" stroke="#9673a6" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-ve2)" />
+  <defs><marker id="arrow-ve3" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#9673a6" /></marker></defs>
+  <polyline id="ve3" points="410.0,350.0 410.0,380.0" fill="none" stroke="#9673a6" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-ve3)" />
+  <defs><marker id="arrow-ve4" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#9673a6" /></marker></defs>
+  <polyline id="ve4" points="410.0,438.0 410.0,468.0" fill="none" stroke="#9673a6" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-ve4)" />
+  <defs><marker id="arrow-de1" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#d79b00" /></marker></defs>
+  <polyline id="de1" points="210.0,119.0 259.0,119.0 259.0,145.0 308.0,145.0" fill="none" stroke="#d79b00" stroke-width="2" stroke-dasharray="12 4" stroke-linejoin="round" marker-end="url(#arrow-de1)" />
+  <rect x="204.5" y="107.0" width="60.0" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.6" />
+  <text x="234.5" y="117.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#d79b00">audio in</text>
+  <defs><marker id="arrow-de2" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#9673a6" /></marker></defs>
+  <polyline id="de2" points="210.0,207.0 259.0,207.0 259.0,233.0 308.0,233.0" fill="none" stroke="#9673a6" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow-de2)" />
+  <rect x="194.8" y="195.0" width="79.5" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.9" />
+  <text x="234.5" y="205.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#9673a6">transcripts</text>
+  <defs><marker id="arrow-de3" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#9673a6" /></marker></defs>
+  <polyline id="de3" points="210.0,295.0 259.0,295.0 259.0,321.0 308.0,321.0" fill="none" stroke="#9673a6" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow-de3)" />
+  <rect x="191.5" y="283.0" width="86.0" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.9" />
+  <text x="234.5" y="293.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#9673a6">safety check</text>
+  <defs><marker id="arrow-de4" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#6c8ebf" /></marker></defs>
+  <polyline id="de4" points="210.0,383.0 259.0,383.0 259.0,409.0 308.0,409.0" fill="none" stroke="#6c8ebf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-de4)" />
+  <rect x="211.0" y="371.0" width="47.0" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.9" />
+  <text x="234.5" y="381.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#6c8ebf">tokens</text>
+  <defs><marker id="arrow-de5" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#9673a6" /></marker></defs>
+  <polyline id="de5" points="210.0,471.0 259.0,471.0 259.0,497.0 308.0,497.0" fill="none" stroke="#9673a6" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow-de5)" />
+  <rect x="201.2" y="459.0" width="66.5" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.9" />
+  <text x="234.5" y="469.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#9673a6">audio out</text>
+  <defs><marker id="arrow-de6" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#6c8ebf" /></marker></defs>
+  <polyline id="de6" points="610.0,383.0 561.0,383.0 561.0,409.0 512.0,409.0" fill="none" stroke="#6c8ebf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-de6)" />
+  <rect x="549.0" y="371.0" width="73.0" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.9" />
+  <text x="585.5" y="381.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#6c8ebf">tool calls</text>
+  <text x="410.0" y="76.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Realtime-Voice Pipeline</text>
+  <text x="410.0" y="92.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">pipecat audio processing</text>
+  <text x="410.0" y="141.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">LiveKit Transport</text>
+  <text x="410.0" y="156.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">receive audio frames</text>
+  <text x="410.0" y="229.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">STT Processor</text>
+  <text x="410.0" y="244.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">transcribe to text</text>
+  <text x="410.0" y="317.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Guardrails Check</text>
+  <text x="410.0" y="332.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">input safety screening</text>
+  <text x="410.0" y="405.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">LLM Completion</text>
+  <text x="410.0" y="420.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">stream response tokens</text>
+  <text x="410.0" y="493.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">TTS Synthesis</text>
+  <text x="410.0" y="508.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">generate audio output</text>
+  <text x="135.0" y="115.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">LiveKit Server</text>
+  <text x="135.0" y="130.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">WebRTC signalling</text>
+  <text x="135.0" y="203.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">STT (Triton)</text>
+  <text x="135.0" y="218.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">nemotron_asr model</text>
+  <text x="135.0" y="291.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Guardrails (Triton)</text>
+  <text x="135.0" y="306.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">4 safety models</text>
+  <text x="135.0" y="379.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">LLM (vLLM)</text>
+  <text x="135.0" y="394.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Qwen3-8B / Gemma-4</text>
+  <text x="135.0" y="467.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">TTS (Triton)</text>
+  <text x="135.0" y="482.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">chatterbox_tts model</text>
+  <text x="685.0" y="379.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Concierge API</text>
+  <text x="685.0" y="394.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">tool execution, DB</text>
+  <text x="26.0" y="614.0" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="normal" font-style="normal" text-anchor="start" fill="#333">━━ HTTP</text>
+  <text x="26.0" y="628.0" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="normal" font-style="normal" text-anchor="start" fill="#333">━━━ gRPC</text>
+  <text x="26.0" y="642.0" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="normal" font-style="normal" text-anchor="start" fill="#333">┄┄ WebSocket</text>
+</svg>

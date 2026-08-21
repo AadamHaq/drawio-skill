@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="ac.draw.io">
+  <diagram id="overview" name="Pipeline Overview">
+    <mxGraphModel pageWidth="910" pageHeight="1800" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ===== INPUT NODES: Author inputs (Row 0, y=30) ===== -->
+        <mxCell id="in-envs" value="Tool Environments&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;environments/e2–e16&lt;br/&gt;tools + logic + manifest per arm&lt;/font&gt;"
+          style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;html=1;fontStyle=1;fontSize=11;whiteSpace=wrap;"
+          vertex="1" parent="1">
+          <mxGeometry x="130" y="30" width="200" height="58" as="geometry" />
+        </mxCell>
+
+        <mxCell id="in-prompts" value="Prompt Arms&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;prompt_arms/p0–p12&lt;br/&gt;sections/ composable parts&lt;/font&gt;"
+          style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;html=1;fontStyle=1;fontSize=11;whiteSpace=wrap;"
+          vertex="1" parent="1">
+          <mxGeometry x="390" y="30" width="200" height="58" as="geometry" />
+        </mxCell>
+
+        <!-- ===== STAGE 1: AUTHOR (y=148, h=368) ===== -->
+        <mxCell id="sl-author" value="1. Author&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;environments/ + prompt_arms/ → setup JSON&lt;/font&gt;"
+          style="swimlane;startSize=52;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=12;html=1;"
+          vertex="1" parent="1">
+          <mxGeometry x="210" y="148" width="450" height="368" as="geometry" />
+        </mxCell>
+
+        <mxCell id="auth-s1" value="Cut New Environment&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;cp parent → eN+1 / edit tools.py, logic.py&lt;br/&gt;stdlib-only pure functions, frozen snapshot&lt;/font&gt;"
+          style="rounded=1;fillColor=#ffffff;strokeColor=#d79b00;html=1;fontSize=11;whiteSpace=wrap;"
+          vertex="1" parent="sl-author">
+          <mxGeometry x="18" y="78" width="414" height="76" as="geometry" />
+        </mxCell>
+
+        <mxCell id="auth-s2" value="Cut New Prompt Arm&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;prompt_arms/pN+1.json (parent + changes)&lt;br/&gt;sections/pN+1/ composable system prompt&lt;/font&gt;"
+          style="rounded=1;fillColor=#ffffff;strokeColor=#d79b00;html=1;fontSize=11;whiteSpace=wrap;"
+          vertex="1" parent="sl-author">
+          <mxGeometry x="18" y="184" width="414" height="76" as="geometry" />
+        </mxCell>
+
+        <mxCell id="auth-s3" value="Create Setup JSON (Cell)&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;runners/setups/prompt_pN_env_eM.json&lt;/font&gt;"
+          style="rounded=1;fillColor=#ffffff;strokeColor=#d79b00;html=1;fontSize=11;whiteSpace=wrap;"
+          vertex="1" parent="sl-author">
+          <mxGeometry x="18" y="290" width="414" height="58" as="geometry" />
+        </mxCell>
+
+        <!-- Internal sequential edges for Author -->
+        <mxCell id="e-auth-1-2" edge="1" source="auth-s1" target="auth-s2" parent="sl-author"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e-auth-2-3" edge="1" source="auth-s2" target="auth-s3" parent="sl-author"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===== INPUT NODES: Run inputs (y=576) ===== -->
+        <mxCell id="in-batteries" value="Eval Batteries&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;datasets/scenarios/&lt;br/&gt;lab_prompts_hard, suite_full&lt;/font&gt;"
+          style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;html=1;fontStyle=1;fontSize=11;whiteSpace=wrap;"
+          vertex="1" parent="1">
+          <mxGeometry x="130" y="576" width="200" height="58" as="geometry" />
+        </mxCell>
+
+        <mxCell id="in-product" value="Product (convai/)&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;git submodule, pinned SHA&lt;br/&gt;realtime + api services&lt;/font&gt;"
+          style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;html=1;fontStyle=1;fontSize=11;whiteSpace=wrap;"
+          vertex="1" parent="1">
+          <mxGeometry x="530" y="576" width="200" height="58" as="geometry" />
+        </mxCell>
+
+        <!-- ===== STAGE 2: RUN SWEEP (y=694, h=474) ===== -->
+        <mxCell id="sl-run" value="3. Run Sweep&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;sweep.py · eval_params × cells matrix&lt;/font&gt;"
+          style="swimlane;startSize=52;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=12;html=1;"
+          vertex="1" parent="1">
+          <mxGeometry x="210" y="694" width="450" height="474" as="geometry" />
+        </mxCell>
+
+        <mxCell id="run-s1" value="Boot Realtime Service&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;convai/services/realtime (port 8001)&lt;br/&gt;EXPERIMENTAL_ENV + SYSTEM_PROMPT_CONFIG&lt;/font&gt;"
+          style="rounded=1;fillColor=#ffffff;strokeColor=#d79b00;html=1;fontSize=11;whiteSpace=wrap;"
+          vertex="1" parent="sl-run">
+          <mxGeometry x="18" y="78" width="414" height="76" as="geometry" />
+        </mxCell>
+
+        <mxCell id="run-s2" value="Invoke ceval simulate&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;sim model + judge model (vLLM local default)&lt;br/&gt;--max-turns 3 / --suite full / --batch-size 4&lt;/font&gt;"
+          style="rounded=1;fillColor=#ffffff;strokeColor=#d79b00;html=1;fontSize=11;whiteSpace=wrap;"
+          vertex="1" parent="sl-run">
+          <mxGeometry x="18" y="184" width="414" height="76" as="geometry" />
+        </mxCell>
+
+        <mxCell id="run-s3" value="Judge Scores Each Turn&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;3-tier: auto-fails → LLM rubric → cross-turn&lt;br/&gt;same model judges its own output&lt;/font&gt;"
+          style="rounded=1;fillColor=#ffffff;strokeColor=#d79b00;html=1;fontSize=11;whiteSpace=wrap;"
+          vertex="1" parent="sl-run">
+          <mxGeometry x="18" y="290" width="414" height="76" as="geometry" />
+        </mxCell>
+
+        <mxCell id="run-s4" value="Write Results + Metrics&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;results/ceval/&lt;run_id&gt;/ + manifest.json&lt;/font&gt;"
+          style="rounded=1;fillColor=#ffffff;strokeColor=#d79b00;html=1;fontSize=11;whiteSpace=wrap;"
+          vertex="1" parent="sl-run">
+          <mxGeometry x="18" y="396" width="414" height="58" as="geometry" />
+        </mxCell>
+
+        <!-- Internal sequential edges for Run -->
+        <mxCell id="e-run-1-2" edge="1" source="run-s1" target="run-s2" parent="sl-run"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e-run-2-3" edge="1" source="run-s2" target="run-s3" parent="sl-run"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e-run-3-4" edge="1" source="run-s3" target="run-s4" parent="sl-run"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===== STAGE 3: READ RESULTS (y=1228, h=332) ===== -->
+        <mxCell id="sl-read" value="4. Read Results&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;view/ · metric vectors + response inspection&lt;/font&gt;"
+          style="swimlane;startSize=52;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=12;html=1;"
+          vertex="1" parent="1">
+          <mxGeometry x="210" y="1228" width="450" height="332" as="geometry" />
+        </mxCell>
+
+        <mxCell id="read-s1" value="Metric Vectors&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;view/ceval_table.py · per-cell pass rates&lt;/font&gt;"
+          style="rounded=1;fillColor=#ffffff;strokeColor=#d79b00;html=1;fontSize=11;whiteSpace=wrap;"
+          vertex="1" parent="sl-read">
+          <mxGeometry x="18" y="78" width="414" height="58" as="geometry" />
+        </mxCell>
+
+        <mxCell id="read-s2" value="Terminal Inspector&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;view/inspector.py · side-by-side diff&lt;/font&gt;"
+          style="rounded=1;fillColor=#ffffff;strokeColor=#d79b00;html=1;fontSize=11;whiteSpace=wrap;"
+          vertex="1" parent="sl-read">
+          <mxGeometry x="18" y="166" width="414" height="58" as="geometry" />
+        </mxCell>
+
+        <mxCell id="read-s3" value="Web Viewer&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;view/app/ (React/Vite) · real chart components&lt;/font&gt;"
+          style="rounded=1;fillColor=#ffffff;strokeColor=#d79b00;html=1;fontSize=11;whiteSpace=wrap;"
+          vertex="1" parent="sl-read">
+          <mxGeometry x="18" y="254" width="414" height="58" as="geometry" />
+        </mxCell>
+
+        <!-- Internal sequential edges for Read -->
+        <mxCell id="e-read-1-2" edge="1" source="read-s1" target="read-s2" parent="sl-read"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e-read-2-3" edge="1" source="read-s2" target="read-s3" parent="sl-read"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===== OUTPUT NODE (y=1620) ===== -->
+        <mxCell id="out-land" value="5. Land in Product&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;winning arm copied to convai/&lt;br/&gt;reviewed there, env stays frozen&lt;/font&gt;"
+          style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;html=1;fontStyle=1;fontSize=11;whiteSpace=wrap;"
+          vertex="1" parent="1">
+          <mxGeometry x="305" y="1620" width="260" height="58" as="geometry" />
+        </mxCell>
+
+        <!-- ===== CROSS-ROW EDGES ===== -->
+
+        <!-- Envs → Author -->
+        <mxCell id="e-envs-author" edge="1" source="in-envs" target="sl-author" parent="1"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;exitX=0.5;exitY=1.0;exitDx=0;exitDy=0;entryX=0.3;entryY=0.0;entryDx=0;entryDy=0;"
+          value="tool arms">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="345" y="88" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Prompts → Author -->
+        <mxCell id="e-prompts-author" edge="1" source="in-prompts" target="sl-author" parent="1"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;exitX=0.5;exitY=1.0;exitDx=0;exitDy=0;entryX=0.7;entryY=0.0;entryDx=0;entryDy=0;"
+          value="prompt arms">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="525" y="88" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Batteries → Run -->
+        <mxCell id="e-batteries-run" edge="1" source="in-batteries" target="sl-run" parent="1"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;exitX=0.5;exitY=1.0;exitDx=0;exitDy=0;entryX=0.2;entryY=0.0;entryDx=0;entryDy=0;"
+          value="scenarios">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="300" y="634" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Product → Run -->
+        <mxCell id="e-product-run" edge="1" source="in-product" target="sl-run" parent="1"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;exitX=0.5;exitY=1.0;exitDx=0;exitDy=0;entryX=0.8;entryY=0.0;entryDx=0;entryDy=0;"
+          value="pinned SHA">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="570" y="634" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Author → Run -->
+        <mxCell id="e-author-run" edge="1" source="sl-author" target="sl-run" parent="1"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;exitX=0.5;exitY=1.0;exitDx=0;exitDy=0;entryX=0.5;entryY=0.0;entryDx=0;entryDy=0;"
+          value="setup JSONs">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Run → Read -->
+        <mxCell id="e-run-read" edge="1" source="sl-run" target="sl-read" parent="1"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;exitX=0.5;exitY=1.0;exitDx=0;exitDy=0;entryX=0.5;entryY=0.0;entryDx=0;entryDy=0;"
+          value="results/ceval/">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Read → Output -->
+        <mxCell id="e-read-out" edge="1" source="sl-read" target="out-land" parent="1"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#82b366;strokeWidth=2;exitX=0.5;exitY=1.0;exitDx=0;exitDy=0;entryX=0.5;entryY=0.0;entryDx=0;entryDy=0;"
+          value="winner">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===== LEGEND ===== -->
+        <mxCell id="legend" value="━━ sequential&lt;br/&gt;━━ &lt;font color=&quot;#82b366&quot;&gt;pass / output&lt;/font&gt;"
+          style="text;html=1;align=left;verticalAlign=top;fontSize=10;fillColor=none;strokeColor=none;"
+          vertex="1" parent="1">
+          <mxGeometry x="20" y="1718" width="140" height="50" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

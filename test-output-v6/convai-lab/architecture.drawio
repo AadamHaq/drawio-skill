@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="Kiro" modified="2025-01-01T00:00:00.000Z" agent="Kiro" version="1.0">
+  <diagram id="arch-overview" name="Architecture Overview">
+    <mxGraphModel dx="0" dy="0" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="960" pageHeight="780" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Layer 0: Config / Frozen Arms (band) -->
+        <mxCell id="L0" value="Config &amp; Frozen Arms" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize=28;" vertex="1" parent="1">
+          <mxGeometry x="30" y="30" width="860" height="134" as="geometry" />
+        </mxCell>
+
+        <!-- Layer 1: Runners (band) -->
+        <mxCell id="L1" value="Runners (Experiment Drivers)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize=28;" vertex="1" parent="1">
+          <mxGeometry x="30" y="184" width="860" height="134" as="geometry" />
+        </mxCell>
+
+        <!-- Layer 2: Environments & Data (band) -->
+        <mxCell id="L2" value="Frozen Environments &amp; Data" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize=28;" vertex="1" parent="1">
+          <mxGeometry x="30" y="338" width="860" height="134" as="geometry" />
+        </mxCell>
+
+        <!-- Layer 3: View / Results (band) -->
+        <mxCell id="L3" value="View &amp; Results" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize=28;" vertex="1" parent="1">
+          <mxGeometry x="30" y="492" width="860" height="134" as="geometry" />
+        </mxCell>
+
+        <!-- Layer 0 items (root-level siblings) -->
+        <mxCell id="arms" value="prompt_arms/ p0-p11&lt;br/&gt;&lt;font style='font-size:9px'&gt;frozen system prompts from sections/&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="195" y="84" width="240" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="setups" value="runners/setups/&lt;br/&gt;&lt;font style='font-size:9px'&gt;one JSON per cell, selects arm+env&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="485" y="84" width="240" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Layer 1 items (root-level siblings) -->
+        <mxCell id="sweep" value="sweep.py&lt;br/&gt;&lt;font style='font-size:9px'&gt;eval-params x cells matrix driver&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="50" y="238" width="240" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="run_ceval" value="run_ceval.py&lt;br/&gt;&lt;font style='font-size:9px'&gt;boot realtime, invoke ceval, teardown&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="340" y="238" width="240" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="eval_params" value="eval_params.py&lt;br/&gt;&lt;font style='font-size:9px'&gt;named evaluations + ceval flags&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="630" y="238" width="240" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Layer 2 items (root-level siblings) -->
+        <mxCell id="envs" value="environments/ e0-e15&lt;br/&gt;&lt;font style='font-size:9px'&gt;frozen tool snapshots (ToolSpec)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="195" y="392" width="240" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="datasets" value="datasets/&lt;br/&gt;&lt;font style='font-size:9px'&gt;prompts + generated scenarios&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="485" y="392" width="240" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Layer 3 items (root-level siblings) -->
+        <mxCell id="inspector" value="inspector.py&lt;br/&gt;&lt;font style='font-size:9px'&gt;terminal side-by-side viewer&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="50" y="546" width="240" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ceval_table" value="ceval_table.py&lt;br/&gt;&lt;font style='font-size:9px'&gt;metric vector per cell comparison&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="340" y="546" width="240" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="webapp" value="view/app/&lt;br/&gt;&lt;font style='font-size:9px'&gt;React/Vite web viewer (dist/)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="630" y="546" width="240" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Edges: Config → Runners (cross-band, need 2 waypoints) -->
+        <!-- e1: setups → sweep (cells) -->
+        <mxCell id="e1" edge="1" source="setups" target="sweep" value="cells"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;exitX=0.2;exitY=1;exitDx=0;exitDy=0;entryX=0.7;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="533" y="174" />
+              <mxPoint x="218" y="217" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- e2: setups → run_ceval (arm+env) -->
+        <mxCell id="e2" edge="1" source="setups" target="run_ceval" value="arm+env"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="605" y="174" />
+              <mxPoint x="460" y="217" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- e3: arms → run_ceval (prompt) -->
+        <mxCell id="e3" edge="1" source="arms" target="run_ceval" value="prompt"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.3;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="315" y="174" />
+              <mxPoint x="412" y="217" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- e4: eval_params → sweep (batteries) - horizontal within same band -->
+        <mxCell id="e4" edge="1" source="eval_params" target="sweep" value="batteries"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#d6b656;strokeWidth=2;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Edges: Runners → Environments (cross-band) -->
+        <!-- e5: run_ceval → envs (load_tools()) -->
+        <mxCell id="e5" edge="1" source="run_ceval" target="envs" value="load_tools()"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#82b366;strokeWidth=2;exitX=0.3;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="412" y="328" />
+              <mxPoint x="315" y="371" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- e6: run_ceval → datasets (scenarios) -->
+        <mxCell id="e6" edge="1" source="run_ceval" target="datasets" value="scenarios"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#82b366;strokeWidth=2;exitX=0.7;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="508" y="328" />
+              <mxPoint x="605" y="371" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Edges: Runners → View (cross-band, skip L2) -->
+        <!-- e7: sweep → ceval_table (results/) -->
+        <mxCell id="e7" edge="1" source="sweep" target="ceval_table" value="results/"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#9673a6;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="170" y="482" />
+              <mxPoint x="460" y="525" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- e8: run_ceval → inspector (turns.jsonl) -->
+        <mxCell id="e8" edge="1" source="run_ceval" target="inspector" value="turns.jsonl"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#9673a6;strokeWidth=2;exitX=0.2;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="388" y="482" />
+              <mxPoint x="170" y="525" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- e9: envs → webapp (ToolSpec) - cross-band -->
+        <mxCell id="e9" edge="1" source="envs" target="webapp" value="ToolSpec"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#9673a6;strokeWidth=2;exitX=0.7;exitY=1;exitDx=0;exitDy=0;entryX=0.3;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="363" y="482" />
+              <mxPoint x="702" y="525" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Legend -->
+        <mxCell id="legend" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="30" y="650" width="200" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-title" value="Legend" style="text;html=1;fontSize=10;fontStyle=1;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="655" width="60" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-l1" value="&#x2014; Config flow (blue)" style="text;html=1;fontSize=9;fillColor=none;strokeColor=none;fontColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="673" width="180" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-l2" value="&#x2014; Data/env flow (green)" style="text;html=1;fontSize=9;fillColor=none;strokeColor=none;fontColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="40" y="689" width="180" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-l3" value="&#x2014; Intra-band (yellow)" style="text;html=1;fontSize=9;fillColor=none;strokeColor=none;fontColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="40" y="705" width="180" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-l4" value="&#x2014; Results flow (purple)" style="text;html=1;fontSize=9;fillColor=none;strokeColor=none;fontColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="40" y="721" width="180" height="14" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

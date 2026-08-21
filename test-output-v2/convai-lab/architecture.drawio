@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="ac.draw.io">
+  <diagram id="overview" name="Architecture Overview">
+    <mxGraphModel pageWidth="850" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ===== LAYER 0: Config / Input ===== -->
+        <mxCell id="L0" value="Config &amp; Inputs" style="swimlane;startSize=28;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;html=1;rounded=1;whiteSpace=wrap;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="30" y="30" width="767" height="105" as="geometry" />
+        </mxCell>
+
+        <!-- Config items as root-level siblings (receive no incoming cross-band edges, but placed as siblings for consistency) -->
+        <mxCell id="eval-params" value="eval_params.py&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;7 named batteries: lab_prompts, harvest_tool_200,&lt;br/&gt;suite_full; --max-turns 3, --persona-db-dir&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="48" y="85" width="210" height="45" as="geometry" />
+        </mxCell>
+
+        <mxCell id="cell-setups" value="setups/experimental_tools/&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;one JSON per cell: prompt_{arm}_env_{env}[_think].json&lt;br/&gt;pins EXPERIMENTAL_ENV + EXPERIMENTAL_TOOLS_DIR&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="298" y="85" width="220" height="45" as="geometry" />
+        </mxCell>
+
+        <mxCell id="prompt-arms" value="prompt_arms/ (p0-p11)&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;frozen system prompts composed from sections/;&lt;br/&gt;portable (p1-p6) vs coupled (p7-p10)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="558" y="85" width="220" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- ===== LAYER 1: Pipeline / Runners ===== -->
+        <mxCell id="L1" value="Pipeline (runners/)" style="swimlane;startSize=28;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=12;html=1;rounded=1;whiteSpace=wrap;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="30" y="190" width="767" height="130" as="geometry" />
+        </mxCell>
+
+        <!-- Pipeline items as root-level siblings -->
+        <mxCell id="sweep" value="sweep.py&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;matrix driver: eval_params x cells;&lt;br/&gt;sequential cells, prints ceval_table between runs&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="48" y="246" width="210" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="run-ceval" value="run_ceval.py&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;launches one cell: boots realtime, resolves&lt;br/&gt;provenance (lab+convai SHA), writes metadata.json&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="298" y="246" width="220" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ceval-harness" value="convai-eval (ceval simulate)&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;3 models: assistant + sim customer + judge&lt;br/&gt;(gemma-4-26B-A4B-it on localhost:8080)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="558" y="246" width="220" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- ===== LAYER 2: Environments ===== -->
+        <mxCell id="L2" value="Environments (frozen)" style="swimlane;startSize=28;fillColor=#fef5f5;strokeColor=#b85450;fontStyle=1;fontSize=12;html=1;rounded=1;whiteSpace=wrap;verticalAlign=top;dashed=1;dashPattern=8 4;" vertex="1" parent="1">
+          <mxGeometry x="30" y="395" width="767" height="130" as="geometry" />
+        </mxCell>
+
+        <!-- Environment items as root-level siblings -->
+        <mxCell id="registry" value="registry.py&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;resolves env name (e0-e15) via importlib;&lt;br/&gt;loads manifest + tools + logic per arm&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="48" y="451" width="210" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="frozen-envs" value="e0-e15 (tool snapshots)&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;manifest.py + tools.py + logic.py per env;&lt;br/&gt;two families: tool ladder (e2-e10) &amp;amp; chart (e12-e14)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="298" y="451" width="220" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="frozen-charts" value="_charts_v1 / _charts_v2&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;frozen product chart pipeline copies;&lt;br/&gt;stdlib-only logic, never imports live product&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="558" y="451" width="220" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- ===== LAYER 3: View / Results ===== -->
+        <mxCell id="L3" value="View (results readers)" style="swimlane;startSize=28;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=12;html=1;rounded=1;whiteSpace=wrap;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="30" y="600" width="767" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- View items as root-level siblings -->
+        <mxCell id="ceval-table" value="ceval_table.py&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;metric vector per cell (rubric, completeness,&lt;br/&gt;groundedness); flags mixed judges/batteries&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="108" y="656" width="220" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="webapp" value="view/app (React/Vite)&lt;br/&gt;&lt;font style=&quot;font-size:9px&quot;&gt;renders charts via pinned product renderer;&lt;br/&gt;ceval_to_responses.py adapts turns.jsonl&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="468" y="656" width="220" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- ===== EDGES ===== -->
+
+        <!-- Config -> Pipeline: eval_params feeds sweep (cross-band, needs waypoint in gap) -->
+        <mxCell id="e-ep-sw" edge="1" source="eval-params" target="sweep" value=""
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;"
+          parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="153" y="170" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Config -> Pipeline: cell setups feed sweep (cross-band, waypoint in gap y=170) -->
+        <mxCell id="e-cs-sw" edge="1" source="cell-setups" target="sweep" value=""
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.7;entryY=0;entryDx=0;entryDy=0;"
+          parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="353" y="170" />
+              <mxPoint x="195" y="170" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Config -> Pipeline: prompt_arms feed run_ceval (cross-band) -->
+        <mxCell id="e-pa-rc" edge="1" source="prompt-arms" target="run-ceval" value=""
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.7;entryY=0;entryDx=0;entryDy=0;"
+          parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="668" y="170" />
+              <mxPoint x="452" y="170" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Pipeline internal: sweep -> run_ceval (sibling, same layer) -->
+        <mxCell id="e-sw-rc" edge="1" source="sweep" target="run-ceval" value=""
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#d6b656;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;"
+          parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Pipeline internal: run_ceval -> ceval harness (sibling, same layer) -->
+        <mxCell id="e-rc-ce" edge="1" source="run-ceval" target="ceval-harness" value=""
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#d6b656;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;"
+          parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Pipeline -> Env: run_ceval calls registry (cross-band, dashed) -->
+        <mxCell id="e-rc-reg" edge="1" source="run-ceval" target="registry" value="load_tools()"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#b85450;strokeWidth=2;dashed=1;dashPattern=8 4;labelPosition=right;align=left;exitX=0.3;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;"
+          parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="364" y="355" />
+              <mxPoint x="153" y="355" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Pipeline -> Env: ceval harness calls frozen envs (cross-band, dashed) -->
+        <mxCell id="e-ce-fe" edge="1" source="ceval-harness" target="frozen-envs" value="execute_tool()"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#b85450;strokeWidth=2;dashed=1;dashPattern=8 4;labelPosition=right;align=left;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;"
+          parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="668" y="355" />
+              <mxPoint x="408" y="355" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Environment internal: frozen-envs -> frozen-charts -->
+        <mxCell id="e-fe-fc" edge="1" source="frozen-envs" target="frozen-charts" value=""
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#b85450;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;"
+          parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Pipeline -> View: run_ceval produces results (cross-band, through env band) -->
+        <mxCell id="e-rc-ct" edge="1" source="run-ceval" target="ceval-table" value="results/"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#9673a6;strokeWidth=2;dashed=1;dashPattern=12 4;labelPosition=right;align=left;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;"
+          parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="408" y="355" />
+              <mxPoint x="30" y="355" />
+              <mxPoint x="30" y="570" />
+              <mxPoint x="218" y="570" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- View internal: ceval_table -> webapp -->
+        <mxCell id="e-ct-wa" edge="1" source="ceval-table" target="webapp" value="responses.json"
+          style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#9673a6;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;"
+          parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===== LEGEND ===== -->
+        <mxCell id="legend" value="&lt;b&gt;Colour Legend&lt;/b&gt;&lt;br/&gt;━━ &lt;font color=&quot;#6c8ebf&quot;&gt;config flow&lt;/font&gt;&lt;br/&gt;━━ &lt;font color=&quot;#d6b656&quot;&gt;pipeline seq&lt;/font&gt;&lt;br/&gt;╌╌ &lt;font color=&quot;#b85450&quot;&gt;env call&lt;/font&gt;&lt;br/&gt;╌╌ &lt;font color=&quot;#9673a6&quot;&gt;results write&lt;/font&gt;"
+          style="text;html=1;align=left;verticalAlign=top;fontSize=10;fillColor=none;strokeColor=none;"
+          vertex="1" parent="1">
+          <mxGeometry x="20" y="740" width="140" height="80" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

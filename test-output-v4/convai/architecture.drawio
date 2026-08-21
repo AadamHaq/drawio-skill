@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="ac.draw.io">
+  <diagram id="service-map" name="Service Map">
+    <mxGraphModel pageWidth="1240" pageHeight="1040" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ═══ ROW 1: CLIENT ═══ -->
+        <mxCell id="web" value="Web UI&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;React + Vite frontend&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize=30;" vertex="1" parent="1">
+          <mxGeometry x="470" y="60" width="200" height="98" as="geometry" />
+        </mxCell>
+        <mxCell id="web-c1" value="React / Vite :3000" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="web">
+          <mxGeometry x="10" y="36" width="180" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="web-c2" value="LiveKit WebRTC client" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="web">
+          <mxGeometry x="10" y="64" width="180" height="24" as="geometry" />
+        </mxCell>
+
+        <!-- ═══ ROW 2: APP SERVICES ═══ -->
+        <mxCell id="api" value="API&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;Core application service&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize=30;" vertex="1" parent="1">
+          <mxGeometry x="160" y="260" width="200" height="126" as="geometry" />
+        </mxCell>
+        <mxCell id="api-c1" value="FastAPI :8000" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="api">
+          <mxGeometry x="10" y="56" width="180" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="api-c2" value="Auth / Sessions / Banking" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="api">
+          <mxGeometry x="10" y="84" width="180" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="rt-text" value="Realtime-Text&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;Text chat tier&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize=30;" vertex="1" parent="1">
+          <mxGeometry x="420" y="260" width="200" height="126" as="geometry" />
+        </mxCell>
+        <mxCell id="rt-text-c1" value="FastAPI :8000 (WS)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="rt-text">
+          <mxGeometry x="10" y="56" width="180" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="rt-text-c2" value="LLM streaming + tools" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="rt-text">
+          <mxGeometry x="10" y="84" width="180" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="rt-voice" value="Realtime-Voice&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;Voice pipeline tier&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize=30;" vertex="1" parent="1">
+          <mxGeometry x="680" y="260" width="200" height="126" as="geometry" />
+        </mxCell>
+        <mxCell id="rt-voice-c1" value="pipecat voice pipeline" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="rt-voice">
+          <mxGeometry x="10" y="56" width="180" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="rt-voice-c2" value="LiveKit room transport" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="rt-voice">
+          <mxGeometry x="10" y="84" width="180" height="24" as="geometry" />
+        </mxCell>
+
+        <!-- ═══ ROW 3: INFERENCE ═══ -->
+        <mxCell id="llm" value="LLM&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;Language model serving&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize=30;" vertex="1" parent="1">
+          <mxGeometry x="160" y="510" width="200" height="108" as="geometry" />
+        </mxCell>
+        <mxCell id="llm-c1" value="vLLM (OpenAI-compat API)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="llm">
+          <mxGeometry x="10" y="56" width="180" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="llm-c2" value="LMCache + Redis KV" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="llm">
+          <mxGeometry x="10" y="84" width="180" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="guardrails" value="Guardrails&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;Safety inference server&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize=30;" vertex="1" parent="1">
+          <mxGeometry x="420" y="510" width="200" height="126" as="geometry" />
+        </mxCell>
+        <mxCell id="guard-c1" value="Triton Inference Server" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="guardrails">
+          <mxGeometry x="10" y="56" width="180" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="guard-c2" value="prompt_inj / multi_guard" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="guardrails">
+          <mxGeometry x="10" y="84" width="180" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="stt" value="STT&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;Speech-to-text inference&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize=30;" vertex="1" parent="1">
+          <mxGeometry x="680" y="510" width="200" height="108" as="geometry" />
+        </mxCell>
+        <mxCell id="stt-c1" value="Triton (nemotron_asr)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="stt">
+          <mxGeometry x="10" y="56" width="180" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="stt-c2" value="Streaming ASR" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="stt">
+          <mxGeometry x="10" y="84" width="180" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tts" value="TTS&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;Text-to-speech inference&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize=30;" vertex="1" parent="1">
+          <mxGeometry x="940" y="510" width="200" height="108" as="geometry" />
+        </mxCell>
+        <mxCell id="tts-c1" value="Triton (chatterbox_tts)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="tts">
+          <mxGeometry x="10" y="56" width="180" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="tts-c2" value="Neural voice synthesis" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="tts">
+          <mxGeometry x="10" y="84" width="180" height="24" as="geometry" />
+        </mxCell>
+
+        <!-- ═══ ROW 4: INFRASTRUCTURE ═══ -->
+        <mxCell id="postgres" value="PostgreSQL&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;v16 — conversations, users&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;boundedLbl=1;backgroundOutline=1;size=10;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="200" y="750" width="160" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="redis" value="Redis&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;Sessions + rate limiting&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;boundedLbl=1;backgroundOutline=1;size=10;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="470" y="750" width="160" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="livekit" value="LiveKit&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;WebRTC media server&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;boundedLbl=1;backgroundOutline=1;size=10;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="740" y="750" width="160" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ═══ EDGES ═══ -->
+        <!-- e1: web → api (HTTP) — route left side avoiding middle services -->
+        <mxCell id="e1" edge="1" source="web" target="api" value="REST /api" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;exitX=0.2;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="510" y="200" />
+              <mxPoint x="260" y="200" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- e2: web → rt-text (WebSocket) — straight down -->
+        <mxCell id="e2" edge="1" source="web" target="rt-text" value="WebSocket" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#d79b00;strokeWidth=2;dashed=1;dashPattern=12 4;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- e3: rt-text → api (HTTP internal) — horizontal -->
+        <mxCell id="e3" edge="1" source="rt-text" target="api" value="internal HTTP" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- e4: rt-voice → llm (HTTP) — route under services, avoid stt box -->
+        <mxCell id="e4" edge="1" source="rt-voice" target="llm" value="completions" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;exitX=0.2;exitY=1;exitDx=0;exitDy=0;entryX=0.7;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="720" y="450" />
+              <mxPoint x="300" y="450" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- e5: rt-voice → stt (gRPC) — straight down -->
+        <mxCell id="e5" edge="1" source="rt-voice" target="stt" value="gRPC infer" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#9673a6;strokeWidth=3;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- e6: rt-voice → tts (gRPC) — route right -->
+        <mxCell id="e6" edge="1" source="rt-voice" target="tts" value="gRPC synth" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#9673a6;strokeWidth=3;exitX=0.8;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="840" y="450" />
+              <mxPoint x="1040" y="450" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- e7: rt-text → llm (HTTP) — route left, below row 2 -->
+        <mxCell id="e7" edge="1" source="rt-text" target="llm" value="text comp" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;exitX=0.2;exitY=1;exitDx=0;exitDy=0;entryX=0.3;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="460" y="470" />
+              <mxPoint x="220" y="470" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- e8: rt-text → guardrails (gRPC) — route down to guardrails -->
+        <mxCell id="e8" edge="1" source="rt-text" target="guardrails" value="gRPC guard" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#9673a6;strokeWidth=3;exitX=0.8;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="580" y="430" />
+              <mxPoint x="520" y="430" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- e9: api → postgres (database) — route left side, avoid llm box -->
+        <mxCell id="e9" edge="1" source="api" target="postgres" value="queries" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;dashed=1;dashPattern=8 4;exitX=0.2;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="200" y="420" />
+              <mxPoint x="100" y="420" />
+              <mxPoint x="100" y="700" />
+              <mxPoint x="280" y="700" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- e10: api → redis (database) — route right side, avoid overlap with e7 -->
+        <mxCell id="e10" edge="1" source="api" target="redis" value="sessions" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;dashed=1;dashPattern=8 4;exitX=0.8;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="320" y="410" />
+              <mxPoint x="390" y="410" />
+              <mxPoint x="390" y="700" />
+              <mxPoint x="550" y="700" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- e11: rt-voice → livekit (HTTP) — route far right past TTS -->
+        <mxCell id="e11" edge="1" source="rt-voice" target="livekit" value="rooms API" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;exitX=0.8;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="840" y="230" />
+              <mxPoint x="1160" y="230" />
+              <mxPoint x="1160" y="700" />
+              <mxPoint x="820" y="700" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- e12: web → livekit (WebRTC/WS) — route far right past TTS -->
+        <mxCell id="e12" edge="1" source="web" target="livekit" value="WebRTC" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#d79b00;strokeWidth=2;dashed=1;dashPattern=12 4;exitX=0.8;exitY=0;exitDx=0;exitDy=0;entryX=0.7;entryY=0;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="630" y="40" />
+              <mxPoint x="1180" y="40" />
+              <mxPoint x="1180" y="720" />
+              <mxPoint x="852" y="720" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- LEGEND -->
+        <mxCell id="legend" value="━━ &lt;font color=&quot;#6c8ebf&quot;&gt;HTTP&lt;/font&gt;&lt;br/&gt;━━━ &lt;font color=&quot;#9673a6&quot;&gt;gRPC&lt;/font&gt;&lt;br/&gt;┄┄ &lt;font color=&quot;#d79b00&quot;&gt;WebSocket&lt;/font&gt;&lt;br/&gt;┄┄ &lt;font color=&quot;#6c8ebf&quot;&gt;database&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=top;fontSize=10;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="20" y="850" width="140" height="60" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <diagram id="data-flow" name="Voice Pipeline">
+    <mxGraphModel pageWidth="827" pageHeight="720" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Swimlane: Realtime-Voice Pipeline -->
+        <mxCell id="voice-sl" value="Realtime-Voice Pipeline&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;pipecat audio processing&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize=30;" vertex="1" parent="1">
+          <mxGeometry x="290" y="60" width="240" height="510" as="geometry" />
+        </mxCell>
+        <mxCell id="v-step1" value="LiveKit Transport&lt;br/&gt;receive audio frames" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="voice-sl">
+          <mxGeometry x="18" y="56" width="204" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="v-step2" value="STT Processor&lt;br/&gt;transcribe to text" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="voice-sl">
+          <mxGeometry x="18" y="144" width="204" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="v-step3" value="Guardrails Check&lt;br/&gt;input safety screening" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="voice-sl">
+          <mxGeometry x="18" y="232" width="204" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="v-step4" value="LLM Completion&lt;br/&gt;stream response tokens" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="voice-sl">
+          <mxGeometry x="18" y="320" width="204" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="v-step5" value="TTS Synthesis&lt;br/&gt;generate audio output" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="voice-sl">
+          <mxGeometry x="18" y="408" width="204" height="58" as="geometry" />
+        </mxCell>
+
+        <!-- External dependencies -->
+        <mxCell id="ext-lk" value="LiveKit Server&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;WebRTC signalling&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="97" width="150" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="ext-stt" value="STT (Triton)&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;nemotron_asr model&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="185" width="150" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="ext-guard" value="Guardrails (Triton)&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;4 safety models&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="273" width="150" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="ext-llm" value="LLM (vLLM)&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;Qwen3-8B / Gemma-4&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="361" width="150" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="ext-tts" value="TTS (Triton)&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;chatterbox_tts model&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="449" width="150" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="ext-api" value="Concierge API&lt;br/&gt;&lt;font style=&quot;font-size:10px&quot;&gt;tool execution, DB&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="610" y="361" width="150" height="44" as="geometry" />
+        </mxCell>
+
+        <!-- Sequential edges (within swimlane) -->
+        <mxCell id="ve1" edge="1" source="v-step1" target="v-step2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#9673a6;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="voice-sl">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ve2" edge="1" source="v-step2" target="v-step3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#9673a6;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="voice-sl">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ve3" edge="1" source="v-step3" target="v-step4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#9673a6;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="voice-sl">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ve4" edge="1" source="v-step4" target="v-step5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#9673a6;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="voice-sl">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Cross-service edges from external deps -->
+        <mxCell id="de1" edge="1" source="ext-lk" target="v-step1" value="audio in" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#d79b00;strokeWidth=2;dashed=1;dashPattern=12 4;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="de2" edge="1" source="ext-stt" target="v-step2" value="transcripts" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#9673a6;strokeWidth=3;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="de3" edge="1" source="ext-guard" target="v-step3" value="safety check" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#9673a6;strokeWidth=3;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="de4" edge="1" source="ext-llm" target="v-step4" value="tokens" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="de5" edge="1" source="ext-tts" target="v-step5" value="audio out" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#9673a6;strokeWidth=3;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="de6" edge="1" source="ext-api" target="v-step4" value="tool calls" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Legend -->
+        <mxCell id="legend2" value="━━ &lt;font color=&quot;#6c8ebf&quot;&gt;HTTP&lt;/font&gt;&lt;br/&gt;━━━ &lt;font color=&quot;#9673a6&quot;&gt;gRPC&lt;/font&gt;&lt;br/&gt;┄┄ &lt;font color=&quot;#d79b00&quot;&gt;WebSocket&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=top;fontSize=10;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="20" y="600" width="130" height="60" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

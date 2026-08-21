@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="10 10 940 750" width="940" height="750">
+  <!-- Page: Architecture Overview -->
+  <style>text { font-family: Inter, Arial, sans-serif; }</style>
+  <rect id="L0-body" x="30.0" y="30.0" width="900.0" height="100.0" rx="4" ry="4" fill="#fafafa" stroke="#6c8ebf" stroke-width="1" />
+  <rect id="setups" x="195.0" y="60.0" width="240.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#6c8ebf" stroke-width="1" />
+  <rect id="eval_params" x="525.0" y="60.0" width="240.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#6c8ebf" stroke-width="1" />
+  <rect id="L1-body" x="30.0" y="180.0" width="900.0" height="120.0" rx="4" ry="4" fill="#fafafa" stroke="#d6b656" stroke-width="1" />
+  <rect id="sweep" x="60.0" y="224.0" width="240.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#d6b656" stroke-width="1" />
+  <rect id="run_ceval" x="360.0" y="224.0" width="240.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#d6b656" stroke-width="1" />
+  <rect id="models" x="660.0" y="224.0" width="240.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#d6b656" stroke-width="1" />
+  <rect id="L2-body" x="30.0" y="360.0" width="900.0" height="120.0" rx="4" ry="4" fill="#fafafa" stroke="#82b366" stroke-width="1" />
+  <rect id="envs" x="60.0" y="404.0" width="240.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#82b366" stroke-width="1" />
+  <rect id="prompts" x="360.0" y="404.0" width="240.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#82b366" stroke-width="1" />
+  <rect id="datasets" x="660.0" y="404.0" width="240.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#82b366" stroke-width="1" />
+  <rect id="L3-body" x="30.0" y="540.0" width="900.0" height="110.0" rx="4" ry="4" fill="#fafafa" stroke="#b85450" stroke-width="1" />
+  <rect id="convai" x="195.0" y="584.0" width="240.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#b85450" stroke-width="1" />
+  <rect id="view" x="525.0" y="584.0" width="240.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#b85450" stroke-width="1" />
+  <defs><marker id="arrow-e-setup-sweep" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#6c8ebf" /></marker></defs>
+  <polyline id="e-setup-sweep" points="267.0,118.0 267.0,150.0 156.0,150.0 156.0,224.0" fill="none" stroke="#6c8ebf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-setup-sweep)" />
+  <rect x="178.2" y="138.0" width="66.5" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.9" />
+  <text x="211.5" y="148.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#6c8ebf">cell list</text>
+  <defs><marker id="arrow-e-eval-sweep" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#6c8ebf" /></marker></defs>
+  <polyline id="e-eval-sweep" points="597.0,118.0 597.0,160.0 228.0,160.0 228.0,224.0" fill="none" stroke="#6c8ebf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-eval-sweep)" />
+  <rect x="379.2" y="148.0" width="66.5" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.9" />
+  <text x="412.5" y="158.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#6c8ebf">eval sets</text>
+  <defs><marker id="arrow-e-sweep-runceval" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#d6b656" /></marker></defs>
+  <polyline id="e-sweep-runceval" points="300.0,253.0 360.0,253.0" fill="none" stroke="#d6b656" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-sweep-runceval)" />
+  <text x="330.0" y="245.0" font-family="Inter, Arial, sans-serif" font-size="9" text-anchor="middle" fill="#d6b656" font-style="italic">per cell</text>
+  <defs><marker id="arrow-e-models-runceval" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#d6b656" /></marker></defs>
+  <polyline id="e-models-runceval" points="660.0,253.0 600.0,253.0" fill="none" stroke="#d6b656" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-models-runceval)" />
+  <text x="630.0" y="245.0" font-family="Inter, Arial, sans-serif" font-size="9" text-anchor="middle" fill="#d6b656" font-style="italic">sim+judge</text>
+  <defs><marker id="arrow-e-runceval-envs" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#82b366" /></marker></defs>
+  <polyline id="e-runceval-envs" points="408.0,282.0 408.0,340.0 180.0,340.0 180.0,404.0" fill="none" stroke="#82b366" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-runceval-envs)" />
+  <rect x="260.8" y="328.0" width="66.5" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.9" />
+  <text x="294.0" y="338.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#82b366">loads arm</text>
+  <defs><marker id="arrow-e-runceval-prompts" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#82b366" /></marker></defs>
+  <polyline id="e-runceval-prompts" points="480.0,282.0 480.0,340.0 480.0,404.0" fill="none" stroke="#82b366" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-runceval-prompts)" />
+  <rect x="490.0" y="299.0" width="79.5" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.9" />
+  <text x="492.0" y="309.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="start" fill="#82b366">selects arm</text>
+  <defs><marker id="arrow-e-runceval-datasets" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#82b366" /></marker></defs>
+  <polyline id="e-runceval-datasets" points="552.0,282.0 552.0,340.0 780.0,340.0 780.0,404.0" fill="none" stroke="#82b366" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-runceval-datasets)" />
+  <rect x="632.8" y="328.0" width="66.5" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.9" />
+  <text x="666.0" y="338.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#82b366">scenarios</text>
+  <defs><marker id="arrow-e-runceval-convai" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#b85450" /></marker></defs>
+  <polyline id="e-runceval-convai" points="444.0,282.0 444.0,510.0 315.0,510.0 315.0,584.0" fill="none" stroke="#b85450" stroke-width="2" stroke-dasharray="8 4" stroke-linejoin="round" marker-end="url(#arrow-e-runceval-convai)" />
+  <rect x="454.0" y="384.0" width="60.0" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.6" />
+  <text x="456.0" y="394.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="start" fill="#b85450">boots RT</text>
+  <defs><marker id="arrow-e-envs-convai" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#b85450" /></marker></defs>
+  <polyline id="e-envs-convai" points="180.0,462.0 180.0,510.0 243.0,510.0 243.0,584.0" fill="none" stroke="#b85450" stroke-width="2" stroke-dasharray="8 4" stroke-linejoin="round" marker-end="url(#arrow-e-envs-convai)" />
+  <rect x="191.2" y="498.0" width="40.5" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.6" />
+  <text x="211.5" y="508.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="middle" fill="#b85450">tools</text>
+  <defs><marker id="arrow-e-runceval-view" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#82b366" /></marker></defs>
+  <polyline id="e-runceval-view" points="516.0,282.0 516.0,510.0 645.0,510.0 645.0,584.0" fill="none" stroke="#82b366" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-e-runceval-view)" />
+  <rect x="526.0" y="384.0" width="60.0" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.9" />
+  <text x="528.0" y="394.0" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="start" fill="#82b366">results/</text>
+  <rect id="L0-header" x="30.0" y="30.0" width="900.0" height="28.0" rx="4" ry="4" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1" />
+  <rect x="30.0" y="54.0" width="900.0" height="4.0" fill="#dae8fc" stroke="none" />
+  <rect id="L1-header" x="30.0" y="180.0" width="900.0" height="28.0" rx="4" ry="4" fill="#fff2cc" stroke="#d6b656" stroke-width="1" />
+  <rect x="30.0" y="204.0" width="900.0" height="4.0" fill="#fff2cc" stroke="none" />
+  <rect id="L2-header" x="30.0" y="360.0" width="900.0" height="28.0" rx="4" ry="4" fill="#d5e8d4" stroke="#82b366" stroke-width="1" />
+  <rect x="30.0" y="384.0" width="900.0" height="4.0" fill="#d5e8d4" stroke="none" />
+  <rect id="L3-header" x="30.0" y="540.0" width="900.0" height="28.0" rx="4" ry="4" fill="#f8cecc" stroke="#b85450" stroke-width="1" />
+  <rect x="30.0" y="564.0" width="900.0" height="4.0" fill="#f8cecc" stroke="none" />
+  <text x="480.0" y="46.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Config</text>
+  <text x="315.0" y="77.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">setups/</text>
+  <text x="315.0" y="92.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">one JSON per cell, pairs</text>
+  <text x="315.0" y="107.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">prompt arm + environment</text>
+  <text x="645.0" y="77.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">eval_params.py</text>
+  <text x="645.0" y="92.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">named eval sets (lab_prompts,</text>
+  <text x="645.0" y="107.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">suite_full, harvest_tool_200)</text>
+  <text x="480.0" y="196.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Orchestration</text>
+  <text x="180.0" y="241.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">sweep.py</text>
+  <text x="180.0" y="256.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">eval-params × cells matrix,</text>
+  <text x="180.0" y="271.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">keep-going, prints ceval_table</text>
+  <text x="480.0" y="241.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">run_ceval.py</text>
+  <text x="480.0" y="256.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">boots realtime per cell,</text>
+  <text x="480.0" y="271.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">invokes ceval, tears down</text>
+  <text x="780.0" y="241.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">models.py</text>
+  <text x="780.0" y="256.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">named LLM targets (sim+judge),</text>
+  <text x="780.0" y="271.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">resolves from pipeline.env</text>
+  <text x="480.0" y="376.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Frozen Assets</text>
+  <text x="180.0" y="421.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">environments/</text>
+  <text x="180.0" y="436.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">15 frozen tool arms (e0–e14),</text>
+  <text x="180.0" y="451.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">registry.py resolves by name</text>
+  <text x="480.0" y="421.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">prompt_arms/</text>
+  <text x="480.0" y="436.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">frozen prompts p0–p11,</text>
+  <text x="480.0" y="451.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">sections/ compose sys prompt</text>
+  <text x="780.0" y="421.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">datasets/</text>
+  <text x="780.0" y="436.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">lab prompts + scenario</text>
+  <text x="780.0" y="451.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">batteries (57 labelled)</text>
+  <text x="480.0" y="556.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Product + Readers</text>
+  <text x="315.0" y="601.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">convai/ submodule</text>
+  <text x="315.0" y="616.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">pinned product SHA, realtime</text>
+  <text x="315.0" y="631.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">service + API under test</text>
+  <text x="645.0" y="601.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">view/</text>
+  <text x="645.0" y="616.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">inspector.py, ceval_table.py,</text>
+  <text x="645.0" y="631.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">React app for chart render</text>
+  <text x="36.0" y="694.0" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="normal" font-style="normal" text-anchor="start" fill="#333">━━ config flow</text>
+  <text x="36.0" y="708.0" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="normal" font-style="normal" text-anchor="start" fill="#333">━━ data flow</text>
+  <text x="36.0" y="722.0" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="normal" font-style="normal" text-anchor="start" fill="#333">┄┄ runtime call</text>
+</svg>

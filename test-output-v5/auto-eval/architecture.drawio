@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="ac.draw.io">
+  <diagram id="overview" name="Pipeline Overview">
+    <mxGraphModel pageWidth="640" pageHeight="2150" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ═══ INPUT ROW (y=30) ═══ -->
+        <mxCell id="input-config" value="Config YAML&lt;br/&gt;generation_plan_*.yaml" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=11;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="120" y="30" width="160" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="input-env" value="Environment Module&lt;br/&gt;convai_spending_insights" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=11;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="350" y="30" width="170" height="58" as="geometry" />
+        </mxCell>
+
+        <!-- ═══ GENERATOR SWIMLANE (y=148, h=488) ═══ -->
+        <mxCell id="sl-gen" value="Generator&lt;br/&gt;multi-turn block pool builder" style="swimlane;startSize=48;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=12;html=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="148" width="240" height="488" as="geometry" />
+        </mxCell>
+        <mxCell id="gen-combo" value="Combo Grid Builder&lt;br/&gt;dialect × type × topic&lt;br/&gt;× emotion × style" style="rounded=1;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;html=1;whiteSpace=wrap;" vertex="1" parent="sl-gen">
+          <mxGeometry x="18" y="74" width="204" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="gen-query" value="Query Generation (Stage 1)&lt;br/&gt;deepseek-v4-flash / temp=0.7&lt;br/&gt;persona + topic → user msg" style="rounded=1;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;html=1;whiteSpace=wrap;" vertex="1" parent="sl-gen">
+          <mxGeometry x="18" y="180" width="204" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="gen-answer" value="Answer Decision (Stage 2)&lt;br/&gt;deepseek-v4-flash / auto&lt;br/&gt;dispatch by ToolBehavior" style="rounded=1;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;html=1;whiteSpace=wrap;" vertex="1" parent="sl-gen">
+          <mxGeometry x="18" y="286" width="204" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="gen-tool" value="Tool Result + Response (Stage 3)&lt;br/&gt;EXECUTE: real DB via Postgres&lt;br/&gt;SYNTHESIZE / DETERMINISTIC" style="rounded=1;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;html=1;whiteSpace=wrap;" vertex="1" parent="sl-gen">
+          <mxGeometry x="18" y="392" width="204" height="76" as="geometry" />
+        </mxCell>
+
+        <!-- Sequential edges inside Generator -->
+        <mxCell id="e-gen-1" edge="1" source="gen-combo" target="gen-query" parent="sl-gen" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-gen-2" edge="1" source="gen-query" target="gen-answer" parent="sl-gen" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-gen-3" edge="1" source="gen-answer" target="gen-tool" parent="sl-gen" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ═══ VALIDATOR SWIMLANE (y=696, h=276) ═══ -->
+        <mxCell id="sl-val" value="Validator&lt;br/&gt;rubric-driven LLM judge (per turn)" style="swimlane;startSize=48;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=12;html=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="696" width="240" height="276" as="geometry" />
+        </mxCell>
+        <mxCell id="val-scorer" value="LLM Scorer (per turn)&lt;br/&gt;deepseek-v4-flash / temp=0.1&lt;br/&gt;mean≥8, no metric≤5" style="rounded=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;html=1;whiteSpace=wrap;" vertex="1" parent="sl-val">
+          <mxGeometry x="18" y="74" width="204" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="val-gate" value="Pass/Fail Gate&lt;br/&gt;core avg + insight sub-rubric&lt;br/&gt;tone_* dims gated separately" style="rounded=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;html=1;whiteSpace=wrap;" vertex="1" parent="sl-val">
+          <mxGeometry x="18" y="180" width="204" height="76" as="geometry" />
+        </mxCell>
+
+        <!-- Sequential edges inside Validator -->
+        <mxCell id="e-val-1" edge="1" source="val-scorer" target="val-gate" parent="sl-val" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ═══ FIXER SWIMLANE (y=1032, h=276) ═══ -->
+        <mxCell id="sl-fix" value="Fixer&lt;br/&gt;LLM rewrite + reground in real DB" style="swimlane;startSize=48;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=12;html=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="1032" width="240" height="276" as="geometry" />
+        </mxCell>
+        <mxCell id="fix-rewrite" value="LLM Rewrite (fix_multi_turn)&lt;br/&gt;deepseek-v4-flash / temp=0.3&lt;br/&gt;per-turn fix with context" style="rounded=1;fillColor=#ffffff;strokeColor=#b85450;fontSize=10;html=1;whiteSpace=wrap;" vertex="1" parent="sl-fix">
+          <mxGeometry x="18" y="74" width="204" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="fix-reground" value="Reground Tool Units&lt;br/&gt;validate + re-execute vs DB&lt;br/&gt;regenerate reply from data" style="rounded=1;fillColor=#ffffff;strokeColor=#b85450;fontSize=10;html=1;whiteSpace=wrap;" vertex="1" parent="sl-fix">
+          <mxGeometry x="18" y="180" width="204" height="76" as="geometry" />
+        </mxCell>
+
+        <!-- Sequential edges inside Fixer -->
+        <mxCell id="e-fix-1" edge="1" source="fix-rewrite" target="fix-reground" parent="sl-fix" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ═══ POST-PROCESSING SWIMLANE (y=1368, h=434) ═══ -->
+        <mxCell id="sl-post" value="Post-Processing&lt;br/&gt;assemble + split + quality report" style="swimlane;startSize=48;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=12;html=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="1368" width="240" height="434" as="geometry" />
+        </mxCell>
+        <mxCell id="post-assemble" value="Assemble Blocks&lt;br/&gt;stitch blocks → conversations&lt;br/&gt;topic pivots at seams" style="rounded=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=10;html=1;whiteSpace=wrap;" vertex="1" parent="sl-post">
+          <mxGeometry x="18" y="74" width="204" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="post-split" value="Split&lt;br/&gt;train / val / eval ratios" style="rounded=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=10;html=1;whiteSpace=wrap;" vertex="1" parent="sl-post">
+          <mxGeometry x="18" y="180" width="204" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="post-rebalance" value="Rebalance&lt;br/&gt;tool:text ratio + contamination" style="rounded=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=10;html=1;whiteSpace=wrap;" vertex="1" parent="sl-post">
+          <mxGeometry x="18" y="268" width="204" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="post-analysis" value="Analysis&lt;br/&gt;dataset quality report" style="rounded=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=10;html=1;whiteSpace=wrap;" vertex="1" parent="sl-post">
+          <mxGeometry x="18" y="356" width="204" height="58" as="geometry" />
+        </mxCell>
+
+        <!-- Sequential edges inside Post-Processing -->
+        <mxCell id="e-post-1" edge="1" source="post-assemble" target="post-split" parent="sl-post" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-post-2" edge="1" source="post-split" target="post-rebalance" parent="sl-post" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-post-3" edge="1" source="post-rebalance" target="post-analysis" parent="sl-post" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ═══ OUTPUT ROW (y=1862) ═══ -->
+        <mxCell id="output" value="Dataset Output&lt;br/&gt;eval / train / val .json" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="200" y="1862" width="200" height="58" as="geometry" />
+        </mxCell>
+
+        <!-- ═══ CROSS-ROW EDGES ═══ -->
+
+        <!-- Config → Generator -->
+        <mxCell id="e-cfg-gen" edge="1" source="input-config" target="sl-gen" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.3;entryY=0;entryDx=0;entryDy=0;" value="YAML config" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="200" y="108" />
+              <mxPoint x="252" y="108" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Environment → Generator -->
+        <mxCell id="e-env-gen" edge="1" source="input-env" target="sl-gen" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.7;entryY=0;entryDx=0;entryDy=0;" value="tools+rules" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="435" y="108" />
+              <mxPoint x="348" y="108" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Generator → Validator -->
+        <mxCell id="e-gen-val" edge="1" source="sl-gen" target="sl-val" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" value="raw blocks" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Validator → Fixer (fail - straight down) -->
+        <mxCell id="e-val-fix" edge="1" source="sl-val" target="sl-fix" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#b85450;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" value="fail" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Fixer → Validator (re-score loop on right side) -->
+        <mxCell id="e-fix-val" edge="1" source="sl-fix" target="sl-val" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6c8ebf;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" value="re-score" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="470" y="1170" />
+              <mxPoint x="470" y="834" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Validator → Post-Processing (pass - left side) -->
+        <mxCell id="e-val-post" edge="1" source="sl-val" target="sl-post" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#82b366;strokeWidth=2;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" value="pass" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="140" y="834" />
+              <mxPoint x="140" y="1585" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Post-Processing → Output -->
+        <mxCell id="e-post-out" edge="1" source="sl-post" target="output" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" value="" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ═══ LEGEND ═══ -->
+        <mxCell id="legend" value="━━ sequential&lt;br/&gt;━━ &lt;font color=&quot;#82b366&quot;&gt;pass&lt;/font&gt;&lt;br/&gt;━━ &lt;font color=&quot;#b85450&quot;&gt;fail&lt;/font&gt;&lt;br/&gt;━━ &lt;font color=&quot;#6c8ebf&quot;&gt;re-score loop&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=top;fontSize=10;fillColor=none;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1960" width="140" height="70" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 10 937 695" width="937" height="695">
+  <!-- Page: Generator Drill-Down -->
+  <style>text { font-family: Inter, Arial, sans-serif; }</style>
+  <rect id="gen-sl-body" x="175.0" y="30.0" width="520.0" height="460.0" rx="4" ry="4" fill="#fafafa" stroke="#d6b656" stroke-width="1" />
+  <rect id="gs1" x="193.0" y="108.0" width="484.0" height="48.0" rx="8" ry="8" fill="#ffffff" stroke="#d6b656" stroke-width="1" />
+  <rect id="gs2" x="193.0" y="178.0" width="484.0" height="48.0" rx="8" ry="8" fill="#ffffff" stroke="#d6b656" stroke-width="1" />
+  <rect id="gs3" x="193.0" y="248.0" width="484.0" height="48.0" rx="8" ry="8" fill="#ffffff" stroke="#d6b656" stroke-width="1" />
+  <rect id="gs4" x="193.0" y="322.0" width="484.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#d6b656" stroke-width="1" />
+  <rect id="gs5" x="193.0" y="406.0" width="484.0" height="58.0" rx="8" ry="8" fill="#ffffff" stroke="#d6b656" stroke-width="1" />
+  <rect id="dd-env" x="740.0" y="310.0" width="150.0" height="70.0" rx="8" ry="8" fill="#f8cecc" stroke="#b85450" stroke-width="1" stroke-dasharray="8 4" />
+  <rect id="dd-cfg" x="30.0" y="90.0" width="120.0" height="60.0" rx="8" ry="8" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1" />
+  <rect id="dd-db" x="760.0" y="440.0" width="130.0" height="60.0" rx="0" ry="0" fill="#f8cecc" stroke="#b85450" stroke-width="1" />
+  <rect id="dd-output" x="30.0" y="440.0" width="120.0" height="60.0" rx="8" ry="8" fill="#d5e8d4" stroke="#82b366" stroke-width="1" />
+  <rect x="20.0" y="630.0" width="140.0" height="55.0" rx="4" ry="4" fill="#f9f9f9" stroke="#e0e0e0" stroke-width="1" />
+  <defs><marker id="arrow-ge1-2" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#d6b656" /></marker></defs>
+  <polyline id="ge1-2" points="435.0,156.0 435.0,178.0" fill="none" stroke="#d6b656" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-ge1-2)" />
+  <defs><marker id="arrow-ge2-3" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#d6b656" /></marker></defs>
+  <polyline id="ge2-3" points="435.0,226.0 435.0,248.0" fill="none" stroke="#d6b656" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-ge2-3)" />
+  <defs><marker id="arrow-ge3-4" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#d6b656" /></marker></defs>
+  <polyline id="ge3-4" points="435.0,296.0 435.0,322.0" fill="none" stroke="#d6b656" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-ge3-4)" />
+  <defs><marker id="arrow-ge4-5" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#d6b656" /></marker></defs>
+  <polyline id="ge4-5" points="435.0,380.0 435.0,406.0" fill="none" stroke="#d6b656" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-ge4-5)" />
+  <defs><marker id="arrow-de-cfg-gen" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#6c8ebf" /></marker></defs>
+  <polyline id="de-cfg-gen" points="150.0,120.0 162.5,120.0 162.5,99.0 175.0,99.0" fill="none" stroke="#6c8ebf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-de-cfg-gen)" />
+  <defs><marker id="arrow-de-dispatch-env" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#b85450" /></marker></defs>
+  <polyline id="de-dispatch-env" points="677.0,351.0 708.5,351.0 708.5,345.0 740.0,345.0" fill="none" stroke="#b85450" stroke-width="2" stroke-dasharray="8 4" stroke-linejoin="round" marker-end="url(#arrow-de-dispatch-env)" />
+  <defs><marker id="arrow-de-env-db" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#b85450" /></marker></defs>
+  <polyline id="de-env-db" points="815.0,380.0 815.0,399.8 825.0,399.8 825.0,440.0" fill="none" stroke="#b85450" stroke-width="2" stroke-dasharray="8 4" stroke-linejoin="round" marker-end="url(#arrow-de-env-db)" />
+  <defs><marker id="arrow-de-gen-output" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0 0, 10 4, 0 8" fill="#82b366" /></marker></defs>
+  <polyline id="de-gen-output" points="193.0,435.0 171.5,435.0 171.5,470.0 150.0,470.0" fill="none" stroke="#82b366" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow-de-gen-output)" />
+  <rect id="gen-sl-header" x="175.0" y="30.0" width="520.0" height="52.0" rx="4" ry="4" fill="#fff2cc" stroke="#d6b656" stroke-width="1" />
+  <rect x="175.0" y="78.0" width="520.0" height="4.0" fill="#fff2cc" stroke="none" />
+  <text x="724.2" y="337.0" font-family="Inter, Arial, sans-serif" font-size="9" text-anchor="middle" fill="#b85450" font-style="italic">dispatch</text>
+  <rect x="835.0" y="407.9" width="27.5" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.5" />
+  <text x="837.0" y="417.9" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="start" fill="#b85450">SQL</text>
+  <rect x="181.5" y="440.5" width="34.0" height="14" rx="2" ry="2" fill="white" stroke="none" opacity="0.7" />
+  <text x="183.5" y="450.5" font-family="Inter, Arial, sans-serif" font-size="10" text-anchor="start" fill="#82b366">JSON</text>
+  <text x="435.0" y="46.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">Generator</text>
+  <text x="435.0" y="62.0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" text-anchor="middle" fill="#333">run_generation.py → multi_turn_gen.py</text>
+  <text x="435.0" y="128.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">1. Combo Grid</text>
+  <text x="435.0" y="143.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">combos.py — dialect × block_type × topic × emotion × typing_style</text>
+  <text x="435.0" y="198.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">2. Query Generation</text>
+  <text x="435.0" y="213.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">query model (deepseek-v4-flash, temp=0.7) → realistic user message</text>
+  <text x="435.0" y="268.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">3. Answer Decision</text>
+  <text x="435.0" y="283.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">answer model (deepseek-v4-flash, temp=0.3, tool_choice=auto) → tool_call or NLR</text>
+  <text x="435.0" y="347.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">4. Tool Behavior Dispatch</text>
+  <text x="435.0" y="362.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">turn_gen.py — EXECUTE→env | SYNTHESIZE→LLM | DETERMINISTIC→env | TERMINAL→stop</text>
+  <text x="435.0" y="431.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">5. Tool Result + Response</text>
+  <text x="435.0" y="446.0" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">turn_gen.py — format tool_result, generate narration (≤60 words, British English)</text>
+  <text x="815.0" y="333.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Environment</text>
+  <text x="815.0" y="348.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">convai_spending_insights</text>
+  <text x="815.0" y="363.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">ToolSpec + execute_tool</text>
+  <text x="90.0" y="108.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">Config YAML</text>
+  <text x="90.0" y="123.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">models, taxonomy,</text>
+  <text x="90.0" y="138.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">batch_size=50</text>
+  <text x="825.0" y="459.0" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">PostgreSQL</text>
+  <text x="825.0" y="473.0" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">concierge_eval DB</text>
+  <text x="825.0" y="487.0" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">persona + txns</text>
+  <text x="90.0" y="458.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">output/raw/</text>
+  <text x="90.0" y="473.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">multi_turn.json</text>
+  <text x="90.0" y="488.5" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" text-anchor="middle" fill="#333">(block pool)</text>
+  <text x="26.0" y="644.0" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="normal" font-style="normal" text-anchor="start" fill="#333">━━ sequential flow</text>
+  <text x="26.0" y="658.0" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="normal" font-style="normal" text-anchor="start" fill="#333">┄┄ env dispatch</text>
+  <text x="26.0" y="672.0" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="normal" font-style="normal" text-anchor="start" fill="#333">━━ data output</text>
+</svg>
