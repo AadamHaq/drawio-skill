@@ -117,13 +117,15 @@ When an edge returns to a box that is ABOVE the source (e.g., a retry loop, or d
 - Route the edge **alongside** the diagram (left or right margin), going UP
 - NEVER route DOWN first then back UP — this creates a confusing visual where the line appears to go the wrong direction before doubling back
 - The edge should exit sideways (exitX=0 or exitX=1), route vertically UP in the margin, then enter the target from the side or top
+- **CRITICAL: use entryY=0 (top entry) or entryX=0/1 (side entry).** NEVER use entryY=1 (bottom entry) when the edge arrives from above — this forces the edge to pass THROUGH the target box to reach the bottom.
 
 **Pattern:**
 ```
 Source below → exitX=0;exitY=0.5 (left side)
   waypoint: x = diagram_left_margin - 30, y = source_midY
-  waypoint: x = diagram_left_margin - 30, y = target_midY
-Target above → entryX=0;entryY=0.5 (left side) or entryX=0.5;entryY=1 (bottom)
+  waypoint: x = diagram_left_margin - 30, y = target_y - 15
+Target above → entryX=0;entryY=0.5 (left side entry)
+  OR entryX=0.5;entryY=0 (top entry — edge arrives directly above)
 ```
 
-The arrowhead direction must make physical sense: if the edge arrives at the bottom of the target, use `entryY=1` (arrow points up). If it arrives from the left, use `entryX=0` (arrow points right).
+The arrowhead direction must make physical sense: if the edge arrives at the top of the target, use `entryY=0` (arrow points down). If it arrives from the left, use `entryX=0` (arrow points right). NEVER enter from the bottom when approaching from above.

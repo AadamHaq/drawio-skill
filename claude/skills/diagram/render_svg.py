@@ -405,7 +405,7 @@ def render_edge(points, style, label, cell_id, all_vertices):
                 text_y = ly - 2
 
             # Lower opacity for ALL pills to keep lines visible through them
-            pill_opacity = "0.5" if dashed else "0.7"
+            pill_opacity = "0.3" if dashed else "0.5"
 
             # Pill x position depends on anchor
             if text_anchor == "start":
