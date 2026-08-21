@@ -413,7 +413,7 @@ def validate_file(filepath):
                         break
 
         # ─── Header clearance check ─────────────────────────────────────
-        # First child inside a swimlane must be at y >= startSize + 20
+        # First child inside a swimlane must be at y >= startSize + 26
         # Only applies to swimlanes that ARE targets of edges (arrows enter them)
         edge_targets = set()
         for cell in cells:
@@ -432,7 +432,7 @@ def validate_file(filepath):
             # Only check if this swimlane receives incoming edges
             if parent_id not in edge_targets:
                 continue
-            start_size = int(style.get("startSize", "30"))
+            start_size = int(style.get("startSize", "32"))
             # Find first child by y-position
             first_child_y = None
             for child in cells:
@@ -462,7 +462,7 @@ def validate_file(filepath):
             geom = get_geometry(cell)
             if not geom or geom["w"] < 500:
                 continue  # only full-width bands
-            ss = int(style.get("startSize", "28"))
+            ss = int(style.get("startSize", "32"))
             band_headers.append((
                 cell.get("id", ""),
                 geom["y"],

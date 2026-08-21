@@ -29,11 +29,23 @@ Optional:
 ### Service container style
 ```
 rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;
-verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize=30;
+verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize={see formula};
 ```
 - Header: service name ONLY (bold, 12px)
 - First child box: port/model (e.g., "FastAPI :8000")
 - Subsequent child boxes: features/components (11px)
+
+### Header startSize formula (MANDATORY)
+
+Count the lines in your header value (`<br/>` splits):
+```
+startSize = 20 + (n_lines × 16)
+
+1 line  (e.g. "API"):                           startSize = 36
+2 lines (e.g. "API<br/><font ...>REST svc"):    startSize = 52
+```
+
+Minimum for single-word service names: `startSize=32`. If you add ANY subtitle line via `<br/>`, use at least 46.
 
 **Content-richness rules (MANDATORY):**
 - Every service container must have at least 2 child boxes (port + primary feature)

@@ -33,10 +33,11 @@ Infrastructure — databases, caches, message brokers (blue cylinder: #dae8fc)
 ### Service Container Style
 ```
 rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;
-verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize=30;
+verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize={see formula};
 ```
 - Header: service name ONLY (bold, 12px)
 - Internal components as child boxes: port, model name, features (11px)
+- **startSize formula**: `20 + (n_lines × 16)`. Min 32 for 1-line, min 46 for 2-line headers.
 
 ### Infrastructure Style
 ```

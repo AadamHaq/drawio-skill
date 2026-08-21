@@ -20,6 +20,7 @@ Usage:
   layout.py boilerplate <page_name> [page_name...]
   layout.py legend <lowest_y> [topology]      (pipeline|microservice|layered)
   layout.py step-height "Label<br/>Line 2"    (compute box height from label)
+  layout.py header-size "Title<br/>subtitle"   (compute startSize from header lines)
   layout.py shared-layer <n_items> [y] [page_w]
   layout.py scaffold <topology> [n_stages]    (pipeline|microservice|layered)
 """
@@ -452,7 +453,7 @@ def cmd_layers(n_layers, *items_per_layer):
     band_w = page_w - 2 * margin_x
     # Layer heights: computed from content (startSize + clearance + item + padding)
     base_item_h = 60
-    computed_layer_h = 28 + 26 + base_item_h + 20  # = 134 per layer
+    computed_layer_h = 32 + 26 + base_item_h + 20  # = 138 per layer
 
     # Compute total height to see if we need landscape
     total_h = 2 * margin_y + n_layers * computed_layer_h + (n_layers - 1) * layer_gap
@@ -472,7 +473,7 @@ def cmd_layers(n_layers, *items_per_layer):
     print()
 
     y = margin_y
-    start_size = 28  # standard band startSize
+    start_size = 32  # standard band startSize
     header_clearance = 26  # space below header for arrow visibility
     bottom_pad = 20  # space between item bottom and band border
 
@@ -613,6 +614,32 @@ def cmd_step_height(*label_parts):
     print(f"n_lines={n_lines}")
     print(f"height={h}")
     print(f"# Formula: max(36, 22 + {n_lines} × 18) = {h}")
+
+
+# ─── Header size helper ──────────────────────────────────────────────────────
+
+def cmd_header_size(*label_parts):
+    """Compute startSize for a swimlane/band header from its label.
+
+    Formula: startSize = max(32, 20 + n_lines × 16)
+
+    Accepts the header value as one or more arguments (joined with spaces).
+    Counts <br/> occurrences to determine line count.
+    """
+    label = " ".join(label_parts)
+    if not label:
+        print("usage: layout.py header-size \"Title<br/>subtitle text\"", file=sys.stderr)
+        sys.exit(1)
+
+    n_breaks = label.lower().count("<br/>") + label.lower().count("<br>")
+    n_lines = n_breaks + 1
+    start_size = max(32, 20 + n_lines * 16)
+
+    print(f"n_lines={n_lines}")
+    print(f"startSize={start_size}")
+    print(f"# Formula: max(32, 20 + {n_lines} × 16) = {start_size}")
+    if n_lines >= 2:
+        print(f"# First child y = {start_size} + 26 = {start_size + 26}")
 
 
 # ─── Text width helper ───────────────────────────────────────────────────────
@@ -897,7 +924,7 @@ def _scaffold_layered(n):
         layer_id = f"layer-{i}"
         print(f'        <mxCell id="{layer_id}" value="{role}" '
               f'style="rounded=1;fillColor={p["fill"]};strokeColor={p["stroke"]};html=1;'
-              f'verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize=30;" '
+              f'verticalAlign=top;fontStyle=1;fontSize=12;swimlane;startSize=32;" '
               f'vertex="1" parent="1">')
         print(f'          <mxGeometry x="{margin_x}" y="{y}" width="{band_w}" height="{layer_h}" as="geometry" />')
         print(f'        </mxCell>')
@@ -905,7 +932,7 @@ def _scaffold_layered(n):
         # 2 stub items inside
         item_w = 160
         item_h = 40
-        item_y = 35
+        item_y = 38
         ix1 = (band_w - 2 * item_w - 40) // 2
         ix2 = ix1 + item_w + 40
         print(f'        <mxCell id="item-{i}-0" value="Component A" '
@@ -1098,6 +1125,7 @@ def main():
         "boilerplate":      lambda: cmd_boilerplate(*args),
         "legend":           lambda: cmd_legend(*args),
         "step-height":      lambda: cmd_step_height(*args),
+        "header-size":      lambda: cmd_header_size(*args),
         "text-width":       lambda: cmd_text_width(*args),
         "shared-layer":     lambda: cmd_shared_layer(*args),
         "scaffold":         lambda: cmd_scaffold(*args),

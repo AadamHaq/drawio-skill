@@ -21,7 +21,7 @@ Order inputs to match their target stages: input feeding the left stage goes on 
 Any stage with 2+ sub-steps → swimlane container with steps inside:
 ```xml
 <mxCell id="sl-X" parent="1" vertex="1"
-  style="swimlane;startSize=30;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=12;html=1;"
+  style="swimlane;startSize=32;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=12;html=1;"
   value="Stage Name">
   <mxGeometry x="..." y="..." width="316" height="..." as="geometry" />
 </mxCell>
@@ -157,9 +157,23 @@ For edges inside swimlanes (sequential steps), always use:
 **CRITICAL: Always compute swimlane height from content. Never guess.**
 
 ```
-Short title (≤ 40 chars):  startSize=30
+Short title (≤ 40 chars):  startSize=32
 Long title  (> 40 chars):  startSize=50, add whiteSpace=wrap
 ```
+
+### Header startSize formula (MANDATORY)
+
+Count the lines in your header value (`<br/>` splits):
+```
+startSize = 20 + (n_lines × 16)
+
+1 line  (e.g. "Stage Name"):                    startSize = 36
+2 lines (e.g. "Name<br/><font ...>subtitle"):   startSize = 52
+```
+
+**Why:** At fontSize=12 bold, each line needs ~16px. The 20px base covers top/bottom padding. If startSize is too small, the subtitle text overflows into the body or gets clipped.
+
+For simple single-word headers ("Config", "Pipeline") you may use `startSize=32` as minimum — it's still comfortable. But if you add ANY subtitle line via `<br/>`, bump to at least 46.
 
 Step height formula — count `<br/>` line breaks in the label:
 ```
